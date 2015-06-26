@@ -7,5 +7,7 @@
     <string name="next_button">Looks good!</string>
     <string name="edit_message">Article excerpt</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_highlight">Highlight</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
