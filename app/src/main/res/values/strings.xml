@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Xcerpt</string>
+    <string name="paste_button">Paste</string>
+    <string name="delete_button">Delete</string>
+    <string name="next_button">Looks good!</string>
+    <string name="edit_message">Article excerpt</string>
+    <string name="action_settings">Settings</string>
+
+</resources>
