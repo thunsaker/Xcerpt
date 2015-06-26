@@ -1,32 +1,41 @@
 package ericbai.com.sharepiece;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.astuetz.PagerSlidingTabStrip;
 
-public class HighlightActivity extends Activity {
+
+public class HighlightActivity extends FragmentActivity {
     private String excerpt;
-    private TextView mTextView;
-    public static final float TEXT_SIZE = 18;
+    private ViewPager mPager;
+    private PagerAdapter mPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_highlight);
+
+        mPager = (ViewPager) findViewById(R.id.pager);
+        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setViewPager(mPager);
+
         Intent intent = getIntent();
         excerpt = intent.getStringExtra(PasteActivity.EXCERPT);
-
-        mTextView = (TextView) findViewById(R.id.article_text);
-        mTextView.setTextColor(Color.BLACK);
-        mTextView.setTextSize(TEXT_SIZE);
-        mTextView.setTypeface(Typeface.SERIF);
-        mTextView.setText(excerpt);
     }
 
 
@@ -47,5 +56,27 @@ public class HighlightActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
+        private final String[] TITLES = { "Highlight", "Colour", "Source"};
+
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        public CharSequence getPageTitle(int position) {
+            return TITLES[position];
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return ScreenSlidePageFragment.create(position, excerpt);
+        }
+
+        @Override
+        public int getCount() {
+            return TITLES.length;
+        }
     }
 }

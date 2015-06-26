@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,12 +44,9 @@ public class PasteActivity extends ActionBarActivity {
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
             }
-
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
             }
 
             @Override
@@ -78,6 +76,12 @@ public class PasteActivity extends ActionBarActivity {
 
     public void delete(View view) {
         mEditText.setText("");
+
+        // show keyboard
+        mEditText.requestFocus();
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.showSoftInput(mEditText, InputMethodManager.SHOW_IMPLICIT);
     }
 
     public void paste(View view) {
