@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+def BING_ACCOUNT_KEY = '"' + BingAccountKeyProp + '"' ?: '"Define Bing account key"';
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -12,7 +14,11 @@ android {
         versionName "1.0"
     }
     buildTypes {
+        debug{
+            buildConfigField 'String', 'BING_ACCOUNT_KEY', BING_ACCOUNT_KEY
+        }
         release {
+            buildConfigField 'String', 'BING_ACCOUNT_KEY', BING_ACCOUNT_KEY
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -24,5 +30,4 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.google.code.gson:gson:2.2.4'
-    compile 'commons-codec:commons-codec:1.9'
 }

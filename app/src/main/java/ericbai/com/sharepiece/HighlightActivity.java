@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -21,6 +22,8 @@ public class HighlightActivity extends FragmentActivity {
     private String excerpt;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
+
+    private static final int NUM_RESULTS = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +39,19 @@ public class HighlightActivity extends FragmentActivity {
 
         Intent intent = getIntent();
         excerpt = intent.getStringExtra(PasteActivity.EXCERPT);
-    }
 
+        SearchAsyncTask searchTask =
+                new SearchAsyncTask(excerpt, NUM_RESULTS, new SearchAsyncTask.Callback() {
+            @Override
+            public void onComplete(Object o, Error error) {
+                if(error != null){
+                    return;
+                }
+                BingSearchResults results = (BingSearchResults) o;
+            }
+        });
+        searchTask.execute();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

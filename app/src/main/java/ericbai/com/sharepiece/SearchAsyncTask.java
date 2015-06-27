@@ -1,12 +1,14 @@
 package ericbai.com.sharepiece;
 
 import android.os.AsyncTask;
+import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.apache.commons.codec.binary.Base64;
+//import org.apache.commons.codec.binary.Base64;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.net.URLEncoder;
 public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private final String TAG = getClass().getName();
+    private final String BING_ACCOUNT_KEY = "BING_ACCOUNT_KEY";
 
     private String mSearchStr;
     private int mNumOfResults = 0;
@@ -28,7 +31,7 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
     private Error mError;
 
     public SearchAsyncTask(String searchStr, int numOfResults, Callback callback) {
-        mSearchStr = searchStr;
+        mSearchStr = "\"" + searchStr +  "\"";
         mNumOfResults = numOfResults;
         mCallback = callback;
     }
@@ -38,16 +41,20 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
         try {
             String searchStr = URLEncoder.encode(mSearchStr);
             String numOfResultsStr = mNumOfResults <= 0 ? "" : "&$top=" + mNumOfResults;
-            String bingUrl = "https://api.datamarket.azure.com/Bing/SearchWeb/v1/Web?Query=%27" + searchStr + "%27" + numOfResultsStr + "&$format=json";
-            String accountKey = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-            byte[] accountKeyBytes = Base64.encodeBase64((accountKey + ":" + accountKey).getBytes());
-            String accountKeyEnc = new String(accountKeyBytes);
+
+            String bingUrl =
+                    "https://api.datamarket.azure.com/Bing/Search/v1/Web?Query=%27"
+                    + searchStr + "%27" + numOfResultsStr + "&$format=json";
+            String accountKey = BuildConfig.BING_ACCOUNT_KEY;
+            Log.e("ENV VAR", accountKey);
+            String auth = accountKey + ":" + accountKey;
+            String encodedAuth = Base64.encodeToString(auth.getBytes(), Base64.NO_WRAP);
 
             URL url = null;
             url = new URL(bingUrl);
 
             URLConnection urlConnection = url.openConnection();
-            urlConnection.setRequestProperty("Authorization", "Basic " + accountKeyEnc);
+            urlConnection.setRequestProperty("Authorization", "Basic " + encodedAuth);
             InputStream response = urlConnection.getInputStream();
             String res = readStream(response);
 
