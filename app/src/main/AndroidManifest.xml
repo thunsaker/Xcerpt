@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ericbai.com.sharepiece" >
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -24,12 +25,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HighlightActivity"
+            android:name=".CustomizeActivity"
             android:label="@string/title_activity_highlight"
             android:parentActivityName=".PasteActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ericbai.com.sharepiece.PasteActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ShareActivity"
+            android:label="@string/title_activity_share"
+            android:parentActivityName=".CustomizeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ericbai.com.sharepiece.CustomizeActivity" />
         </activity>
     </application>
 

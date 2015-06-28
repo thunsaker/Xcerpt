@@ -1,8 +1,11 @@
 package ericbai.com.sharepiece;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -13,33 +16,43 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import static ericbai.com.sharepiece.PasteActivity.isNetworkAvailable;
 
-public class HighlightActivity extends FragmentActivity {
+public class CustomizeActivity extends FragmentActivity {
     private String excerpt;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private TextView contentPreview;
     private TextView titleView;
     private TextView websiteView;
+    private ScrollView scroll;
 
-    public static final float TEXT_SIZE = 18;
+    public static final float TEXT_SIZE = 16;
     private static final int NUM_RESULTS = 3;
-    private static final int IMAGE_WIDTH = 600;
+    private static final int MAX_HEIGHT = 1920;
     private static final String NO_SOURCE_FOUND = "No source found!";
+    public static final String IMAGE = "IMAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_highlight);
+        setContentView(R.layout.activity_customize);
 
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
         contentPreview = (TextView) findViewById(R.id.content_preview);
+        scroll = (ScrollView) findViewById(R.id.content);
+
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
@@ -48,7 +61,13 @@ public class HighlightActivity extends FragmentActivity {
         tabs.setViewPager(mPager);
 
         Intent intent = getIntent();
-        excerpt = intent.getStringExtra(PasteActivity.EXCERPT);
+        String intentAction = intent.getAction();
+
+        if(intentAction.equals(Intent.ACTION_SEND)){
+            excerpt = intent.getStringExtra(Intent.EXTRA_TEXT).trim();
+        }else if(intentAction.equals(Intent.ACTION_DEFAULT)){
+            excerpt = intent.getStringExtra(PasteActivity.EXCERPT);
+        }
 
         contentPreview.setTypeface(Typeface.SERIF);
 
@@ -98,6 +117,7 @@ public class HighlightActivity extends FragmentActivity {
         }
         titleView.setText(titles[0]);
         websiteView.setText(urls[0]);
+
     }
 
     @Override
@@ -117,6 +137,21 @@ public class HighlightActivity extends FragmentActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void back(View view){
+        finish();
+    }
+
+    public void share(View view) {
+        Intent intent = new Intent(this, ShareActivity.class);
+
+        Bitmap image = takeScreenShot();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        intent.putExtra(IMAGE, byteArray);
+        startActivity(intent);
     }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
@@ -143,5 +178,40 @@ public class HighlightActivity extends FragmentActivity {
         public int getCount() {
             return TITLES.length;
         }
+    }
+
+    private Bitmap takeScreenShot()
+    {
+        int totalHeight = scroll.getChildAt(0).getHeight();
+        int totalWidth = scroll.getChildAt(0).getWidth();
+
+        Bitmap b = getBitmapFromView(scroll,totalHeight,totalWidth);
+
+        return b;
+    }
+    public static Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {
+
+        int height = Math.min(MAX_HEIGHT, totalHeight);
+        float percent = height / (float)totalHeight;
+
+        Bitmap canvasBitmap = Bitmap.createBitmap(
+                (int)(totalWidth*percent),
+                (int)(totalHeight*percent),
+                Bitmap.Config.ARGB_8888
+        );
+        Canvas canvas = new Canvas(canvasBitmap);
+
+        Drawable bgDrawable = view.getBackground();
+        if (bgDrawable != null)
+            bgDrawable.draw(canvas);
+        else
+            canvas.drawColor(Color.WHITE);
+
+        canvas.save();
+        canvas.scale(percent, percent);
+        view.draw(canvas);
+        canvas.restore();
+
+        return canvasBitmap;
     }
 }

@@ -1,25 +1,23 @@
 package ericbai.com.sharepiece;
 
-import android.app.ActionBar;
-import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class PasteActivity extends ActionBarActivity {
@@ -51,10 +49,17 @@ public class PasteActivity extends ActionBarActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                boolean enableNext = mEditText.getText().length() > 0;
-                nextButton.setEnabled(enableNext);
+                if (isNetworkAvailable(getApplicationContext())) {
+                    boolean enableNext = mEditText.getText().length() > 0;
+                    nextButton.setEnabled(enableNext);
+                }
             }
         });
+
+        if (!isNetworkAvailable(getApplicationContext())) {
+            CharSequence text = "Error: Check your internet connection."; //TODO make const
+            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        }
 
         if (!(clipboard.hasPrimaryClip())) {
             pasteButton.setEnabled(false);
@@ -98,10 +103,16 @@ public class PasteActivity extends ActionBarActivity {
     }
 
     public void next(View view) {
-        Intent intent = new Intent(this, HighlightActivity.class);
-        String content = mEditText.getText().toString();
-        intent.putExtra(EXCERPT, content);
-        startActivity(intent);
+        if (isNetworkAvailable(getApplicationContext())) {
+            Intent intent = new Intent(this, CustomizeActivity.class);
+            intent.setAction(Intent.ACTION_DEFAULT);
+            String content = mEditText.getText().toString();
+            intent.putExtra(EXCERPT, content);
+            startActivity(intent);
+        } else {
+            CharSequence text = "Error: Check your internet connection."; //TODO make const
+            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -114,5 +125,10 @@ public class PasteActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE))
+                .getActiveNetworkInfo() != null;
     }
 }
