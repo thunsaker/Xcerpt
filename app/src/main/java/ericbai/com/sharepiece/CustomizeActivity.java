@@ -125,8 +125,8 @@ public class CustomizeActivity extends FragmentActivity {
         websiteView.setText(urls[0]);
 
         for(int i = 0; i < results.length; i++){
+            //TODO
             RadioButton rb = new RadioButton(this);
-            rb.
         }
     }
 

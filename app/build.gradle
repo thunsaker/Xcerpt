@@ -1,6 +1,20 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 def BING_ACCOUNT_KEY = '"' + BingAccountKeyProp + '"' ?: '"Define Bing account key"';
+def TWITTER_KEY = '"' + TwitterKeyProp + '"' ?: '"Define Twitter key"';
+def TWITTER_SECRET_KEY = '"' + TwitterSecretKeyProp + '"' ?: '"Define Twitter secret key"';
 
 android {
     compileSdkVersion 21
@@ -16,9 +30,13 @@ android {
     buildTypes {
         debug{
             buildConfigField 'String', 'BING_ACCOUNT_KEY', BING_ACCOUNT_KEY
+            buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
+            buildConfigField 'String', 'TWITTER_SECRET_KEY', TWITTER_SECRET_KEY
         }
         release {
             buildConfigField 'String', 'BING_ACCOUNT_KEY', BING_ACCOUNT_KEY
+            buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
+            buildConfigField 'String', 'TWITTER_SECRET_KEY', TWITTER_SECRET_KEY
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -30,4 +48,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.google.code.gson:gson:2.2.4'
+    compile('com.twitter.sdk.android:twitter:1.6.0@aar') {
+        transitive = true;
+    }
 }

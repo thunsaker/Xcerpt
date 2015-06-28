@@ -48,6 +48,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ericbai.com.sharepiece.CustomizeActivity" />
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="359ddc091b7c9586ca7cde1a6ff8d64f85d9c5cb" />
     </application>
 
 </manifest>

@@ -7,26 +7,55 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewManager;
 import android.widget.ImageView;
+
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 
 public class ShareActivity extends Activity {
 
     private ImageView finalImage;
+    private TwitterLoginButton loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
-        Intent intent = getIntent();
         finalImage = (ImageView) findViewById(R.id.final_image);
 
         Bundle extras = getIntent().getExtras();
         byte[] byteArray = extras.getByteArray(CustomizeActivity.IMAGE);
         Bitmap img = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         finalImage.setImageBitmap(img);
+
+        loginButton = (TwitterLoginButton)
+                findViewById(R.id.twitter_login_button);
+        loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        loginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                ((ViewManager)loginButton.getParent()).removeView(loginButton);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                // Do something on failure
+            }
+        });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        loginButton.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
