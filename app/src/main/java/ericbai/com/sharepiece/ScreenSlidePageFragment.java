@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 public class ScreenSlidePageFragment extends Fragment {
@@ -96,7 +97,18 @@ public class ScreenSlidePageFragment extends Fragment {
 
         TextView text = setInstructions(getString(R.string.instructions_source));
 
+        RadioGroup sourceSelect = new RadioGroup(getActivity());
+        RadioGroup.LayoutParams rgParams =
+                new RadioGroup.LayoutParams(RadioGroup.LayoutParams.MATCH_PARENT, RadioGroup.LayoutParams.WRAP_CONTENT);
+        final int margin =
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources()
+                        .getDisplayMetrics());
+        rgParams.gravity = Gravity.CENTER_HORIZONTAL;
+        rgParams.setMargins(margin, margin, margin, margin);
+        sourceSelect.setLayoutParams(rgParams);
+
         layout.addView(text);
+        layout.addView(sourceSelect);
 
         return layout;
     }
