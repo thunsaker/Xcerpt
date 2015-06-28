@@ -5,36 +5,33 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class ScreenSlidePageFragment extends Fragment {
-    /**
-     * The argument key for the page number this fragment represents.
-     */
-
-    public static final String EXCERPT = "excerpt";
     public static final String ARG_PAGE = "page";
 
     /**
      * The fragment's page number, which is set to the argument value for {@link #ARG_PAGE}.
      */
     private int mPageNumber;
-    private String mExcerpt;
 
-    public static final float TEXT_SIZE = 18;
+    private static final int HIGHLIGHT = 0;
+    private static final int COLOUR = 1;
+    private static final int SOURCE = 2;
 
     /**
      * Factory method for this fragment class. Constructs a new fragment for the given page number.
      */
-    public static ScreenSlidePageFragment create(int pageNumber, String excerpt) {
+    public static ScreenSlidePageFragment create(int pageNumber) {
         ScreenSlidePageFragment fragment = new ScreenSlidePageFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, pageNumber);
-        args.putString(EXCERPT, excerpt);
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,34 +43,71 @@ public class ScreenSlidePageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPageNumber = getArguments().getInt(ARG_PAGE);
-        mExcerpt = getArguments().getString(EXCERPT);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-
+        FrameLayout.LayoutParams params =
+                new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         FrameLayout fl = new FrameLayout(getActivity());
-        fl.setLayoutParams(params);
 
-        final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources()
+        final int margin =
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources()
                 .getDisplayMetrics());
-
-        TextView v = new TextView(getActivity());
+        params.gravity = Gravity.CENTER_HORIZONTAL;
         params.setMargins(margin, margin, margin, margin);
 
-        v.setTypeface(Typeface.SERIF);
+        fl.setLayoutParams(params);
 
-        v.setTextColor(Color.BLACK);
-        v.setTextSize(TEXT_SIZE);
-        v.setLayoutParams(params);
-        v.setLayoutParams(params);
-        v.setText(mExcerpt);
+        View child = null;
+        switch(mPageNumber){
+            case HIGHLIGHT: child = getHighlightCard();
+                break;
+            case COLOUR: child = getColourCard();
+                break;
+            case SOURCE: child = getSourceCard();
+                break;
+        }
 
-        fl.addView(v);
+        fl.addView(child);
+
         return fl;
     }
+
+    public View getHighlightCard(){
+        return setInstructions(getString(R.string.instructions_highlight));
+    }
+
+    public View getColourCard(){
+        TextView text = setInstructions(getString(R.string.instructions_colour));
+
+        return text;
+    }
+
+    public View getSourceCard(){
+        LinearLayout layout = new LinearLayout(getActivity());
+
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        layout.setLayoutParams(params);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        TextView text = setInstructions(getString(R.string.instructions_source));
+
+        layout.addView(text);
+
+        return layout;
+    }
+
+    public TextView setInstructions(String instructions){
+        TextView text = new TextView(getActivity());
+        text.setGravity(Gravity.CENTER_HORIZONTAL);
+        text.setText(instructions);
+        return text;
+    }
+
 
     /**
      * Returns the page number represented by this fragment object.

@@ -46,7 +46,6 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
                     "https://api.datamarket.azure.com/Bing/Search/v1/Web?Query=%27"
                     + searchStr + "%27" + numOfResultsStr + "&$format=json";
             String accountKey = BuildConfig.BING_ACCOUNT_KEY;
-            Log.e("ENV VAR", accountKey);
             String auth = accountKey + ":" + accountKey;
             String encodedAuth = Base64.encodeToString(auth.getBytes(), Base64.NO_WRAP);
 
