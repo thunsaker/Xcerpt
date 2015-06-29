@@ -37,11 +37,14 @@ public class CustomizeActivity extends FragmentActivity {
     private TextView websiteView;
     private ScrollView scroll;
 
-    public static final float TEXT_SIZE = 16;
+    public String selectedUrl;
+
+    private static final float TEXT_SIZE = 16;
     private static final int NUM_RESULTS = 3;
     private static final int MAX_HEIGHT = 1920;
-    private static final String NO_SOURCE_FOUND = "No source found!";
+    private static final String NO_SOURCE_FOUND = "No source found!"; //TODO put in strings.xml
     public static final String IMAGE = "IMAGE";
+    public static final String URL = "URL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,21 +106,26 @@ public class CustomizeActivity extends FragmentActivity {
             return;
         }
         String[] titles = new String[results.length];
+        String[] displayUrls = new String[results.length];
         String[] urls = new String[results.length];
+
         for(int i = 0; i < results.length; i++){
             //TODO: get meta og:title from site's HTML instead of Bing's title
             String pageTitle = results[i].Title;
             titles[i] = pageTitle;
+
+            urls[i] = results[i].Url;
 
             String baseUrl = results[i].DisplayUrl;
             int backslashAt = baseUrl.indexOf('/');
             if(backslashAt > 0){
                 baseUrl = baseUrl.substring(0, backslashAt);
             }
-            urls[i] = baseUrl;
+            displayUrls[i] = baseUrl;
         }
         titleView.setText(titles[0]);
-        websiteView.setText(urls[0]);
+        websiteView.setText(displayUrls[0]);
+        selectedUrl = urls[0];
 
         for(int i = 0; i < results.length; i++){
             //TODO
@@ -150,6 +158,8 @@ public class CustomizeActivity extends FragmentActivity {
 
     public void share(View view) {
         Intent intent = new Intent(this, ShareActivity.class);
+
+        intent.putExtra(URL, selectedUrl);
 
         Bitmap image = takeScreenShot();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
