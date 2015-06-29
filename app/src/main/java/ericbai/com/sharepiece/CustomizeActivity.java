@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -15,30 +14,25 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static ericbai.com.sharepiece.PasteActivity.isNetworkAvailable;
-
 public class CustomizeActivity extends FragmentActivity {
     private String excerpt;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private TextView contentPreview;
+    private LinearLayout backgroundView;
     private TextView titleView;
     private TextView websiteView;
     private ScrollView scroll;
@@ -54,6 +48,7 @@ public class CustomizeActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customize);
 
+        backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
         contentPreview = (TextView) findViewById(R.id.content_preview);
@@ -126,7 +121,6 @@ public class CustomizeActivity extends FragmentActivity {
 
         for(int i = 0; i < results.length; i++){
             RadioButton rb = new RadioButton(this);
-            rb.
         }
     }
 
@@ -188,6 +182,10 @@ public class CustomizeActivity extends FragmentActivity {
         public int getCount() {
             return TITLES.length;
         }
+    }
+
+    public LinearLayout getBackgroundView() {
+      return backgroundView;
     }
 
     private Bitmap takeScreenShot()
