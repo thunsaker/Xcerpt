@@ -21,6 +21,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -42,6 +43,7 @@ public class CustomizeActivity extends FragmentActivity {
     private TextView titleView;
     private TextView websiteView;
     private LinearLayout wrapper;
+    private Button shareButton;
 
     public String selectedUrl;
     public int selected_index = 0;
@@ -59,6 +61,9 @@ public class CustomizeActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customize_2);
+
+        shareButton = (Button) findViewById(R.id.share_button);
+        shareButton.setEnabled(false);
 
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
@@ -131,6 +136,7 @@ public class CustomizeActivity extends FragmentActivity {
         websiteView.setText(articles[0].displayUrl);
         selectedUrl = articles[0].url;
         mPagerAdapter.notifyDataSetChanged();
+        shareButton.setEnabled(true);
     }
 
     @Override
