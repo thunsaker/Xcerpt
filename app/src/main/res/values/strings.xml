@@ -19,5 +19,6 @@
     <string name="loading">Loading…</string>
     <string name="title_activity_share">ShareActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="watermark">"\""</string>
 
 </resources>

@@ -1,8 +1,6 @@
 package ericbai.com.sharepiece;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,14 +11,13 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewManager;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
@@ -31,11 +28,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import io.fabric.sdk.android.Fabric;
+
 
 public class ShareActivity extends Activity {
+
+    private static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
+    private static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
 
     private ImageView finalImage;
     private TwitterLoginButton loginButton;
@@ -46,6 +50,11 @@ public class ShareActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
+
+
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
+
         finalImage = (ImageView) findViewById(R.id.final_image);
 
         TwitterSession twitterSession =
@@ -99,9 +108,7 @@ public class ShareActivity extends Activity {
             return null;
         }
 
-        String fullPath = getAlbumStorageDir("Xcerpt").getAbsolutePath();
-
-        File file = new File(fullPath, fileName);
+        File file = new File(getAlbumStorageDir("Xcerpt"), fileName);
         try {
             file.createNewFile();
             FileOutputStream out = new FileOutputStream(file);
@@ -126,7 +133,7 @@ public class ShareActivity extends Activity {
 
     public File getAlbumStorageDir(String albumName) {
         // Get the directory for the user's public pictures directory.
-        File file = new File(Environment.getExternalStoragePublicDirectory(
+        File file = new File(this.getExternalFilesDir(
                 Environment.DIRECTORY_PICTURES), albumName);
         if (!file.mkdirs()) {
             Log.e("Test", "Directory not created");
@@ -143,9 +150,14 @@ public class ShareActivity extends Activity {
     }
 
     private void composeTweet(String url, Uri imageUri){
-        Log.e("Uri path", imageUri.getPath());
+        URL link = null;
+        try {
+            link = new URL(url);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         TweetComposer.Builder builder = new TweetComposer.Builder(this)
-                .text(url)
+                .url(link)
                 .image(imageUri);
         builder.show();
     }

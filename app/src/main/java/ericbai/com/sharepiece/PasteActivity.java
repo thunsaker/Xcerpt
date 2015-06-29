@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,17 +18,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterCore;
-
-import io.fabric.sdk.android.Fabric;
 
 
 public class PasteActivity extends Activity {
-
-    private static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
-    private static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
 
     private EditText mEditText;
     private ClipboardManager clipboard;
@@ -39,8 +30,6 @@ public class PasteActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, new Twitter(authConfig));
 
 
         setContentView(R.layout.activity_paste);
@@ -63,10 +52,8 @@ public class PasteActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (isNetworkAvailable(getApplicationContext())) {
-                    boolean enableNext = mEditText.getText().length() > 0;
-                    nextButton.setEnabled(enableNext);
-                }
+                boolean enableNext = mEditText.getText().length() > 0;
+                nextButton.setEnabled(enableNext);
             }
         });
 

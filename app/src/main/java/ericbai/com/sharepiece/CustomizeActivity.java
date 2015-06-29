@@ -11,14 +11,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -26,6 +31,7 @@ import com.astuetz.PagerSlidingTabStrip;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class CustomizeActivity extends FragmentActivity {
     private String excerpt;
@@ -35,9 +41,12 @@ public class CustomizeActivity extends FragmentActivity {
     private LinearLayout backgroundView;
     private TextView titleView;
     private TextView websiteView;
-    private ScrollView scroll;
+    private LinearLayout wrapper;
 
     public String selectedUrl;
+    public int selected_index = 0;
+
+    public Article[] articles = new Article[3];
 
     private static final float TEXT_SIZE = 16;
     private static final int NUM_RESULTS = 3;
@@ -49,13 +58,13 @@ public class CustomizeActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customize);
+        setContentView(R.layout.activity_customize_2);
 
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
         contentPreview = (TextView) findViewById(R.id.content_preview);
-        scroll = (ScrollView) findViewById(R.id.content);
+        wrapper = (LinearLayout) findViewById(R.id.content);
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
@@ -105,32 +114,23 @@ public class CustomizeActivity extends FragmentActivity {
             websiteView.setText(NO_SOURCE_FOUND);
             return;
         }
-        String[] titles = new String[results.length];
-        String[] displayUrls = new String[results.length];
-        String[] urls = new String[results.length];
 
         for(int i = 0; i < results.length; i++){
             //TODO: get meta og:title from site's HTML instead of Bing's title
             String pageTitle = results[i].Title;
-            titles[i] = pageTitle;
-
-            urls[i] = results[i].Url;
 
             String baseUrl = results[i].DisplayUrl;
             int backslashAt = baseUrl.indexOf('/');
             if(backslashAt > 0){
                 baseUrl = baseUrl.substring(0, backslashAt);
             }
-            displayUrls[i] = baseUrl;
-        }
-        titleView.setText(titles[0]);
-        websiteView.setText(displayUrls[0]);
-        selectedUrl = urls[0];
 
-        for(int i = 0; i < results.length; i++){
-            //TODO
-            RadioButton rb = new RadioButton(this);
+            articles[i] = new Article(pageTitle, baseUrl, results[i].Url);
         }
+        titleView.setText(articles[0].title);
+        websiteView.setText(articles[0].displayUrl);
+        selectedUrl = articles[0].url;
+        mPagerAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -169,6 +169,18 @@ public class CustomizeActivity extends FragmentActivity {
         startActivity(intent);
     }
 
+    public class Article{
+        String title;
+        String displayUrl;
+        String url;
+
+        public Article(String title, String displayUrl, String url){
+            this.title = title;
+            this.displayUrl = displayUrl;
+            this.url = url;
+        }
+    }
+
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         private final String[] TITLES = {
                 getString(R.string.tab_highlight),
@@ -190,9 +202,21 @@ public class CustomizeActivity extends FragmentActivity {
         }
 
         @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
         public int getCount() {
             return TITLES.length;
         }
+    }
+
+    public void updateSource(int articleIndex){
+        titleView.setText(articles[articleIndex].title);
+        websiteView.setText(articles[articleIndex].displayUrl);
+        selected_index = articleIndex;
+
     }
 
     public LinearLayout getBackgroundView() {
@@ -201,10 +225,10 @@ public class CustomizeActivity extends FragmentActivity {
 
     private Bitmap takeScreenShot()
     {
-        int totalHeight = scroll.getChildAt(0).getHeight();
-        int totalWidth = scroll.getChildAt(0).getWidth();
+        int totalHeight = wrapper.getChildAt(0).getHeight();
+        int totalWidth = wrapper.getChildAt(0).getWidth();
 
-        Bitmap b = getBitmapFromView(scroll,totalHeight,totalWidth);
+        Bitmap b = getBitmapFromView(wrapper,totalHeight,totalWidth);
 
         return b;
     }

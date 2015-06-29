@@ -1,14 +1,11 @@
 package ericbai.com.sharepiece;
 
 import android.os.AsyncTask;
-import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-//import org.apache.commons.codec.binary.Base64;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +18,6 @@ import java.net.URLEncoder;
 public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private final String TAG = getClass().getName();
-    private final String BING_ACCOUNT_KEY = "BING_ACCOUNT_KEY";
 
     private String mSearchStr;
     private int mNumOfResults = 0;

@@ -2,6 +2,7 @@ package ericbai.com.sharepiece;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -9,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class ScreenSlidePageFragment extends Fragment {
     public static final String ARG_PAGE = "page";
@@ -19,10 +23,11 @@ public class ScreenSlidePageFragment extends Fragment {
      * The fragment's page number, which is set to the argument value for {@link #ARG_PAGE}.
      */
     private int mPageNumber;
+    private static RadioGroup sourceSelect;
 
-    private static final int HIGHLIGHT = 0;
-    private static final int COLOUR = 1;
-    private static final int SOURCE = 2;
+    public static final int HIGHLIGHT = 0;
+    public static final int COLOUR = 1;
+    public static final int SOURCE = 2;
 
     /**
      * Factory method for this fragment class. Constructs a new fragment for the given page number.
@@ -86,11 +91,11 @@ public class ScreenSlidePageFragment extends Fragment {
       View green = (View) view.findViewById(R.id.green);
 
       purple.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          CustomizeActivity activity = (CustomizeActivity) getActivity();
-          activity.getBackgroundView().setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
-        }
+          @Override
+          public void onClick(View v) {
+              CustomizeActivity activity = (CustomizeActivity) getActivity();
+              activity.getBackgroundView().setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
+          }
       });
 
       blue.setOnClickListener(new View.OnClickListener() {
@@ -121,6 +126,7 @@ public class ScreenSlidePageFragment extends Fragment {
 
     public View getSourceCard(){
         LinearLayout layout = new LinearLayout(getActivity());
+        CustomizeActivity.Article articles[] = ((CustomizeActivity)getActivity()).articles;
 
         LinearLayout.LayoutParams params =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -130,7 +136,20 @@ public class ScreenSlidePageFragment extends Fragment {
 
         TextView text = setInstructions(getString(R.string.instructions_source));
 
-        RadioGroup sourceSelect = new RadioGroup(getActivity());
+        layout.addView(text);
+
+        if(articles[0] == null){
+            TextView loadingText = new TextView(getActivity());
+            loadingText.setText(getString(R.string.loading));
+            layout.addView(loadingText);
+            return layout;
+        }
+
+        if(sourceSelect != null){
+            sourceSelect.removeAllViews();
+        }
+
+        sourceSelect = new RadioGroup(getActivity());
         RadioGroup.LayoutParams rgParams =
                 new RadioGroup.LayoutParams(RadioGroup.LayoutParams.MATCH_PARENT, RadioGroup.LayoutParams.WRAP_CONTENT);
         final int margin =
@@ -140,7 +159,28 @@ public class ScreenSlidePageFragment extends Fragment {
         rgParams.setMargins(margin, margin, margin, margin);
         sourceSelect.setLayoutParams(rgParams);
 
-        layout.addView(text);
+        for(int i = 0; i < articles.length; i++){
+            if(articles[i] == null) continue;
+            //TODO
+            RadioButton rb = new RadioButton(getActivity());
+            String html = "<b>" + articles[i].title + "</b> - "
+                    + articles[i].displayUrl;
+            rb.setId(i);
+            rb.setText(Html.fromHtml(html),TextView.BufferType.SPANNABLE);
+            sourceSelect.addView(rb);
+            if(i == ((CustomizeActivity)getActivity()).selected_index){
+                sourceSelect.check(rb.getId());
+            }
+        }
+
+        sourceSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                ((CustomizeActivity)getActivity()).updateSource(checkedId);
+            }
+        });;
+
         layout.addView(sourceSelect);
 
         return layout;
