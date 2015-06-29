@@ -15,6 +15,12 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"/>
 
+    <TextView
+        android:id="@+id/login_successful"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Temporary text - login successful"/>
+
     <ImageView
         android:id="@+id/final_image"
         android:layout_width="wrap_content"

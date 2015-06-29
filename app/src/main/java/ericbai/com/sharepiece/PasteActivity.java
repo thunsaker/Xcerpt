@@ -1,5 +1,6 @@
 package ericbai.com.sharepiece;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
@@ -20,10 +21,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+
 import io.fabric.sdk.android.Fabric;
 
 
-public class PasteActivity extends ActionBarActivity {
+public class PasteActivity extends Activity {
 
     private static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
     private static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
@@ -38,6 +41,7 @@ public class PasteActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
+
 
         setContentView(R.layout.activity_paste);
 

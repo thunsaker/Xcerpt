@@ -7,8 +7,10 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -23,12 +25,18 @@ public class ShareActivity extends Activity {
 
     private ImageView finalImage;
     private TwitterLoginButton loginButton;
+    private TextView loginTemp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
         finalImage = (ImageView) findViewById(R.id.final_image);
+        loginTemp = (TextView) findViewById(R.id.login_successful);
+        loginTemp.setVisibility(View.INVISIBLE);
+
+        TwitterSession twitterSession =
+                TwitterCore.getInstance().getSessionManager().getActiveSession();
 
         Bundle extras = getIntent().getExtras();
         byte[] byteArray = extras.getByteArray(CustomizeActivity.IMAGE);
@@ -42,6 +50,7 @@ public class ShareActivity extends Activity {
             @Override
             public void success(Result<TwitterSession> result) {
                 ((ViewManager)loginButton.getParent()).removeView(loginButton);
+                loginTemp.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -49,6 +58,11 @@ public class ShareActivity extends Activity {
                 // Do something on failure
             }
         });
+
+        if(twitterSession != null){
+            ((ViewManager)loginButton.getParent()).removeView(loginButton);
+            loginTemp.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

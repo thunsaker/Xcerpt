@@ -17,6 +17,7 @@
         <activity
             android:name=".PasteActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +28,7 @@
         <activity
             android:name=".CustomizeActivity"
             android:label="@string/title_activity_highlight"
+            android:screenOrientation="portrait"
             android:parentActivityName=".PasteActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -43,6 +45,7 @@
         <activity
             android:name=".ShareActivity"
             android:label="@string/title_activity_share"
+            android:screenOrientation="portrait"
             android:parentActivityName=".CustomizeActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
