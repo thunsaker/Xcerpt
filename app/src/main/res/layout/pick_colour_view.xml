@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/instructions_colour"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <View
+            android:id="@+id/purple"
+            android:backgroundTint="@android:color/holo_purple"
+            style="@style/Circle"/>
+
+        <View
+            android:id="@+id/blue"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            style="@style/Circle"/>
+
+        <View
+            android:id="@+id/orange"
+            android:backgroundTint="@android:color/holo_orange_dark"
+            style="@style/Circle"/>
+
+        <View
+            android:id="@+id/green"
+            android:backgroundTint="@android:color/holo_green_dark"
+            style="@style/Circle"/>
+
+    </LinearLayout>
+
+</LinearLayout>

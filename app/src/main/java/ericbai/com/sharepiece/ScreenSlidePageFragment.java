@@ -1,7 +1,5 @@
 package ericbai.com.sharepiece;
 
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.TypedValue;
@@ -81,9 +79,44 @@ public class ScreenSlidePageFragment extends Fragment {
     }
 
     public View getColourCard(){
-        TextView text = setInstructions(getString(R.string.instructions_colour));
+      View view = View.inflate(getActivity(), R.layout.pick_colour_view, null);
+      View purple = (View) view.findViewById(R.id.purple);
+      View blue = (View) view.findViewById(R.id.blue);
+      View orange = (View) view.findViewById(R.id.orange);
+      View green = (View) view.findViewById(R.id.green);
 
-        return text;
+      purple.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          CustomizeActivity activity = (CustomizeActivity) getActivity();
+          activity.getBackgroundView().setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
+        }
+      });
+
+      blue.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          CustomizeActivity activity = (CustomizeActivity) getActivity();
+          activity.getBackgroundView().setBackgroundColor(getResources().getColor(android.R.color.holo_blue_dark));
+        }
+      });
+
+      orange.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          CustomizeActivity activity = (CustomizeActivity) getActivity();
+          activity.getBackgroundView().setBackgroundColor(getResources().getColor(android.R.color.holo_orange_dark));
+        }
+      });
+
+      green.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          CustomizeActivity activity = (CustomizeActivity) getActivity();
+          activity.getBackgroundView().setBackgroundColor(getResources().getColor(android.R.color.holo_green_dark));
+        }
+      });
+      return view;
     }
 
     public View getSourceCard(){
