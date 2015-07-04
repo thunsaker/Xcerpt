@@ -1,18 +1,29 @@
 package ericbai.com.sharepiece;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -34,33 +45,82 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import io.fabric.sdk.android.Fabric;
+import twitter4j.StatusUpdate;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.conf.ConfigurationBuilder;
 
 
 public class ShareActivity extends Activity {
 
     private static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
     private static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
+    private static final int CHAR_LIMIT = 94;
+
+    private TwitterSession twitterSession;
+
+    private ProgressDialog pDialog;
 
     private ImageView finalImage;
     private TwitterLoginButton loginButton;
+    private TextView userName;
+    private Button tweetButton;
+    private TextView link;
+    private TextView characterCount;
+    private EditText tweet;
+    private LinearLayout tweetLayout;
 
     private Bitmap img;
+
+    private String tweetText;
+    private File imageFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
-
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
 
         finalImage = (ImageView) findViewById(R.id.final_image);
-
-        TwitterSession twitterSession =
-                TwitterCore.getInstance().getSessionManager().getActiveSession();
+        tweetButton = (Button) findViewById(R.id.tweet_button);
+        link = (TextView) findViewById(R.id.link);
+        characterCount = (TextView) findViewById(R.id.character_count);
+        tweet = (EditText) findViewById(R.id.tweet);
+        tweetLayout = (LinearLayout) findViewById(R.id.tweet_layout);
+        userName = (TextView) findViewById(R.id.user_name);
 
         final String selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
+
+        tweetLayout.setVisibility(View.GONE);
+        link.setText(selectedUrl);
+        characterCount.setText(Integer.toString(CHAR_LIMIT));
+        tweet.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                tweetText = tweet.getText() + " " + selectedUrl;
+                int charsRemaining =CHAR_LIMIT - tweet.getText().length();
+                characterCount.setText(Integer.toString(charsRemaining));
+                if(charsRemaining >= 0){
+                    tweetButton.setEnabled(true);
+                    characterCount.setTextColor(Color.BLACK);
+                }else{
+                    tweetButton.setEnabled(false);
+                    characterCount.setTextColor(Color.RED);
+                }
+            }
+        });
+
+        twitterSession =
+                TwitterCore.getInstance().getSessionManager().getActiveSession();
 
         Bundle extras = getIntent().getExtras();
         byte[] byteArray = extras.getByteArray(CustomizeActivity.IMAGE);
@@ -71,14 +131,14 @@ public class ShareActivity extends Activity {
         Date now = new Date();
         String strDate = sdf.format(now);
         String fileName = strDate + ".png";
-        File file = saveFile(fileName, img);
+        imageFile = saveFile(fileName, img);
 
-        if(file == null){
+        if(imageFile == null){
             //TODO throw error
             return;
         }
 
-        final Uri imageUri = Uri.fromFile(file);
+        // final Uri imageUri = Uri.fromFile(imageFile);
 
         loginButton = (TwitterLoginButton)
                 findViewById(R.id.twitter_login_button);
@@ -86,8 +146,12 @@ public class ShareActivity extends Activity {
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                ((ViewManager)loginButton.getParent()).removeView(loginButton);
-                composeTweet(selectedUrl, imageUri);
+                twitterSession = result.data;
+                loginButton.setVisibility(View.GONE);
+                //composeTweet(selectedUrl, imageUri);
+                tweetLayout.setVisibility(View.VISIBLE);
+                userName.setText(twitterSession.getUserName());
+
             }
 
             @Override
@@ -97,8 +161,10 @@ public class ShareActivity extends Activity {
         });
 
         if(twitterSession != null){
-            ((ViewManager)loginButton.getParent()).removeView(loginButton);
-            composeTweet(selectedUrl, imageUri);
+            loginButton.setVisibility(View.GONE);
+            //composeTweet(selectedUrl, imageUri);
+            tweetLayout.setVisibility(View.VISIBLE);
+            userName.setText(twitterSession.getUserName());
         }
     }
 
@@ -185,5 +251,79 @@ public class ShareActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void logOut(View view) {
+        Twitter.logOut();
+        loginButton.setVisibility(View.VISIBLE);
+        tweetLayout.setVisibility(View.GONE);
+
+    }
+
+    public void postTweet(View view) {
+        UpdateTwitterStatusTask postTweet = new UpdateTwitterStatusTask(tweetText, imageFile);
+        postTweet.execute();
+    }
+
+    class UpdateTwitterStatusTask extends AsyncTask<String, String, Void> {
+
+        String status;
+        File image;
+
+        public UpdateTwitterStatusTask(String status, File image) {
+            this.status = status;
+            this.image = image;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            pDialog = new ProgressDialog(ShareActivity.this);
+            pDialog.setMessage("Posting to twitter...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        protected Void doInBackground(String... args) {
+
+            try {
+                ConfigurationBuilder builder = new ConfigurationBuilder();
+                builder.setOAuthConsumerKey(TWITTER_KEY);
+                builder.setOAuthConsumerSecret(TWITTER_SECRET);
+
+                // Access Token
+                String access_token = twitterSession.getAuthToken().token;
+                // Access Token Secret
+                String access_token_secret = twitterSession.getAuthToken().secret;
+
+                AccessToken accessToken = new AccessToken(access_token, access_token_secret);
+                twitter4j.Twitter twitter = new TwitterFactory(builder.build()).getInstance(accessToken);
+
+                // Update status
+                StatusUpdate statusUpdate = new StatusUpdate(status);
+                statusUpdate.setMedia(image);
+
+                twitter4j.Status response = twitter.updateStatus(statusUpdate);
+
+                Log.d("Status", response.getText());
+
+            } catch (twitter4j.TwitterException e) {
+                Log.d("Failed to post!", e.getMessage());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+			/* Dismiss the progress dialog after sharing */
+            pDialog.dismiss();
+
+            Toast.makeText(ShareActivity.this, "Posted to Twitter!", Toast.LENGTH_SHORT).show();
+
+            //TODO indicate success, disable post button
+        }
+
     }
 }

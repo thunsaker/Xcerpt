@@ -8,6 +8,8 @@
     <string name="next_button">Looks good!</string>
     <string name="back_button">Back</string>
     <string name="share_button">Done</string>
+    <string name="tweet">Tweet</string>
+    <string name="logout">Logout</string>
     <string name="edit_message">Article excerpt</string>
     <string name="action_settings">Settings</string>
     <string name="tab_highlight">Highlight</string>

@@ -51,4 +51,8 @@ dependencies {
     compile('com.twitter.sdk.android:twitter:1.6.0@aar') {
         transitive = true;
     }
+    compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
+        transitive = true;
+    }
+    compile files('libs/twitter4j-core-3.0.4.jar')
 }
