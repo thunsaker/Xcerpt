@@ -12,29 +12,11 @@
         android:layout_marginBottom="10dp"/>
 
     <LinearLayout
+        android:id="@+id/colour_select"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center">
-
-        <View
-            android:id="@+id/purple"
-            android:backgroundTint="@android:color/holo_purple"
-            style="@style/Circle"/>
-
-        <View
-            android:id="@+id/blue"
-            android:backgroundTint="@android:color/holo_blue_dark"
-            style="@style/Circle"/>
-
-        <View
-            android:id="@+id/orange"
-            android:backgroundTint="@android:color/holo_orange_dark"
-            style="@style/Circle"/>
-
-        <View
-            android:id="@+id/green"
-            android:backgroundTint="@android:color/holo_green_dark"
-            style="@style/Circle"/>
+        android:gravity="center"
+        android:orientation="horizontal">
 
     </LinearLayout>
 

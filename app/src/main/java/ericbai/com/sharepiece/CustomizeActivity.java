@@ -1,6 +1,7 @@
 package ericbai.com.sharepiece;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,30 +12,23 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.Html;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 public class CustomizeActivity extends FragmentActivity {
+
     private String excerpt;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
@@ -56,6 +50,7 @@ public class CustomizeActivity extends FragmentActivity {
     private static final String NO_SOURCE_FOUND = "No source found!"; //TODO put in strings.xml
     public static final String IMAGE = "IMAGE";
     public static final String URL = "URL";
+    public static final String COLOUR_SETTING = "colour";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +88,10 @@ public class CustomizeActivity extends FragmentActivity {
         contentPreview.setTextSize(TEXT_SIZE);
         contentPreview.setText(excerpt);
 
+        SharedPreferences settings = getPreferences(0);
+        int defaultColour = settings.getInt(COLOUR_SETTING, android.R.color.holo_purple);
+        backgroundView.setBackgroundColor(getResources().getColor(defaultColour));
+
         SearchAsyncTask searchTask =
                 new SearchAsyncTask(excerpt, NUM_RESULTS, new SearchAsyncTask.Callback() {
             @Override
@@ -125,6 +124,10 @@ public class CustomizeActivity extends FragmentActivity {
             String pageTitle = results[i].Title;
 
             String baseUrl = results[i].DisplayUrl;
+            String https = "https://";
+            if(baseUrl.startsWith(https)){
+                baseUrl = baseUrl.substring(https.length());
+            }
             int backslashAt = baseUrl.indexOf('/');
             if(backslashAt > 0){
                 baseUrl = baseUrl.substring(0, backslashAt);

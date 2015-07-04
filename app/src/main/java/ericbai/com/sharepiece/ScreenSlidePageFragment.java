@@ -1,23 +1,37 @@
 package ericbai.com.sharepiece;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
+import at.markushi.ui.CircleButton;
 
 public class ScreenSlidePageFragment extends Fragment {
     public static final String ARG_PAGE = "page";
+
+    List<Integer> colourChoices = Collections.unmodifiableList(Arrays.asList(
+            android.R.color.holo_purple,
+            android.R.color.holo_blue_dark,
+            android.R.color.holo_orange_dark,
+            android.R.color.holo_green_dark
+    ));
 
     /**
      * The fragment's page number, which is set to the argument value for {@link #ARG_PAGE}.
@@ -84,43 +98,37 @@ public class ScreenSlidePageFragment extends Fragment {
     }
 
     public View getColourCard(){
-      View view = View.inflate(getActivity(), R.layout.pick_colour_view, null);
-      View purple = (View) view.findViewById(R.id.purple);
-      View blue = (View) view.findViewById(R.id.blue);
-      View orange = (View) view.findViewById(R.id.orange);
-      View green = (View) view.findViewById(R.id.green);
+        final SharedPreferences settings = getActivity().getPreferences(0);
 
-      purple.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-              CustomizeActivity activity = (CustomizeActivity) getActivity();
-              activity.getBackgroundView().setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
-          }
-      });
+        LinearLayout view = new LinearLayout(getActivity());
+        view.setOrientation(LinearLayout.VERTICAL);
+        view.setGravity(Gravity.CENTER_HORIZONTAL);
 
-      blue.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          CustomizeActivity activity = (CustomizeActivity) getActivity();
-          activity.getBackgroundView().setBackgroundColor(getResources().getColor(android.R.color.holo_blue_dark));
+        view.addView(setInstructions(getString(R.string.instructions_colour)));
+
+        LinearLayout colourSelect = new LinearLayout(getActivity());
+        colourSelect.setGravity(Gravity.CENTER_HORIZONTAL);
+        final SharedPreferences.Editor editor = settings.edit();
+
+        for(final int colour : colourChoices){
+            CircleButton b = new CircleButton(getActivity());
+            b.setMinimumWidth(150);
+            b.setMinimumHeight(150);
+            b.setColor(getResources().getColor(colour));
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("colour select", "" + colour);
+                    CustomizeActivity activity = (CustomizeActivity) getActivity();
+                    activity.getBackgroundView().setBackgroundColor(getResources().getColor(colour));
+                    editor.putInt(CustomizeActivity.COLOUR_SETTING, colour);
+                    editor.commit();
+                }
+            });
+            colourSelect.addView(b);
         }
-      });
+        view.addView(colourSelect);
 
-      orange.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          CustomizeActivity activity = (CustomizeActivity) getActivity();
-          activity.getBackgroundView().setBackgroundColor(getResources().getColor(android.R.color.holo_orange_dark));
-        }
-      });
-
-      green.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          CustomizeActivity activity = (CustomizeActivity) getActivity();
-          activity.getBackgroundView().setBackgroundColor(getResources().getColor(android.R.color.holo_green_dark));
-        }
-      });
       return view;
     }
 
