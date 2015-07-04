@@ -41,7 +41,6 @@ public class PasteActivity extends Activity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Crashlytics(), new Twitter(authConfig));
 
-
         setContentView(R.layout.activity_paste);
 
         mEditText = (EditText) findViewById(R.id.edit_message);

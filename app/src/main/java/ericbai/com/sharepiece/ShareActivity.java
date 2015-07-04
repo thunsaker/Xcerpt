@@ -64,7 +64,6 @@ public class ShareActivity extends Activity {
     private TwitterLoginButton loginButton;
     private TextView userName;
     private Button tweetButton;
-    private TextView link;
     private TextView characterCount;
     private EditText tweet;
     private LinearLayout tweetLayout;
@@ -76,6 +75,8 @@ public class ShareActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final String PREFIX = "Post as @";
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
@@ -84,7 +85,6 @@ public class ShareActivity extends Activity {
 
         finalImage = (ImageView) findViewById(R.id.final_image);
         tweetButton = (Button) findViewById(R.id.tweet_button);
-        link = (TextView) findViewById(R.id.link);
         characterCount = (TextView) findViewById(R.id.character_count);
         tweet = (EditText) findViewById(R.id.tweet);
         tweetLayout = (LinearLayout) findViewById(R.id.tweet_layout);
@@ -93,7 +93,6 @@ public class ShareActivity extends Activity {
         final String selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
 
         tweetLayout.setVisibility(View.GONE);
-        link.setText(selectedUrl);
         characterCount.setText(Integer.toString(CHAR_LIMIT));
         tweet.addTextChangedListener(new TextWatcher() {
             @Override
@@ -149,7 +148,7 @@ public class ShareActivity extends Activity {
                 loginButton.setVisibility(View.GONE);
                 //composeTweet(selectedUrl, imageUri);
                 tweetLayout.setVisibility(View.VISIBLE);
-                userName.setText(twitterSession.getUserName());
+                userName.setText(PREFIX + twitterSession.getUserName());
 
             }
 
@@ -163,7 +162,7 @@ public class ShareActivity extends Activity {
             loginButton.setVisibility(View.GONE);
             //composeTweet(selectedUrl, imageUri);
             tweetLayout.setVisibility(View.VISIBLE);
-            userName.setText(twitterSession.getUserName());
+            userName.setText(PREFIX + twitterSession.getUserName());
         }
     }
 

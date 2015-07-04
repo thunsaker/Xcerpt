@@ -1,6 +1,7 @@
 package ericbai.com.sharepiece;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -10,7 +11,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -27,10 +27,18 @@ public class ScreenSlidePageFragment extends Fragment {
     public static final String ARG_PAGE = "page";
 
     List<Integer> colourChoices = Collections.unmodifiableList(Arrays.asList(
-            android.R.color.holo_purple,
-            android.R.color.holo_blue_dark,
-            android.R.color.holo_orange_dark,
-            android.R.color.holo_green_dark
+            Color.parseColor("#9C27B0"), // purple
+            Color.parseColor("#F44336"), // red
+            Color.parseColor("#E91E63"), // pink
+            Color.parseColor("#3F51B5"), // indigo
+            Color.parseColor("#2196F3"), // blue
+            Color.parseColor("#009688"), // teal
+            Color.parseColor("#43A047"), // green
+            Color.parseColor("#EF6C00"), // orange
+            Color.parseColor("#607D8B"), // blue grey
+            Color.parseColor("#000000") // black
+
+
     ));
 
     /**
@@ -106,28 +114,37 @@ public class ScreenSlidePageFragment extends Fragment {
 
         view.addView(setInstructions(getString(R.string.instructions_colour)));
 
-        LinearLayout colourSelect = new LinearLayout(getActivity());
-        colourSelect.setGravity(Gravity.CENTER_HORIZONTAL);
+        LinearLayout colourSelectrow1 = new LinearLayout(getActivity());
+        colourSelectrow1.setGravity(Gravity.CENTER_HORIZONTAL);
+        LinearLayout colourSelectrow2 = new LinearLayout(getActivity());
+        colourSelectrow2.setGravity(Gravity.CENTER_HORIZONTAL);
         final SharedPreferences.Editor editor = settings.edit();
 
+        int buttonsAdded = 0;
         for(final int colour : colourChoices){
             CircleButton b = new CircleButton(getActivity());
             b.setMinimumWidth(150);
             b.setMinimumHeight(150);
-            b.setColor(getResources().getColor(colour));
+            b.setColor(colour);
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Log.e("colour select", "" + colour);
                     CustomizeActivity activity = (CustomizeActivity) getActivity();
-                    activity.getBackgroundView().setBackgroundColor(getResources().getColor(colour));
+                    activity.getBackgroundView().setBackgroundColor(colour);
                     editor.putInt(CustomizeActivity.COLOUR_SETTING, colour);
                     editor.commit();
                 }
             });
-            colourSelect.addView(b);
+            buttonsAdded++;
+            if(buttonsAdded > 5){
+                colourSelectrow2.addView(b);
+            }else{
+                colourSelectrow1.addView(b);
+            }
         }
-        view.addView(colourSelect);
+        view.addView(colourSelectrow1);
+        view.addView(colourSelectrow2);
 
       return view;
     }

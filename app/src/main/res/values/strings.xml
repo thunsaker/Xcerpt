@@ -9,6 +9,7 @@
     <string name="back_button">Back</string>
     <string name="share_button">Done</string>
     <string name="tweet">Tweet</string>
+    <string name="addComment">Add a comment</string>
     <string name="logout">Logout</string>
     <string name="edit_message">Article excerpt</string>
     <string name="action_settings">Settings</string>

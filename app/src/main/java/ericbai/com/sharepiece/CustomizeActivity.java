@@ -89,8 +89,8 @@ public class CustomizeActivity extends FragmentActivity {
         contentPreview.setText(excerpt);
 
         SharedPreferences settings = getPreferences(0);
-        int defaultColour = settings.getInt(COLOUR_SETTING, android.R.color.holo_purple);
-        backgroundView.setBackgroundColor(getResources().getColor(defaultColour));
+        int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor("#9C27B0"));
+        backgroundView.setBackgroundColor(defaultColour);
 
         SearchAsyncTask searchTask =
                 new SearchAsyncTask(excerpt, NUM_RESULTS, new SearchAsyncTask.Callback() {
