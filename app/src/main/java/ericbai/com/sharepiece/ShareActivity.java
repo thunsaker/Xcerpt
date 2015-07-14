@@ -77,11 +77,11 @@ public class ShareActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         final String PREFIX = "Post as @";
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_share);
-
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_share);
 
         finalImage = (ImageView) findViewById(R.id.final_image);
         tweetButton = (Button) findViewById(R.id.tweet_button);
