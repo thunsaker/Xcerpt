@@ -151,7 +151,7 @@ public class ScreenSlidePageFragment extends Fragment {
 
     public View getSourceCard(){
         LinearLayout layout = new LinearLayout(getActivity());
-        CustomizeActivity.Article articles[] = ((CustomizeActivity)getActivity()).articles;
+        Article articles[] = ((CustomizeActivity)getActivity()).articles;
 
         LinearLayout.LayoutParams params =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);

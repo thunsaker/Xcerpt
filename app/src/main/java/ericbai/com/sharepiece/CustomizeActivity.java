@@ -52,6 +52,37 @@ public class CustomizeActivity extends FragmentActivity {
     public static final String URL = "URL";
     public static final String COLOUR_SETTING = "colour";
 
+    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
+        private final String[] TITLES = {
+                getString(R.string.tab_highlight),
+                getString(R.string.tab_colour),
+                getString(R.string.tab_source)
+        };
+
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        public CharSequence getPageTitle(int position) {
+            return TITLES[position];
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return ScreenSlidePageFragment.create(position);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public int getCount() {
+            return TITLES.length;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -176,49 +207,6 @@ public class CustomizeActivity extends FragmentActivity {
         byte[] byteArray = stream.toByteArray();
         intent.putExtra(IMAGE, byteArray);
         startActivity(intent);
-    }
-
-    public class Article{
-        String title;
-        String displayUrl;
-        String url;
-
-        public Article(String title, String displayUrl, String url){
-            this.title = title;
-            this.displayUrl = displayUrl;
-            this.url = url;
-        }
-    }
-
-    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-        private final String[] TITLES = {
-                getString(R.string.tab_highlight),
-                getString(R.string.tab_colour),
-                getString(R.string.tab_source)
-        };
-
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        public CharSequence getPageTitle(int position) {
-            return TITLES[position];
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return ScreenSlidePageFragment.create(position);
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
-        }
-
-        @Override
-        public int getCount() {
-            return TITLES.length;
-        }
     }
 
     public void updateSource(int articleIndex){
