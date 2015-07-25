@@ -94,6 +94,8 @@ public class ShareActivity extends Activity {
 
         tweetLayout.setVisibility(View.GONE);
         characterCount.setText(Integer.toString(CHAR_LIMIT));
+
+        tweetText = selectedUrl;
         tweet.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -160,7 +162,6 @@ public class ShareActivity extends Activity {
 
         if(twitterSession != null){
             loginButton.setVisibility(View.GONE);
-            //composeTweet(selectedUrl, imageUri);
             tweetLayout.setVisibility(View.VISIBLE);
             userName.setText(PREFIX + twitterSession.getUserName());
         }
@@ -174,17 +175,11 @@ public class ShareActivity extends Activity {
 
         File file = new File(getAlbumStorageDir("Xcerpt"), fileName);
         try {
-            file.createNewFile();
             FileOutputStream out = new FileOutputStream(file);
             image.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();
 
-            MediaStore.Images.Media.insertImage(this.getContentResolver(),
-                    file.getAbsolutePath(),
-                    file.getName(),
-                    file.getName()
-            );
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.e("failure", e.getMessage());
@@ -211,19 +206,6 @@ public class ShareActivity extends Activity {
             return true;
         }
         return false;
-    }
-
-    private void composeTweet(String url, Uri imageUri){
-        URL link = null;
-        try {
-            link = new URL(url);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        TweetComposer.Builder builder = new TweetComposer.Builder(this)
-                .url(link)
-                .image(imageUri);
-        builder.show();
     }
 
     @Override
@@ -317,9 +299,8 @@ public class ShareActivity extends Activity {
 
 			/* Dismiss the progress dialog after sharing */
             pDialog.dismiss();
-
             Toast.makeText(ShareActivity.this, "Posted to Twitter!", Toast.LENGTH_SHORT).show();
-
+            imageFile.delete();
             //TODO indicate success, disable post button
         }
 

@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -190,6 +191,8 @@ public class ScreenSlidePageFragment extends Fragment {
                                         BingSearchResults.Result[] results = ((BingSearchResults) o).getResults();
                                         if(results.length == 0){
                                             // show error toast
+                                            Toast.makeText(getActivity(), "The URL's webpage could not be found.",
+                                                    Toast.LENGTH_SHORT).show();
                                         }else{
                                             String title = results[0].Title;
                                             String baseUrl = results[0].DisplayUrl;
@@ -213,10 +216,13 @@ public class ScreenSlidePageFragment extends Fragment {
                     }
                     catch (MalformedURLException e) {
                         // show toast
+                        Toast.makeText(getActivity(), "The pasted text is not a valid URL.",
+                                Toast.LENGTH_SHORT).show();
                     }
 
                 }else{
-                    // show toast
+                    Toast.makeText(getActivity(), "The clipboard is empty.",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
