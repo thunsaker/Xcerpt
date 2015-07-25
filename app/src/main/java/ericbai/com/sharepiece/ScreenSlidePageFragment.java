@@ -1,5 +1,8 @@
 package ericbai.com.sharepiece;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,12 +14,16 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +53,7 @@ public class ScreenSlidePageFragment extends Fragment {
      */
     private int mPageNumber;
     private static RadioGroup sourceSelect;
+    private ClipboardManager clipboard;
 
     public static final int HIGHLIGHT = 0;
     public static final int COLOUR = 1;
@@ -68,6 +76,7 @@ public class ScreenSlidePageFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         mPageNumber = getArguments().getInt(ARG_PAGE);
     }
 
@@ -159,14 +168,68 @@ public class ScreenSlidePageFragment extends Fragment {
         layout.setLayoutParams(params);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        TextView text = setInstructions(getString(R.string.instructions_source));
+        Button customSourceButton = new Button(getActivity());
+        customSourceButton.setText("Use URL from clipboard");
+        customSourceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // get text from clipboard
+                ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+                String pasteData = item.getText().toString();
+                if(pasteData != null){
+                    // check if text is URL
+                    try { URL url = new URL(pasteData);
+                        SearchAsyncTask searchTask =
+                                new SearchAsyncTask(pasteData, 1, new SearchAsyncTask.Callback() {
+                                    @Override
+                                    public void onComplete(Object o, Error error) {
+                                        if(error != null){
+                                            Log.e("SearchAsyncTask", error.getMessage());
+                                            return;
+                                        }
+                                        BingSearchResults.Result[] results = ((BingSearchResults) o).getResults();
+                                        if(results.length == 0){
+                                            // show error toast
+                                        }else{
+                                            String title = results[0].Title;
+                                            String baseUrl = results[0].DisplayUrl;
+                                            String https = "https://";
+                                            if(baseUrl.startsWith(https)){
+                                                baseUrl = baseUrl.substring(https.length());
+                                            }
+                                            int backslashAt = baseUrl.indexOf('/');
+                                            if(backslashAt > 0){
+                                                baseUrl = baseUrl.substring(0, backslashAt);
+                                            }
 
-        layout.addView(text);
+                                            Article customArticle = new Article(title, baseUrl, results[0].Url);
+                                            if(sourceSelect != null) sourceSelect.clearCheck();
+                                            ((CustomizeActivity)getActivity()).updateSource(customArticle);
+                                        }
+
+                                    }
+                                });
+                        searchTask.execute();
+                    }
+                    catch (MalformedURLException e) {
+                        // show toast
+                    }
+
+                }else{
+                    // show toast
+                }
+            }
+        });
 
         if(articles[0] == null){
-            TextView loadingText = new TextView(getActivity());
-            loadingText.setText(getString(R.string.loading));
-            layout.addView(loadingText);
+            if(((CustomizeActivity)getActivity()).no_results){
+                // do something?
+            }else{
+                TextView loadingText = new TextView(getActivity());
+                loadingText.setText(getString(R.string.loading));
+                layout.addView(loadingText);
+            }
+            layout.addView(customSourceButton);
             return layout;
         }
 
@@ -202,12 +265,14 @@ public class ScreenSlidePageFragment extends Fragment {
         {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                ((CustomizeActivity)getActivity()).updateSource(checkedId);
+                if(checkedId >= 0){
+                    ((CustomizeActivity)getActivity()).updateSource(checkedId);
+                }
             }
-        });;
+        });
 
         layout.addView(sourceSelect);
-
+        layout.addView(customSourceButton);
         return layout;
     }
 

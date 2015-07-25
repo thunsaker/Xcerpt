@@ -41,13 +41,13 @@ public class CustomizeActivity extends FragmentActivity {
 
     public String selectedUrl;
     public int selected_index = 0;
+    public boolean no_results = false;
 
     public Article[] articles = new Article[3];
 
     private static final float TEXT_SIZE = 16;
     private static final int NUM_RESULTS = 3;
     private static final int MAX_HEIGHT = 1920;
-    private static final String NO_SOURCE_FOUND = "No source found!"; //TODO put in strings.xml
     public static final String IMAGE = "IMAGE";
     public static final String URL = "URL";
     public static final String COLOUR_SETTING = "colour";
@@ -145,8 +145,10 @@ public class CustomizeActivity extends FragmentActivity {
 
     public void processResults(BingSearchResults.Result[] results) throws IOException {
         if(results == null || results.length == 0){
-            titleView.setText(NO_SOURCE_FOUND);
-            websiteView.setText(NO_SOURCE_FOUND);
+            titleView.setText(getString(R.string.no_source_found));
+            websiteView.setText(R.string.no_source_instructions);
+            no_results = true;
+            mPagerAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -212,7 +214,14 @@ public class CustomizeActivity extends FragmentActivity {
     public void updateSource(int articleIndex){
         titleView.setText(articles[articleIndex].title);
         websiteView.setText(articles[articleIndex].displayUrl);
+        selectedUrl = articles[articleIndex].url;
         selected_index = articleIndex;
+    }
+
+    public void updateSource(Article article){
+        titleView.setText(article.title);
+        websiteView.setText(article.displayUrl);
+        selectedUrl = article.url;
 
     }
 

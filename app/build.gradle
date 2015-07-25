@@ -37,7 +37,7 @@ android {
             buildConfigField 'String', 'BING_ACCOUNT_KEY', BING_ACCOUNT_KEY
             buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
             buildConfigField 'String', 'TWITTER_SECRET_KEY', TWITTER_SECRET_KEY
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
