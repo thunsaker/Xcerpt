@@ -263,6 +263,10 @@ public class CustomizeActivity extends FragmentActivity {
         String highlightColour = "#40" + hexColour.substring(1);
         contentPreview.setHighlightColor(Color.parseColor(highlightColour));
         shareButton.setBackgroundColor(colour);
+
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setIndicatorColor(colour);
+        tabs.setDividerColor(Color.parseColor(highlightColour));
     }
 
     private Bitmap takeScreenShot()
