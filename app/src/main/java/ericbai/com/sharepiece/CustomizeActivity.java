@@ -15,7 +15,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -32,8 +34,9 @@ public class CustomizeActivity extends FragmentActivity {
     private String excerpt;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
-    private TextView contentPreview;
+    public TextView contentPreview;
     private LinearLayout backgroundView;
+    private LinearLayout customizeBar;
     private TextView titleView;
     private TextView websiteView;
     private LinearLayout wrapper;
@@ -54,7 +57,6 @@ public class CustomizeActivity extends FragmentActivity {
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         private final String[] TITLES = {
-                getString(R.string.tab_highlight),
                 getString(R.string.tab_colour),
                 getString(R.string.tab_source)
         };
@@ -91,6 +93,7 @@ public class CustomizeActivity extends FragmentActivity {
         shareButton = (Button) findViewById(R.id.share_button);
         shareButton.setEnabled(false);
 
+        customizeBar = (LinearLayout) findViewById(R.id.customize_bar);
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
@@ -101,7 +104,7 @@ public class CustomizeActivity extends FragmentActivity {
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
-        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        final PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(mPager);
 
         Intent intent = getIntent();
@@ -114,14 +117,47 @@ public class CustomizeActivity extends FragmentActivity {
         }
 
         contentPreview.setTypeface(Typeface.SERIF);
-
         contentPreview.setTextColor(Color.BLACK);
         contentPreview.setTextSize(TEXT_SIZE);
         contentPreview.setText(excerpt);
+        contentPreview.setKeyListener(null);
+        contentPreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    contentPreview.performLongClick();
+            }
+        });
+        contentPreview.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            public void onDestroyActionMode(ActionMode mode) {
+                // customizeBar.setVisibility(View.VISIBLE);
+            }
+
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // customizeBar.setVisibility(View.GONE);
+
+                menu.removeItem(android.R.id.copy);
+                return true;
+            }
+
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+                switch(item.getItemId()) {
+
+                    case R.id.highlight:
+                        return true;
+                }
+                return false;
+            }
+        });
 
         SharedPreferences settings = getPreferences(0);
         int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor("#9C27B0"));
-        backgroundView.setBackgroundColor(defaultColour);
+        setColour(defaultColour);
 
         SearchAsyncTask searchTask =
                 new SearchAsyncTask(excerpt, NUM_RESULTS, new SearchAsyncTask.Callback() {
@@ -194,10 +230,6 @@ public class CustomizeActivity extends FragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void back(View view){
-        finish();
-    }
-
     public void share(View view) {
         Intent intent = new Intent(this, ShareActivity.class);
 
@@ -225,8 +257,12 @@ public class CustomizeActivity extends FragmentActivity {
 
     }
 
-    public LinearLayout getBackgroundView() {
-      return backgroundView;
+    public void setColour(int colour){
+        backgroundView.setBackgroundColor(colour);
+        String hexColour = String.format("#%06X", (0xFFFFFF & colour));
+        String highlightColour = "#40" + hexColour.substring(1);
+        contentPreview.setHighlightColor(Color.parseColor(highlightColour));
+        shareButton.setBackgroundColor(colour);
     }
 
     private Bitmap takeScreenShot()

@@ -6,16 +6,34 @@
     tools:context="ericbai.com.sharepiece.CustomizeActivity"
     android:orientation="vertical">
 
-    <com.astuetz.PagerSlidingTabStrip
-        android:id="@+id/tabs"
-        app:pstsShouldExpand="true"
+    <LinearLayout
+        android:id="@+id/customize_bar"
         android:layout_width="match_parent"
-        android:layout_height="48dip" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        >
+        <com.astuetz.PagerSlidingTabStrip
+            android:id="@+id/tabs"
+            app:pstsShouldExpand="true"
+            android:layout_weight="3"
+            android:layout_width="0dip"
+            android:layout_height="56dip" />
+        <Button
+            android:id="@+id/share_button"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="0dip"
+            android:shadowColor="@color/tw__transparent"
+            android:textColor="@color/tw__solid_white"
+            android:text="@string/share_button"
+            android:onClick="share" />
+    </LinearLayout>
 
     <android.support.v4.view.ViewPager
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pager"
-        android:layout_weight="3"
+        android:layout_weight="4"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 
@@ -64,6 +82,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="5dip"
+                        android:textIsSelectable="true"
                         android:padding="15dip"/>
 
                 </RelativeLayout>
@@ -106,25 +125,4 @@
 
         </ScrollView>
     </LinearLayout>
-    <LinearLayout
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        >
-        <Button
-            android:id="@+id/back_button"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="@string/back_button"
-            android:onClick="back" />
-        <Button
-            android:id="@+id/share_button"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="@string/share_button"
-            android:onClick="share" />
-    </LinearLayout>
-
 </LinearLayout>

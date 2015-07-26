@@ -25,4 +25,5 @@
     <string name="watermark">"\""</string>
     <string name="no_source_found">No source found!</string>
     <string name="no_source_instructions">Please provide the URL in the Source tab.</string>
+    <string name="highlight">Highlight</string>
 </resources>

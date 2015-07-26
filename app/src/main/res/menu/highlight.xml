@@ -1,8 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="ericbai.com.sharepiece.CustomizeActivity" >
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/highlight"
+        app:showAsAction="always"
+        android:title="@string/highlight"
+        />
 </menu>

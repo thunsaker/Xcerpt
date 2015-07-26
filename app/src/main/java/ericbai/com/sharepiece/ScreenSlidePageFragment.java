@@ -22,7 +22,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -56,9 +55,8 @@ public class ScreenSlidePageFragment extends Fragment {
     private static RadioGroup sourceSelect;
     private ClipboardManager clipboard;
 
-    public static final int HIGHLIGHT = 0;
-    public static final int COLOUR = 1;
-    public static final int SOURCE = 2;
+    public static final int COLOUR = 0;
+    public static final int SOURCE = 1;
 
     /**
      * Factory method for this fragment class. Constructs a new fragment for the given page number.
@@ -98,8 +96,6 @@ public class ScreenSlidePageFragment extends Fragment {
 
         View child = null;
         switch(mPageNumber){
-            case HIGHLIGHT: child = getHighlightCard();
-                break;
             case COLOUR: child = getColourCard();
                 break;
             case SOURCE: child = getSourceCard();
@@ -110,11 +106,6 @@ public class ScreenSlidePageFragment extends Fragment {
 
         return fl;
     }
-
-    public View getHighlightCard(){
-        return setInstructions(getString(R.string.instructions_highlight));
-    }
-
     public View getColourCard(){
         final SharedPreferences settings = getActivity().getPreferences(0);
 
@@ -141,7 +132,7 @@ public class ScreenSlidePageFragment extends Fragment {
                 public void onClick(View v) {
                     Log.e("colour select", "" + colour);
                     CustomizeActivity activity = (CustomizeActivity) getActivity();
-                    activity.getBackgroundView().setBackgroundColor(colour);
+                    activity.setColour(colour);
                     editor.putInt(CustomizeActivity.COLOUR_SETTING, colour);
                     editor.commit();
                 }

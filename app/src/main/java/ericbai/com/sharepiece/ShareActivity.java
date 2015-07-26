@@ -167,6 +167,12 @@ public class ShareActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        imageFile.delete();
+        super.onDestroy();
+    }
+
     private File saveFile(String fileName, Bitmap image){
         if(!isExternalStorageWritable()){
             //TODO toast
@@ -300,7 +306,6 @@ public class ShareActivity extends Activity {
 			/* Dismiss the progress dialog after sharing */
             pDialog.dismiss();
             Toast.makeText(ShareActivity.this, "Posted to Twitter!", Toast.LENGTH_SHORT).show();
-            imageFile.delete();
             //TODO indicate success, disable post button
         }
 
