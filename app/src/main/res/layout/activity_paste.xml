@@ -7,8 +7,7 @@
         android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/buttons">
+        android:layout_alignParentTop="true">
         <EditText android:id="@+id/edit_message"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
@@ -18,30 +17,4 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"/>
     </ScrollView>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_horizontal">
-        <Button
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="@string/delete_button"
-            android:onClick="delete" />
-        <Button
-            android:id="@+id/paste_button"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="@string/paste_button"
-            android:onClick="paste" />
-        <Button
-            android:id="@+id/next_button"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="@string/next_button"
-            android:onClick="next" />
-    </LinearLayout>
 </RelativeLayout>
