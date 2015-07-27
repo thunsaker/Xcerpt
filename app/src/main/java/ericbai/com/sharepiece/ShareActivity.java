@@ -1,22 +1,26 @@
 package ericbai.com.sharepiece;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,14 +36,11 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -50,7 +51,7 @@ import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 
-public class ShareActivity extends Activity {
+public class ShareActivity extends AppCompatActivity {
 
     private static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
     private static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
@@ -82,6 +83,16 @@ public class ShareActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
+
+        ActionBar bar = getSupportActionBar();
+        if(bar != null){
+            bar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.material_blue_grey_800)));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_800));
+            }
+        }
 
         finalImage = (ImageView) findViewById(R.id.final_image);
         tweetButton = (Button) findViewById(R.id.tweet_button);
@@ -233,7 +244,8 @@ public class ShareActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if(id == R.id.home){
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);

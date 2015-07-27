@@ -6,20 +6,24 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,18 +33,16 @@ import com.astuetz.PagerSlidingTabStrip;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class CustomizeActivity extends FragmentActivity {
+public class CustomizeActivity extends AppCompatActivity {
 
     private String excerpt;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
     public TextView contentPreview;
     private LinearLayout backgroundView;
-    private LinearLayout customizeBar;
     private TextView titleView;
     private TextView websiteView;
     private LinearLayout wrapper;
-    private Button shareButton;
 
     public String selectedUrl;
     public int selected_index = 0;
@@ -90,15 +92,12 @@ public class CustomizeActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customize_2);
 
-        shareButton = (Button) findViewById(R.id.share_button);
-        shareButton.setEnabled(false);
-
-        customizeBar = (LinearLayout) findViewById(R.id.customize_bar);
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
         contentPreview = (TextView) findViewById(R.id.content_preview);
         wrapper = (LinearLayout) findViewById(R.id.content);
+
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
@@ -106,13 +105,16 @@ public class CustomizeActivity extends FragmentActivity {
 
         final PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(mPager);
+        tabs.setTextColorResource(R.color.tw__solid_white);
+        tabs.setIndicatorColor(Color.WHITE);
+        tabs.setDividerColor(Color.TRANSPARENT);
 
         Intent intent = getIntent();
         String intentAction = intent.getAction();
 
-        if(intentAction.equals(Intent.ACTION_SEND)){
+        if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){
             excerpt = intent.getStringExtra(Intent.EXTRA_TEXT).trim();
-        }else if(intentAction.equals(Intent.ACTION_DEFAULT)){
+        }else if(intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT)){
             excerpt = intent.getStringExtra(PasteActivity.EXCERPT);
         }
 
@@ -139,8 +141,9 @@ public class CustomizeActivity extends FragmentActivity {
 
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 // customizeBar.setVisibility(View.GONE);
-
+                mode.getMenuInflater().inflate(R.menu.highlight, menu);
                 menu.removeItem(android.R.id.copy);
+                menu.removeItem(android.R.id.selectAll);
                 return true;
             }
 
@@ -148,7 +151,8 @@ public class CustomizeActivity extends FragmentActivity {
 
                 switch(item.getItemId()) {
 
-                    case R.id.highlight:
+                    case R.id.done:
+                        share();
                         return true;
                 }
                 return false;
@@ -208,7 +212,6 @@ public class CustomizeActivity extends FragmentActivity {
         websiteView.setText(articles[0].displayUrl);
         selectedUrl = articles[0].url;
         mPagerAdapter.notifyDataSetChanged();
-        shareButton.setEnabled(true);
     }
 
     @Override
@@ -224,13 +227,14 @@ public class CustomizeActivity extends FragmentActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.done) {
+            share();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void share(View view) {
+    private void share(){
         Intent intent = new Intent(this, ShareActivity.class);
 
         intent.putExtra(URL, selectedUrl);
@@ -262,11 +266,21 @@ public class CustomizeActivity extends FragmentActivity {
         String hexColour = String.format("#%06X", (0xFFFFFF & colour));
         String highlightColour = "#40" + hexColour.substring(1);
         contentPreview.setHighlightColor(Color.parseColor(highlightColour));
-        shareButton.setBackgroundColor(colour);
 
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        tabs.setIndicatorColor(colour);
-        tabs.setDividerColor(Color.parseColor(highlightColour));
+        tabs.setBackgroundColor(colour);
+        tabs.setIndicatorHeight(15);
+
+        ActionBar bar = getSupportActionBar();
+        if(bar != null){
+            bar.setElevation(0);
+            bar.setBackgroundDrawable(new ColorDrawable(colour));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(colour);
+            }
+        }
     }
 
     private Bitmap takeScreenShot()

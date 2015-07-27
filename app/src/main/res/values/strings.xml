@@ -20,10 +20,11 @@
     <string name="instructions_colour">Select a background and highlight colour.</string>
     <string name="instructions_source">Choose the correct source you wish to share.</string>
     <string name="loading">Loading…</string>
-    <string name="title_activity_share">ShareActivity</string>
+    <string name="title_activity_share">Xcerpt</string>
     <string name="hello_world">Hello world!</string>
     <string name="watermark">"\""</string>
     <string name="no_source_found">No source found!</string>
     <string name="no_source_instructions">Please provide the URL in the Source tab.</string>
     <string name="highlight">Highlight</string>
+    <string name="done">Done</string>
 </resources>
