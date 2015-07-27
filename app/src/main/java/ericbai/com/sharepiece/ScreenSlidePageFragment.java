@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import at.markushi.ui.CircleButton;
 
 public class ScreenSlidePageFragment extends Fragment {
     public static final String ARG_PAGE = "page";
+    private final int MARGIN = 12;
 
     List<Integer> colourChoices = Collections.unmodifiableList(Arrays.asList(
             Color.parseColor("#9C27B0"), // purple
@@ -109,11 +111,19 @@ public class ScreenSlidePageFragment extends Fragment {
     public View getColourCard(){
         final SharedPreferences settings = getActivity().getPreferences(0);
 
+        ScrollView sv = new ScrollView(getActivity());
         LinearLayout view = new LinearLayout(getActivity());
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+        params.setMargins(MARGIN, MARGIN, MARGIN, MARGIN);
+        view.setLayoutParams(params);
         view.setOrientation(LinearLayout.VERTICAL);
         view.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        view.addView(setInstructions(getString(R.string.instructions_colour)));
+        // view.addView(setInstructions(getString(R.string.instructions_colour)));
 
         LinearLayout colourSelectrow1 = new LinearLayout(getActivity());
         colourSelectrow1.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -146,21 +156,33 @@ public class ScreenSlidePageFragment extends Fragment {
         }
         view.addView(colourSelectrow1);
         view.addView(colourSelectrow2);
-
-      return view;
+        sv.addView(view);
+      return sv;
     }
 
     public View getSourceCard(){
+        ScrollView sv = new ScrollView(getActivity());
         LinearLayout layout = new LinearLayout(getActivity());
         Article articles[] = ((CustomizeActivity)getActivity()).articles;
 
         LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+        params.setMargins(MARGIN, MARGIN, MARGIN, MARGIN);
         layout.setLayoutParams(params);
         layout.setOrientation(LinearLayout.VERTICAL);
 
         Button customSourceButton = new Button(getActivity());
+
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        buttonParams.gravity = Gravity.CENTER_HORIZONTAL;
+        customSourceButton.setLayoutParams(buttonParams);
+
         customSourceButton.setText("Use URL from clipboard");
         customSourceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,6 +221,7 @@ public class ScreenSlidePageFragment extends Fragment {
                                             Article customArticle = new Article(title, baseUrl, results[0].Url);
                                             if(sourceSelect != null) sourceSelect.clearCheck();
                                             ((CustomizeActivity)getActivity()).updateSource(customArticle);
+                                            ((CustomizeActivity)getActivity()).nextItem.setEnabled(true);
                                         }
 
                                     }
@@ -270,7 +293,8 @@ public class ScreenSlidePageFragment extends Fragment {
 
         layout.addView(sourceSelect);
         layout.addView(customSourceButton);
-        return layout;
+        sv.addView(layout);
+        return sv;
     }
 
     public TextView setInstructions(String instructions){

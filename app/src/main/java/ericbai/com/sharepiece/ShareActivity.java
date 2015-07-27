@@ -1,6 +1,7 @@
 package ericbai.com.sharepiece;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -21,10 +21,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +58,7 @@ public class ShareActivity extends AppCompatActivity {
     private static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
     private static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
     private static final int CHAR_LIMIT = 94;
+    private final int LINK_PREVIEW_LENGTH = 32;
 
     private TwitterSession twitterSession;
 
@@ -68,6 +71,8 @@ public class ShareActivity extends AppCompatActivity {
     private TextView characterCount;
     private EditText tweet;
     private LinearLayout tweetLayout;
+    private TextView linkPreview;
+    private LinearLayout tweetBar;
 
     private Bitmap img;
 
@@ -90,7 +95,7 @@ public class ShareActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Window window = getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_800));
+                window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_900));
             }
         }
 
@@ -100,11 +105,32 @@ public class ShareActivity extends AppCompatActivity {
         tweet = (EditText) findViewById(R.id.tweet);
         tweetLayout = (LinearLayout) findViewById(R.id.tweet_layout);
         userName = (TextView) findViewById(R.id.user_name);
+        linkPreview = (TextView) findViewById(R.id.link_preview);
+        tweetBar = (LinearLayout) findViewById(R.id.tweet_bar);
 
         final String selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
+        String baseUrl = selectedUrl;
+        if(baseUrl.startsWith("https://www.")){
+            baseUrl = baseUrl.substring("https://www.".length());
+        }else if(baseUrl.startsWith("http://www.")){
+            baseUrl = baseUrl.substring("http://www.".length());
+        }else if(baseUrl.startsWith("https://")){
+            baseUrl = baseUrl.substring("https://".length());
+        }else if(baseUrl.startsWith("http://")){
+            baseUrl = baseUrl.substring("http://".length());
+        }
+        String urlPreview;
+        if(selectedUrl.length() < LINK_PREVIEW_LENGTH){
+            urlPreview = baseUrl;
+        }else {
+            urlPreview = baseUrl.substring(0, LINK_PREVIEW_LENGTH) + "...";
+        }
+        linkPreview.setText(urlPreview);
+        linkPreview.setTextColor(getResources().getColor(R.color.tw__blue_default));
 
         tweetLayout.setVisibility(View.GONE);
         characterCount.setText(Integer.toString(CHAR_LIMIT));
+        characterCount.setTextColor(Color.BLACK);
 
         tweetText = selectedUrl;
         tweet.addTextChangedListener(new TextWatcher() {
@@ -159,7 +185,7 @@ public class ShareActivity extends AppCompatActivity {
             public void success(Result<TwitterSession> result) {
                 twitterSession = result.data;
                 loginButton.setVisibility(View.GONE);
-                //composeTweet(selectedUrl, imageUri);
+                tweetBar.setVisibility(View.VISIBLE);
                 tweetLayout.setVisibility(View.VISIBLE);
                 userName.setText(PREFIX + twitterSession.getUserName());
 
@@ -174,6 +200,7 @@ public class ShareActivity extends AppCompatActivity {
         if(twitterSession != null){
             loginButton.setVisibility(View.GONE);
             tweetLayout.setVisibility(View.VISIBLE);
+            tweetBar.setVisibility(View.VISIBLE);
             userName.setText(PREFIX + twitterSession.getUserName());
         }
     }
@@ -255,6 +282,9 @@ public class ShareActivity extends AppCompatActivity {
         Twitter.logOut();
         loginButton.setVisibility(View.VISIBLE);
         tweetLayout.setVisibility(View.GONE);
+        tweetBar.setVisibility(View.GONE);
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
     }
 

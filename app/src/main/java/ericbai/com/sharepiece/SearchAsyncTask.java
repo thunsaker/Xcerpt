@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.Random;
 
 public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
 
@@ -38,15 +39,24 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
             String searchStr = URLEncoder.encode(mSearchStr);
             String numOfResultsStr = mNumOfResults <= 0 ? "" : "&$top=" + mNumOfResults;
 
-            String bingUrl =
-                    "https://api.datamarket.azure.com/Bing/Search/v1/Web?Query=%27"
-                    + searchStr + "%27" + numOfResultsStr + "&$format=json";
+            Random rand = new Random();
+            int randomNum = rand.nextInt(2);
+            String bingUrl;
+            if(randomNum == 0){
+                bingUrl =
+                        "https://api.datamarket.azure.com/Bing/Search/v1/Web?Query=%27"
+                                + searchStr + "%27" + numOfResultsStr + "&$format=json";
+            }else{
+                bingUrl =
+                        "https://api.datamarket.azure.com/Bing/SearchWeb/v1/Web?Query=%27"
+                                + searchStr + "%27" + numOfResultsStr + "&$format=json";
+            }
+
             String accountKey = BuildConfig.BING_ACCOUNT_KEY;
             String auth = accountKey + ":" + accountKey;
             String encodedAuth = Base64.encodeToString(auth.getBytes(), Base64.NO_WRAP);
 
-            URL url = null;
-            url = new URL(bingUrl);
+            URL url = new URL(bingUrl);
 
             URLConnection urlConnection = url.openConnection();
             urlConnection.setRequestProperty("Authorization", "Basic " + encodedAuth);

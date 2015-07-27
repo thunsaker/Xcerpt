@@ -1,5 +1,6 @@
 package ericbai.com.sharepiece;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
@@ -48,6 +50,8 @@ public class CustomizeActivity extends AppCompatActivity {
     public int selected_index = 0;
     public boolean no_results = false;
 
+    public MenuItem nextItem;
+
     public Article[] articles = new Article[3];
 
     private static final float TEXT_SIZE = 16;
@@ -56,6 +60,7 @@ public class CustomizeActivity extends AppCompatActivity {
     public static final String IMAGE = "IMAGE";
     public static final String URL = "URL";
     public static final String COLOUR_SETTING = "colour";
+    private static final String SHOW_HINT_SETTING = "hint";
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         private final String[] TITLES = {
@@ -98,7 +103,6 @@ public class CustomizeActivity extends AppCompatActivity {
         contentPreview = (TextView) findViewById(R.id.content_preview);
         wrapper = (LinearLayout) findViewById(R.id.content);
 
-
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
@@ -136,14 +140,26 @@ public class CustomizeActivity extends AppCompatActivity {
             }
 
             public void onDestroyActionMode(ActionMode mode) {
-                // customizeBar.setVisibility(View.VISIBLE);
+                contentPreview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        contentPreview.performLongClick();
+                    }
+                });
             }
 
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                // customizeBar.setVisibility(View.GONE);
+            public boolean onCreateActionMode(final ActionMode mode, Menu menu) {
+
                 mode.getMenuInflater().inflate(R.menu.highlight, menu);
                 menu.removeItem(android.R.id.copy);
                 menu.removeItem(android.R.id.selectAll);
+
+                contentPreview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mode.finish();
+                    }
+                });
                 return true;
             }
 
@@ -159,9 +175,30 @@ public class CustomizeActivity extends AppCompatActivity {
             }
         });
 
-        SharedPreferences settings = getPreferences(0);
+        final SharedPreferences settings = getPreferences(0);
         int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor("#9C27B0"));
         setColour(defaultColour);
+
+        boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
+
+        if(showHint) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setMessage(getString(R.string.highlight_hint));
+            builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                }
+            });
+            builder.setNegativeButton("Don't show again", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean(SHOW_HINT_SETTING, false);
+                    editor.commit();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
 
         SearchAsyncTask searchTask =
                 new SearchAsyncTask(excerpt, NUM_RESULTS, new SearchAsyncTask.Callback() {
@@ -211,6 +248,7 @@ public class CustomizeActivity extends AppCompatActivity {
         titleView.setText(articles[0].title);
         websiteView.setText(articles[0].displayUrl);
         selectedUrl = articles[0].url;
+        nextItem.setEnabled(true);
         mPagerAdapter.notifyDataSetChanged();
     }
 
@@ -218,6 +256,8 @@ public class CustomizeActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.highlight, menu);
+        nextItem = menu.getItem(0);
+        nextItem.setEnabled(false);
         return true;
     }
 
@@ -278,7 +318,13 @@ public class CustomizeActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Window window = getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(colour);
+
+                float[] hsv = new float[3];
+                int darkerColour = colour;
+                Color.colorToHSV(darkerColour, hsv);
+                hsv[2] *= 0.8f; // value component
+                darkerColour = Color.HSVToColor(hsv);
+                window.setStatusBarColor(darkerColour);
             }
         }
     }

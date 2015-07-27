@@ -55,7 +55,7 @@ public class PasteActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Window window = getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_800));
+                window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_900));
             }
         }
 
@@ -63,23 +63,9 @@ public class PasteActivity extends AppCompatActivity {
         clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         mEditText.setTypeface(Typeface.SERIF);
-        mEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                boolean enableNext = mEditText.getText().length() > 0;
-                nextItem.setEnabled(enableNext);
-            }
-        });
 
         if (!isNetworkAvailable(getApplicationContext())) {
-            CharSequence text = "Error: Check your internet connection."; //TODO make const
+            CharSequence text = getString(R.string.no_internet_error); //TODO make const
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         }
     }
@@ -100,6 +86,30 @@ public class PasteActivity extends AppCompatActivity {
             // This enables the paste menu item, since the clipboard contains plain text.
             pasteItem.setEnabled(true);
         }
+
+        Intent intent = getIntent();
+        String intentAction = intent.getAction();
+
+        if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){
+            mEditText.setText(intent.getStringExtra(Intent.EXTRA_TEXT).trim());
+            nextItem.setEnabled(true);
+        }
+
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                boolean enableNext = mEditText.getText().length() > 0;
+                nextItem.setEnabled(enableNext);
+            }
+        });
+
         return true;
     }
 
@@ -134,7 +144,7 @@ public class PasteActivity extends AppCompatActivity {
             intent.putExtra(EXCERPT, content);
             startActivity(intent);
         } else {
-            CharSequence text = "Error: Check your internet connection."; //TODO make const
+            CharSequence text = getString(R.string.no_internet_error); //TODO make const
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         }
     }
