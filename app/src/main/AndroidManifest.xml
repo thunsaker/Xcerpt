@@ -9,12 +9,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".PasteActivity"
-            android:label="@string/app_name"
+            android:logo="@mipmap/ic_launcher_white"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +28,7 @@
         </activity>
         <activity
             android:name=".CustomizeActivity"
-            android:label="@string/title_activity_highlight"
+            android:logo="@mipmap/ic_launcher_white"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:parentActivityName=".PasteActivity" >
@@ -38,7 +38,7 @@
         </activity>
         <activity
             android:name=".ShareActivity"
-            android:label="@string/title_activity_share"
+            android:logo="@mipmap/ic_launcher_white"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".CustomizeActivity" >
