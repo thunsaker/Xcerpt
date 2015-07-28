@@ -1,6 +1,7 @@
 package ericbai.com.sharepiece;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,19 +25,22 @@ public class ParseHtmlAsyncTask extends AsyncTask<Void, Void, Void> {
         try {
             Document doc = Jsoup.connect(mUrl).get();
 
-            Elements twitterTitleElems = doc.select("meta[name=twitter:title]");
-            if(!twitterTitleElems.isEmpty() && twitterTitleElems.first() != null){
-                title = twitterTitleElems.select("content").first().toString();
+            Elements twitterTitleElems = doc.select("meta[property=twitter:title]");
+            if (twitterTitleElems!=null && twitterTitleElems.attr("content").length() > 0) {
+                title = twitterTitleElems.attr("content");
+                Log.e("ParseHTMLTask", "Twitter Title: " + title);
                 return null;
             }
 
-            Elements ogTitleElems = doc.select("meta[name=og:title]");
-            if(!ogTitleElems.isEmpty() && ogTitleElems.first() != null){
-                title = ogTitleElems.select("content").first().toString();
+            Elements ogTitleElems = doc.select("meta[property=og:title]");
+            if (ogTitleElems!=null && ogTitleElems.attr("content").length() > 0) {
+                title = ogTitleElems.attr("content");
+                Log.e("ParseHTMLTask", "OG Title: " + title);
                 return null;
             }
 
             title = doc.title();
+            Log.e("ParseHTMLTask", "HTML Title: " + title);
 
         } catch (Throwable t) {
             t.printStackTrace();

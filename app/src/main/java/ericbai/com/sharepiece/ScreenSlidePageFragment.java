@@ -194,44 +194,43 @@ public class ScreenSlidePageFragment extends Fragment {
             public void onClick(View view) {
                 // get text from clipboard
                 ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-                String pasteData = item.getText().toString();
+                final String pasteData = item.getText().toString();
                 if(pasteData != null){
                     // check if text is URL
                     try { URL url = new URL(pasteData);
-                        SearchAsyncTask searchTask =
-                                new SearchAsyncTask(pasteData, 1, new SearchAsyncTask.Callback() {
+                        ParseHtmlAsyncTask titleTask =
+                                new ParseHtmlAsyncTask(pasteData, new ParseHtmlAsyncTask.Callback(){
                                     @Override
                                     public void onComplete(Object o, Error error) {
                                         if(error != null){
-                                            Log.e("SearchAsyncTask", error.getMessage());
+                                            Log.e("ParseHtmlAsyncTask", error.getMessage());
                                             return;
                                         }
-                                        BingSearchResults.Result[] results = ((BingSearchResults) o).getResults();
-                                        if(results.length == 0){
-                                            // show error toast
-                                            Toast.makeText(getActivity(), "The URL's webpage could not be found.",
-                                                    Toast.LENGTH_SHORT).show();
-                                        }else{
-                                            String title = results[0].Title;
-                                            String baseUrl = results[0].DisplayUrl;
-                                            String https = "https://";
-                                            if(baseUrl.startsWith(https)){
-                                                baseUrl = baseUrl.substring(https.length());
-                                            }
-                                            int backslashAt = baseUrl.indexOf('/');
-                                            if(backslashAt > 0){
-                                                baseUrl = baseUrl.substring(0, backslashAt);
-                                            }
+                                        String title = (String) o;
 
-                                            Article customArticle = new Article(title, baseUrl, results[0].Url);
-                                            if(sourceSelect != null) sourceSelect.clearCheck();
-                                            ((CustomizeActivity)getActivity()).updateSource(customArticle);
-                                            ((CustomizeActivity)getActivity()).nextItem.setEnabled(true);
+                                        String baseUrl = pasteData;
+                                        if(baseUrl.startsWith("https://www.")){
+                                            baseUrl = baseUrl.substring("https://www.".length());
+                                        }else if(baseUrl.startsWith("http://www.")){
+                                            baseUrl = baseUrl.substring("http://www.".length());
+                                        }else if(baseUrl.startsWith("https://")){
+                                            baseUrl = baseUrl.substring("https://".length());
+                                        }else if(baseUrl.startsWith("http://")){
+                                            baseUrl = baseUrl.substring("http://".length());
                                         }
+                                        int backslashAt = baseUrl.indexOf('/');
+                                        if(backslashAt > 0){
+                                            baseUrl = baseUrl.substring(0, backslashAt);
+                                        }
+
+                                        Article customArticle = new Article(title, baseUrl, pasteData);
+                                        if(sourceSelect != null) sourceSelect.clearCheck();
+                                        ((CustomizeActivity)getActivity()).updateSource(customArticle);
+                                        ((CustomizeActivity)getActivity()).nextItem.setEnabled(true);
 
                                     }
                                 });
-                        searchTask.execute();
+                        titleTask.execute();
                     }
                     catch (MalformedURLException e) {
                         // show toast

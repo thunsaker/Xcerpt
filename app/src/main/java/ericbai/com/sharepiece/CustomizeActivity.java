@@ -233,7 +233,7 @@ public class CustomizeActivity extends AppCompatActivity {
         searchTask.execute();
     }
 
-    public void processResults(BingSearchResults.Result[] results) throws IOException {
+    public void processResults(final BingSearchResults.Result[] results) throws IOException {
         if(results == null || results.length == 0){
             titleView.setText(getString(R.string.no_source_found));
             websiteView.setText(R.string.no_source_instructions);
@@ -244,25 +244,42 @@ public class CustomizeActivity extends AppCompatActivity {
 
         for(int i = 0; i < results.length; i++){
             //TODO: get meta og:title from site's HTML instead of Bing's title
-            String pageTitle = results[i].Title;
+            final int finalI = i;
+            ParseHtmlAsyncTask titleTask = new ParseHtmlAsyncTask(results[i].Url,
+                    new ParseHtmlAsyncTask.Callback() {
+                @Override
+                public void onComplete(Object o, Error error) {
+                    if(error != null){
+                        Log.e("SearchAsyncTask", error.getMessage());
+                        //TODO: show user something went wrong
+                        return;
+                    }
+                    String title = (String) o;
+                    String pageTitle = title;
 
-            String baseUrl = results[i].DisplayUrl;
-            String https = "https://";
-            if(baseUrl.startsWith(https)){
-                baseUrl = baseUrl.substring(https.length());
-            }
-            int backslashAt = baseUrl.indexOf('/');
-            if(backslashAt > 0){
-                baseUrl = baseUrl.substring(0, backslashAt);
-            }
+                    String baseUrl = results[finalI].DisplayUrl;
+                    String https = "https://";
+                    if(baseUrl.startsWith(https)){
+                        baseUrl = baseUrl.substring(https.length());
+                    }
+                    int backslashAt = baseUrl.indexOf('/');
+                    if(backslashAt > 0){
+                        baseUrl = baseUrl.substring(0, backslashAt);
+                    }
 
-            articles[i] = new Article(pageTitle, baseUrl, results[i].Url);
+                    articles[finalI] = new Article(pageTitle, baseUrl, results[finalI].Url);
+
+                    if(finalI == 0){
+                        titleView.setText(articles[0].title);
+                        websiteView.setText(articles[0].displayUrl);
+                        selectedUrl = articles[0].url;
+                        nextItem.setEnabled(true);
+                    }
+                    mPagerAdapter.notifyDataSetChanged();
+                }
+            });
+            titleTask.execute();
         }
-        titleView.setText(articles[0].title);
-        websiteView.setText(articles[0].displayUrl);
-        selectedUrl = articles[0].url;
-        nextItem.setEnabled(true);
-        mPagerAdapter.notifyDataSetChanged();
     }
 
     @Override
