@@ -31,4 +31,5 @@
     <string name="ok">OK</string>
     <string name="no_internet_error">Error: Check your internet connection.</string>
     <string name="preview">Preview:</string>
+    <string name="paste_hint">Paste the web article excerpt you want to share on Twitter.</string>
 </resources>

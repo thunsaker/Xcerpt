@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -44,7 +43,6 @@ public class CustomizeActivity extends AppCompatActivity {
     private LinearLayout backgroundView;
     private TextView titleView;
     private TextView websiteView;
-    private LinearLayout wrapper;
 
     public String selectedUrl;
     public int selected_index = 0;
@@ -101,7 +99,6 @@ public class CustomizeActivity extends AppCompatActivity {
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
         contentPreview = (TextView) findViewById(R.id.content_preview);
-        wrapper = (LinearLayout) findViewById(R.id.content);
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
@@ -331,10 +328,10 @@ public class CustomizeActivity extends AppCompatActivity {
 
     private Bitmap takeScreenShot()
     {
-        int totalHeight = wrapper.getChildAt(0).getHeight();
-        int totalWidth = wrapper.getChildAt(0).getWidth();
+        int totalHeight = backgroundView.getHeight();
+        int totalWidth = backgroundView.getWidth();
 
-        Bitmap b = getBitmapFromView(wrapper,totalHeight,totalWidth);
+        Bitmap b = getBitmapFromView(backgroundView,totalHeight,totalWidth);
 
         return b;
     }

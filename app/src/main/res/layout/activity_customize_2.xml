@@ -29,13 +29,7 @@
             android:layout_height="wrap_content" >
 
             <LinearLayout
-                android:id="@+id/content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <LinearLayout
                 android:id="@+id/background"
-                android:background="@android:color/holo_purple"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -102,7 +96,6 @@
                     android:layout_marginBottom="10dip"
                     android:text="@string/app_name"/>
 
-            </LinearLayout>
             </LinearLayout>
 
         </ScrollView>

@@ -33,7 +33,7 @@ import at.markushi.ui.CircleButton;
 
 public class ScreenSlidePageFragment extends Fragment {
     public static final String ARG_PAGE = "page";
-    private final int MARGIN = 12;
+    private final int MARGIN = 5;
 
     List<Integer> colourChoices = Collections.unmodifiableList(Arrays.asList(
             Color.parseColor("#9C27B0"), // purple
@@ -56,6 +56,7 @@ public class ScreenSlidePageFragment extends Fragment {
     private int mPageNumber;
     private static RadioGroup sourceSelect;
     private ClipboardManager clipboard;
+    private int dpAsPixels;
 
     public static final int COLOUR = 0;
     public static final int SOURCE = 1;
@@ -79,6 +80,9 @@ public class ScreenSlidePageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         mPageNumber = getArguments().getInt(ARG_PAGE);
+
+        float scale = getResources().getDisplayMetrics().density;
+        dpAsPixels = (int) (MARGIN*scale + 0.5f);
     }
 
     @Override
@@ -118,8 +122,8 @@ public class ScreenSlidePageFragment extends Fragment {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
-        params.setMargins(MARGIN, MARGIN, MARGIN, MARGIN);
         view.setLayoutParams(params);
+        view.setPadding(0, dpAsPixels, 0, 0);
         view.setOrientation(LinearLayout.VERTICAL);
         view.setGravity(Gravity.CENTER_HORIZONTAL);
 
@@ -170,7 +174,7 @@ public class ScreenSlidePageFragment extends Fragment {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
-        params.setMargins(MARGIN, MARGIN, MARGIN, MARGIN);
+        layout.setPadding(0, 0, dpAsPixels, 0);
         layout.setLayoutParams(params);
         layout.setOrientation(LinearLayout.VERTICAL);
 
@@ -182,6 +186,7 @@ public class ScreenSlidePageFragment extends Fragment {
         );
         buttonParams.gravity = Gravity.CENTER_HORIZONTAL;
         customSourceButton.setLayoutParams(buttonParams);
+        customSourceButton.setTextSize(12);
 
         customSourceButton.setText("Use URL from clipboard");
         customSourceButton.setOnClickListener(new View.OnClickListener() {
