@@ -2,7 +2,12 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="actionModeStyle">@style/LStyled.ActionMode</item>
+    </style>
 
+    <style name="LStyled.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/material_blue_grey_800</item>
+        <item name="backgroundSplit">@color/material_blue_grey_800</item>
     </style>
 
 </resources>

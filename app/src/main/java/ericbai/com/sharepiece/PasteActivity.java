@@ -92,6 +92,9 @@ public class PasteActivity extends AppCompatActivity {
 
         if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){
             mEditText.setText(intent.getStringExtra(Intent.EXTRA_TEXT).trim());
+        }
+
+        if(mEditText.getText().length() > 0){
             nextItem.setEnabled(true);
         }
 

@@ -45,7 +45,7 @@ public class ScreenSlidePageFragment extends Fragment {
             Color.parseColor("#43A047"), // green
             Color.parseColor("#EF6C00"), // orange
             Color.parseColor("#607D8B"), // blue grey
-            Color.parseColor("#000000") // black
+            Color.parseColor("#FFC107") // amber
 
 
     ));

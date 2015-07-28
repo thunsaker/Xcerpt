@@ -128,6 +128,7 @@ public class ShareActivity extends AppCompatActivity {
         linkPreview.setTextColor(getResources().getColor(R.color.tw__blue_default));
 
         tweetLayout.setVisibility(View.GONE);
+        tweetBar.setVisibility(View.GONE);
         characterCount.setText(Integer.toString(CHAR_LIMIT));
         characterCount.setTextColor(Color.BLACK);
 
