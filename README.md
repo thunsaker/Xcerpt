@@ -1,6 +1,5 @@
-# SharePiece
+# Xcerpt
 
-This README will be updated once I add a few more key features to make the app presentable!
-This repo will be renamed Xcerpt... eventually.
+Do you want to make the articles you share on Twitter more eye-catching – and more likely to be read?
 
-Coming to the Play Store soon!
+Xcerpt is a free app that lets you tweet links to articles attached with a beautiful image of a passage of your choice. No longer will your followers scroll past the web articles you share!
