@@ -1,4 +1,4 @@
-package ericbai.com.sharepiece;
+package com.transcendentlabs.xcerpt;
 
 import android.os.AsyncTask;
 import android.util.Base64;
@@ -15,6 +15,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Random;
+
+import com.transcendentlabs.xcerpt.BuildConfig;
 
 public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
 

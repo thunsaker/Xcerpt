@@ -1,4 +1,4 @@
-package ericbai.com.sharepiece;
+package com.transcendentlabs.xcerpt;
 
 public class Article{
     String title;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ericbai.com.sharepiece" >
+    package="com.transcendentlabs.xcerpt" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -31,7 +31,7 @@
             android:parentActivityName=".PasteActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ericbai.com.sharepiece.PasteActivity" />
+                android:value=".PasteActivity" />
         </activity>
         <activity
             android:name=".ShareActivity"
@@ -41,7 +41,7 @@
             android:parentActivityName=".CustomizeActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ericbai.com.sharepiece.CustomizeActivity" />
+                android:value=".CustomizeActivity" />
         </activity>
         <meta-data
             android:name="io.fabric.ApiKey"

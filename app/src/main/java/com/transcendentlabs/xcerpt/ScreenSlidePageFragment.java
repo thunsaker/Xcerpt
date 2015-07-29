@@ -1,4 +1,4 @@
-package ericbai.com.sharepiece;
+package com.transcendentlabs.xcerpt;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;

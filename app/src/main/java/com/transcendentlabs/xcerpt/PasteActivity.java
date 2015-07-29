@@ -1,16 +1,12 @@
-package ericbai.com.sharepiece;
+package com.transcendentlabs.xcerpt;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.LightingColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,8 +21,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +28,7 @@ import com.crashlytics.android.Crashlytics;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
+import com.transcendentlabs.xcerpt.BuildConfig;
 import io.fabric.sdk.android.Fabric;
 
 
