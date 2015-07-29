@@ -330,8 +330,8 @@ public class ShareActivity extends AppCompatActivity {
 			/* Dismiss the progress dialog after sharing */
             pDialog.dismiss();
             Toast.makeText(ShareActivity.this, "Posted to Twitter!", Toast.LENGTH_SHORT).show();
+            tweetButton.setAlpha(.7f);
             tweetButton.setEnabled(false);
-            tweetButton.setTextColor(getResources().getColor(R.color.tw__medium_gray));
             tweetButton.setText("Posted");
             tweet.setEnabled(false);
         }

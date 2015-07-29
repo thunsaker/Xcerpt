@@ -31,5 +31,6 @@
     <string name="ok">OK</string>
     <string name="no_internet_error">Error: Check your internet connection.</string>
     <string name="preview">Preview:</string>
-    <string name="paste_hint">Paste the web article excerpt you want to share on Twitter.</string>
+    <string name="paste_hint">Paste the excerpt you want to share.</string>
+    <string name="share_hint">Hint: Next time, after selecting the passage you want, instead of pressing the COPY button, press the SHARE button, and select Xcerpt!</string>
 </resources>

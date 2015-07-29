@@ -5,8 +5,12 @@ import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,10 +20,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -39,6 +47,7 @@ public class PasteActivity extends AppCompatActivity {
     private MenuItem nextItem;
 
     private EditText mEditText;
+    private TextView mShareHint;
     private ClipboardManager clipboard;
     public static final String EXCERPT = "com.ericbai.xcerpt.excerpt";
     @Override
@@ -60,7 +69,15 @@ public class PasteActivity extends AppCompatActivity {
         }
 
         mEditText = (EditText) findViewById(R.id.edit_message);
+        mShareHint = (TextView) findViewById(R.id.share_hint);
         clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+
+        Intent intent = getIntent();
+        String intentAction = intent.getAction();
+
+        if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){
+            mShareHint.setVisibility(View.GONE);
+        }
 
         mEditText.setTypeface(Typeface.SERIF);
 
