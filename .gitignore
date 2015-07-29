@@ -6,3 +6,5 @@
 /build
 app/fabric.properties
 app/gradle.properties
+*.apk
+app/manifest-merger-release-report.txt
