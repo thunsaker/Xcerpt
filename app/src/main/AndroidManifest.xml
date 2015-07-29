@@ -13,7 +13,7 @@
         <activity
             android:name=".PasteActivity"
             android:logo="@mipmap/ic_launcher_white"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,7 +28,6 @@
             android:name=".CustomizeActivity"
             android:logo="@mipmap/ic_launcher_white"
             android:screenOrientation="portrait"
-            android:launchMode="singleTask"
             android:parentActivityName=".PasteActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

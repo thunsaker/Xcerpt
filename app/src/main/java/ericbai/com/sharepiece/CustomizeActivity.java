@@ -65,6 +65,8 @@ public class CustomizeActivity extends AppCompatActivity {
     private static final String SHOW_HINT_SETTING = "hint";
     public boolean actionModeOpen = false;
 
+    volatile boolean running;
+
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         private final String[] TITLES = {
                 getString(R.string.tab_colour),
@@ -99,6 +101,7 @@ public class CustomizeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customize_2);
+        running = true;
 
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
@@ -217,11 +220,10 @@ public class CustomizeActivity extends AppCompatActivity {
             dialog.show();
         }
 
-        SearchAsyncTask searchTask =
-                new SearchAsyncTask(excerpt, NUM_RESULTS, new SearchAsyncTask.Callback() {
+        SearchAsyncTask searchTask = new SearchAsyncTask(excerpt, NUM_RESULTS, new SearchAsyncTask.Callback() {
             @Override
             public void onComplete(Object o, Error error) {
-                if(error != null){
+                if (error != null) {
                     Log.e("SearchAsyncTask", error.getMessage());
                     return;
                 }
@@ -237,6 +239,12 @@ public class CustomizeActivity extends AppCompatActivity {
         searchTask.execute();
     }
 
+    @Override
+    protected void onDestroy() {
+        running = false;
+        super.onDestroy();
+    }
+
     public void processResults(final BingSearchResults.Result[] results) throws IOException {
         if(results == null || results.length == 0){
             titleView.setText(getString(R.string.no_source_found));
@@ -250,43 +258,45 @@ public class CustomizeActivity extends AppCompatActivity {
             final int finalI = i;
             ParseHtmlAsyncTask titleTask = new ParseHtmlAsyncTask(results[i].Url,
                     new ParseHtmlAsyncTask.Callback() {
-                @Override
-                public void onComplete(Object o, Error error) {
-                    if(error != null){
-                        if(error.getMessage() != null){
-                            Log.e("SearchAsyncTask", error.getMessage());
-                            //TODO: show user something went wrong
-                            return;
-                        } else{
-                            Log.e("SearchAsyncTask", "Unknown error");
-                            return;
+                        @Override
+                        public void onComplete(Object o, Error error) {
+                            if (error != null) {
+                                if (error.getMessage() != null) {
+                                    Log.e("SearchAsyncTask", error.getMessage());
+                                    //TODO: show user something went wrong
+                                    return;
+                                } else {
+                                    Log.e("SearchAsyncTask", "Unknown error");
+                                    return;
+                                }
+                            }
+                            String pageTitle = (String) o;
+                            if (pageTitle.length() == 0) {
+                                //TODO handle when JSoup thinks there's no title?
+                            }
+                            String baseUrl = results[finalI].DisplayUrl;
+                            String https = "https://";
+                            if (baseUrl.startsWith(https)) {
+                                baseUrl = baseUrl.substring(https.length());
+                            }
+                            int backslashAt = baseUrl.indexOf('/');
+                            if (backslashAt > 0) {
+                                baseUrl = baseUrl.substring(0, backslashAt);
+                            }
+
+                            articles[finalI] = new Article(pageTitle, baseUrl, results[finalI].Url);
+
+                            if (finalI == 0) {
+                                titleView.setText(articles[0].title);
+                                websiteView.setText(articles[0].displayUrl);
+                                selectedUrl = articles[0].url;
+                                nextItem.setEnabled(true);
+                            }
+                            if (running) {
+                                mPagerAdapter.notifyDataSetChanged();
+                            }
                         }
-                    }
-                    String pageTitle = (String) o;
-                    if(pageTitle.length() == 0){
-                        //TODO handle when JSoup thinks there's no title?
-                    }
-                    String baseUrl = results[finalI].DisplayUrl;
-                    String https = "https://";
-                    if(baseUrl.startsWith(https)){
-                        baseUrl = baseUrl.substring(https.length());
-                    }
-                    int backslashAt = baseUrl.indexOf('/');
-                    if(backslashAt > 0){
-                        baseUrl = baseUrl.substring(0, backslashAt);
-                    }
-
-                    articles[finalI] = new Article(pageTitle, baseUrl, results[finalI].Url);
-
-                    if(finalI == 0){
-                        titleView.setText(articles[0].title);
-                        websiteView.setText(articles[0].displayUrl);
-                        selectedUrl = articles[0].url;
-                        nextItem.setEnabled(true);
-                    }
-                    mPagerAdapter.notifyDataSetChanged();
-                }
-            });
+                    });
             titleTask.execute();
         }
     }
@@ -309,6 +319,9 @@ public class CustomizeActivity extends AppCompatActivity {
         if (id == R.id.done) {
             share();
             return true;
+        }
+        if(id == R.id.home){
+            onBackPressed();
         }
         return super.onOptionsItemSelected(item);
     }

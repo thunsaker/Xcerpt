@@ -263,7 +263,7 @@ public class ShareActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if(id == R.id.home){
-            finish();
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
