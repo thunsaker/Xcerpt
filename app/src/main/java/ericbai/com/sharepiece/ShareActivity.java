@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -72,11 +73,13 @@ public class ShareActivity extends AppCompatActivity {
     private LinearLayout tweetLayout;
     private TextView linkPreview;
     private LinearLayout tweetBar;
+    private TextView logOut;
 
     private Bitmap img;
-
+    private String fileName;
     private String tweetText;
-    private File imageFile;
+    // private File imageFile;
+    private boolean imageSaved = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +109,19 @@ public class ShareActivity extends AppCompatActivity {
         userName = (TextView) findViewById(R.id.user_name);
         linkPreview = (TextView) findViewById(R.id.link_preview);
         tweetBar = (LinearLayout) findViewById(R.id.tweet_bar);
+        logOut = (TextView) findViewById(R.id.logout);
+
+        logOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Twitter.logOut();
+                loginButton.setVisibility(View.VISIBLE);
+                tweetLayout.setVisibility(View.GONE);
+                tweetBar.setVisibility(View.GONE);
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        });
 
         final String selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
         String baseUrl = selectedUrl;
@@ -167,10 +183,10 @@ public class ShareActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
         Date now = new Date();
         String strDate = sdf.format(now);
-        String fileName = strDate + ".png";
-        imageFile = saveFile(fileName, img);
+        fileName = strDate + ".png";
+        imageSaved = saveFile(fileName, img);
 
-        if(imageFile == null){
+        if(!imageSaved){
             //TODO throw error
             return;
         }
@@ -207,47 +223,22 @@ public class ShareActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        File imageFile = getFileStreamPath(fileName);
         imageFile.delete();
         super.onDestroy();
     }
 
-    private File saveFile(String fileName, Bitmap image){
-        if(!isExternalStorageWritable()){
-            //TODO toast
-            return null;
-        }
+    private boolean saveFile(String fileName, Bitmap image){
+        FileOutputStream outputStream;
 
-        File file = new File(getAlbumStorageDir("Xcerpt"), fileName);
         try {
-            FileOutputStream out = new FileOutputStream(file);
-            image.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Log.e("failure", e.getMessage());
-        } catch (IOException e) {
-            Log.e("failure", e.getMessage());
-        }
-
-        return file;
-    }
-
-    public File getAlbumStorageDir(String albumName) {
-        // Get the directory for the user's public pictures directory.
-        File file = new File(this.getExternalFilesDir(
-                Environment.DIRECTORY_PICTURES), albumName);
-        if (!file.mkdirs()) {
-            Log.e("Test", "Directory not created");
-        }
-        return file;
-    }
-
-    private boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+            image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
             return true;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }
@@ -278,17 +269,8 @@ public class ShareActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void logOut(View view) {
-        Twitter.logOut();
-        loginButton.setVisibility(View.VISIBLE);
-        tweetLayout.setVisibility(View.GONE);
-        tweetBar.setVisibility(View.GONE);
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-
-    }
-
     public void postTweet(View view) {
+        File imageFile = getFileStreamPath(fileName);
         UpdateTwitterStatusTask postTweet = new UpdateTwitterStatusTask(tweetText, imageFile);
         postTweet.execute();
     }
@@ -349,7 +331,9 @@ public class ShareActivity extends AppCompatActivity {
             pDialog.dismiss();
             Toast.makeText(ShareActivity.this, "Posted to Twitter!", Toast.LENGTH_SHORT).show();
             tweetButton.setEnabled(false);
+            tweetButton.setTextColor(getResources().getColor(R.color.tw__medium_gray));
             tweetButton.setText("Posted");
+            tweet.setEnabled(false);
         }
 
     }

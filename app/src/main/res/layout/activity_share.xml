@@ -10,7 +10,8 @@
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/tweet_bar">
+        android:layout_above="@+id/tweet_bar"
+        android:layout_alignParentTop="true">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,8 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text="@string/logout"
-                android:onClick="logOut"/>
+                android:text="@string/logout"/>
         </RelativeLayout>
 
         <EditText
@@ -99,8 +99,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tweet"
-            android:backgroundTint="@color/tw__blue_default"
             android:textColor="@color/tw__solid_white"
+            android:background="@drawable/tweet_button"
             android:onClick="postTweet"/>
             </RelativeLayout>
     </LinearLayout>
