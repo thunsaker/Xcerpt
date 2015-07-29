@@ -82,7 +82,7 @@ public class PasteActivity extends AppCompatActivity {
         mEditText.setTypeface(Typeface.SERIF);
 
         if (!isNetworkAvailable(getApplicationContext())) {
-            CharSequence text = getString(R.string.no_internet_error); //TODO make const
+            CharSequence text = getString(R.string.no_internet_error);
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         }
     }
@@ -164,7 +164,7 @@ public class PasteActivity extends AppCompatActivity {
             intent.putExtra(EXCERPT, content);
             startActivity(intent);
         } else {
-            CharSequence text = getString(R.string.no_internet_error); //TODO make const
+            CharSequence text = getString(R.string.no_internet_error);
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         }
     }

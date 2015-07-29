@@ -285,13 +285,14 @@ public class ScreenSlidePageFragment extends Fragment {
         rgParams.setMargins(margin, margin, margin, margin);
         sourceSelect.setLayoutParams(rgParams);
 
-        boolean showLoadingText = false;
+        //TODO implement showLoadingText properly
+        // boolean showLoadingText = false;
         for(int i = 0; i < articles.length; i++){
             if(articles[i] == null){
-                showLoadingText = true;
+                // showLoadingText = true;
                 continue;
             }
-            //TODO
+
             RadioButton rb = new RadioButton(getActivity());
             String html = "<b>" + articles[i].title + "</b> - "
                     + articles[i].displayUrl;
@@ -314,9 +315,9 @@ public class ScreenSlidePageFragment extends Fragment {
         });
 
         layout.addView(sourceSelect);
-        if(showLoadingText){
-            layout.addView(loadingText);
-        }
+//        if(showLoadingText){
+//            layout.addView(loadingText);
+//        }
         layout.addView(customSourceButton);
         sv.addView(layout);
         return sv;

@@ -247,7 +247,6 @@ public class CustomizeActivity extends AppCompatActivity {
         }
 
         for(int i = 0; i < results.length; i++){
-            //TODO: get meta og:title from site's HTML instead of Bing's title
             final int finalI = i;
             ParseHtmlAsyncTask titleTask = new ParseHtmlAsyncTask(results[i].Url,
                     new ParseHtmlAsyncTask.Callback() {
@@ -263,9 +262,10 @@ public class CustomizeActivity extends AppCompatActivity {
                             return;
                         }
                     }
-                    String title = (String) o;
-                    String pageTitle = title;
-
+                    String pageTitle = (String) o;
+                    if(pageTitle.length() == 0){
+                        //TODO handle when JSoup thinks there's no title?
+                    }
                     String baseUrl = results[finalI].DisplayUrl;
                     String https = "https://";
                     if(baseUrl.startsWith(https)){
