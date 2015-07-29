@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -34,6 +35,8 @@ import at.markushi.ui.CircleButton;
 public class ScreenSlidePageFragment extends Fragment {
     public static final String ARG_PAGE = "page";
     private final int MARGIN = 5;
+    private final String BUTTON_SIZE = "ButtonSize";
+    private final int SIZE_IN_DP = 50;
 
     List<Integer> colourChoices = Collections.unmodifiableList(Arrays.asList(
             Color.parseColor("#9C27B0"), // purple
@@ -135,11 +138,20 @@ public class ScreenSlidePageFragment extends Fragment {
         colourSelectrow2.setGravity(Gravity.CENTER_HORIZONTAL);
         final SharedPreferences.Editor editor = settings.edit();
 
+        int buttonSize = settings.getInt(BUTTON_SIZE, -1);
+        if(buttonSize == -1){
+            buttonSize = Math.round(dpToPx(SIZE_IN_DP));
+            editor.putInt(BUTTON_SIZE, buttonSize);
+            editor.commit();
+        }
+        Log.e("button size", "" + buttonSize);
+
         int buttonsAdded = 0;
         for(final int colour : colourChoices){
             CircleButton b = new CircleButton(getActivity());
-            b.setMinimumWidth(150);
-            b.setMinimumHeight(150);
+
+            b.setMinimumWidth(buttonSize);
+            b.setMinimumHeight(buttonSize);
             b.setColor(colour);
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -227,7 +239,9 @@ public class ScreenSlidePageFragment extends Fragment {
                                         if(sourceSelect != null) sourceSelect.clearCheck();
                                         ((CustomizeActivity)getActivity()).updateSource(customArticle);
                                         ((CustomizeActivity)getActivity()).nextItem.setEnabled(true);
-
+                                        if(((CustomizeActivity)getActivity()).actionModeOpen){
+                                            ((CustomizeActivity)getActivity()).actionModeNextItem.setEnabled(true);
+                                        }
                                     }
                                 });
                         titleTask.execute();
@@ -245,12 +259,12 @@ public class ScreenSlidePageFragment extends Fragment {
             }
         });
 
+        TextView loadingText = new TextView(getActivity());
+        loadingText.setText(getString(R.string.loading));
         if(articles[0] == null){
             if(((CustomizeActivity)getActivity()).no_results){
                 // do something?
             }else{
-                TextView loadingText = new TextView(getActivity());
-                loadingText.setText(getString(R.string.loading));
                 layout.addView(loadingText);
             }
             layout.addView(customSourceButton);
@@ -271,8 +285,12 @@ public class ScreenSlidePageFragment extends Fragment {
         rgParams.setMargins(margin, margin, margin, margin);
         sourceSelect.setLayoutParams(rgParams);
 
+        boolean showLoadingText = false;
         for(int i = 0; i < articles.length; i++){
-            if(articles[i] == null) continue;
+            if(articles[i] == null){
+                showLoadingText = true;
+                continue;
+            }
             //TODO
             RadioButton rb = new RadioButton(getActivity());
             String html = "<b>" + articles[i].title + "</b> - "
@@ -296,6 +314,9 @@ public class ScreenSlidePageFragment extends Fragment {
         });
 
         layout.addView(sourceSelect);
+        if(showLoadingText){
+            layout.addView(loadingText);
+        }
         layout.addView(customSourceButton);
         sv.addView(layout);
         return sv;
@@ -314,5 +335,11 @@ public class ScreenSlidePageFragment extends Fragment {
      */
     public int getPageNumber() {
         return mPageNumber;
+    }
+
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
     }
 }

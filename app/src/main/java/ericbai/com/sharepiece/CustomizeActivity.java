@@ -52,6 +52,7 @@ public class CustomizeActivity extends AppCompatActivity {
     public boolean no_results = false;
 
     public MenuItem nextItem;
+    public MenuItem actionModeNextItem = null;
 
     public Article[] articles = new Article[3];
 
@@ -62,7 +63,7 @@ public class CustomizeActivity extends AppCompatActivity {
     public static final String URL = "URL";
     public static final String COLOUR_SETTING = "colour";
     private static final String SHOW_HINT_SETTING = "hint";
-    private boolean actionModeOpen = false;
+    public boolean actionModeOpen = false;
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         private final String[] TITLES = {
@@ -164,6 +165,9 @@ public class CustomizeActivity extends AppCompatActivity {
                 menu.removeItem(android.R.id.copy);
                 menu.removeItem(android.R.id.selectAll);
 
+                actionModeNextItem = menu.getItem(0);
+                actionModeNextItem.setEnabled(nextItem.isEnabled());
+
                 contentPreview.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -250,9 +254,14 @@ public class CustomizeActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(Object o, Error error) {
                     if(error != null){
-                        Log.e("SearchAsyncTask", error.getMessage());
-                        //TODO: show user something went wrong
-                        return;
+                        if(error.getMessage() != null){
+                            Log.e("SearchAsyncTask", error.getMessage());
+                            //TODO: show user something went wrong
+                            return;
+                        } else{
+                            Log.e("SearchAsyncTask", "Unknown error");
+                            return;
+                        }
                     }
                     String title = (String) o;
                     String pageTitle = title;

@@ -119,7 +119,7 @@ public class ShareActivity extends AppCompatActivity {
             baseUrl = baseUrl.substring("http://".length());
         }
         String urlPreview;
-        if(selectedUrl.length() < LINK_PREVIEW_LENGTH){
+        if(baseUrl.length() < LINK_PREVIEW_LENGTH){
             urlPreview = baseUrl;
         }else {
             urlPreview = baseUrl.substring(0, LINK_PREVIEW_LENGTH) + "...";
@@ -348,7 +348,8 @@ public class ShareActivity extends AppCompatActivity {
 			/* Dismiss the progress dialog after sharing */
             pDialog.dismiss();
             Toast.makeText(ShareActivity.this, "Posted to Twitter!", Toast.LENGTH_SHORT).show();
-            //TODO indicate success, disable post button
+            tweetButton.setEnabled(false);
+            tweetButton.setText("Posted");
         }
 
     }
