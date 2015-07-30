@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -327,10 +328,24 @@ public class ShareActivity extends AppCompatActivity {
 			/* Dismiss the progress dialog after sharing */
             pDialog.dismiss();
             Toast.makeText(ShareActivity.this, "Posted to Twitter!", Toast.LENGTH_SHORT).show();
-            tweetButton.setAlpha(.7f);
-            tweetButton.setEnabled(false);
-            tweetButton.setText("Posted");
             tweet.setEnabled(false);
+            tweetButton.setText(getString(R.string.view_on_twitter));
+            tweetButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent;
+                    try {
+                        // get the Twitter app if possible
+                        getPackageManager().getPackageInfo("com.twitter.android", 0);
+                        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("twitter://user?user_id=" + twitterSession.getUserId()));
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    } catch (Exception e) {
+                        // no Twitter app, revert to browser
+                        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/" + twitterSession.getUserName()));
+                    }
+                    startActivity(intent);
+                }
+            });
         }
 
     }

@@ -63,6 +63,7 @@ public class CustomizeActivity extends AppCompatActivity {
     public static final String URL = "URL";
     public static final String COLOUR_SETTING = "colour";
     private static final String SHOW_HINT_SETTING = "hint";
+    private final String DEFAULT_COLOUR = "#009688"; // teal
     public boolean actionModeOpen = false;
 
     volatile boolean running;
@@ -130,7 +131,7 @@ public class CustomizeActivity extends AppCompatActivity {
 
 
         final SharedPreferences settings = getPreferences(0);
-        int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor("#9C27B0"));
+        int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor(DEFAULT_COLOUR));
         setColour(defaultColour);
 
         contentPreview.setTypeface(Typeface.SERIF);

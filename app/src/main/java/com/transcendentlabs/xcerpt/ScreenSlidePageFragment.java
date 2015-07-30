@@ -38,19 +38,28 @@ public class ScreenSlidePageFragment extends Fragment {
     private final String BUTTON_SIZE = "ButtonSize";
     private final int SIZE_IN_DP = 50;
 
-    List<Integer> colourChoices = Collections.unmodifiableList(Arrays.asList(
-            Color.parseColor("#9C27B0"), // purple
+    List<Integer> colourRow1 = Collections.unmodifiableList(Arrays.asList(
             Color.parseColor("#F44336"), // red
             Color.parseColor("#E91E63"), // pink
-            Color.parseColor("#3F51B5"), // indigo
+            Color.parseColor("#9C27B0"), // purple
+            Color.parseColor("#673AB7"), // deep purple
+            Color.parseColor("#3F51B5") // indigo
+    ));
+
+    List<Integer> colourRow2 = Collections.unmodifiableList(Arrays.asList(
             Color.parseColor("#2196F3"), // blue
+            Color.parseColor("#00BCD4"), // cyan
             Color.parseColor("#009688"), // teal
             Color.parseColor("#43A047"), // green
+            Color.parseColor("#8BC34A") // light green
+    ));
+
+    List<Integer> colourRow3 = Collections.unmodifiableList(Arrays.asList(
+            Color.parseColor("#FFB300"), // amber
             Color.parseColor("#EF6C00"), // orange
-            Color.parseColor("#607D8B"), // blue grey
-            Color.parseColor("#FFB300") // amber
-
-
+            Color.parseColor("#FF5722"), // deep orange
+            Color.parseColor("#795548"), // brown
+            Color.parseColor("#607D8B") // blue grey
     ));
 
     /**
@@ -128,14 +137,8 @@ public class ScreenSlidePageFragment extends Fragment {
         view.setLayoutParams(params);
         view.setPadding(0, dpAsPixels, 0, 0);
         view.setOrientation(LinearLayout.VERTICAL);
-        view.setGravity(Gravity.CENTER_HORIZONTAL);
+        view.setGravity(Gravity.CENTER);
 
-        // view.addView(setInstructions(getString(R.string.instructions_colour)));
-
-        LinearLayout colourSelectrow1 = new LinearLayout(getActivity());
-        colourSelectrow1.setGravity(Gravity.CENTER_HORIZONTAL);
-        LinearLayout colourSelectrow2 = new LinearLayout(getActivity());
-        colourSelectrow2.setGravity(Gravity.CENTER_HORIZONTAL);
         final SharedPreferences.Editor editor = settings.edit();
 
         int buttonSize = settings.getInt(BUTTON_SIZE, -1);
@@ -144,10 +147,15 @@ public class ScreenSlidePageFragment extends Fragment {
             editor.putInt(BUTTON_SIZE, buttonSize);
             editor.commit();
         }
-        Log.e("button size", "" + buttonSize);
 
-        int buttonsAdded = 0;
-        for(final int colour : colourChoices){
+        LinearLayout colourSelectrow1 = new LinearLayout(getActivity());
+        colourSelectrow1.setGravity(Gravity.CENTER);
+        LinearLayout colourSelectrow2 = new LinearLayout(getActivity());
+        colourSelectrow2.setGravity(Gravity.CENTER);
+        LinearLayout colourSelectrow3 = new LinearLayout(getActivity());
+        colourSelectrow3.setGravity(Gravity.CENTER);
+
+        for(final int colour : colourRow1){
             CircleButton b = new CircleButton(getActivity());
 
             b.setMinimumWidth(buttonSize);
@@ -163,18 +171,52 @@ public class ScreenSlidePageFragment extends Fragment {
                     editor.commit();
                 }
             });
-            buttonsAdded++;
-            if(buttonsAdded > 5){
-                colourSelectrow2.addView(b);
-            }else{
-                colourSelectrow1.addView(b);
-            }
+            colourSelectrow1.addView(b);
+        }
+        for(final int colour : colourRow2){
+            CircleButton b = new CircleButton(getActivity());
+
+            b.setMinimumWidth(buttonSize);
+            b.setMinimumHeight(buttonSize);
+            b.setColor(colour);
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("colour select", "" + colour);
+                    CustomizeActivity activity = (CustomizeActivity) getActivity();
+                    activity.setColour(colour);
+                    editor.putInt(CustomizeActivity.COLOUR_SETTING, colour);
+                    editor.commit();
+                }
+            });
+            colourSelectrow2.addView(b);
+        }
+        for(final int colour : colourRow3){
+            CircleButton b = new CircleButton(getActivity());
+
+            b.setMinimumWidth(buttonSize);
+            b.setMinimumHeight(buttonSize);
+            b.setColor(colour);
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("colour select", "" + colour);
+                    CustomizeActivity activity = (CustomizeActivity) getActivity();
+                    activity.setColour(colour);
+                    editor.putInt(CustomizeActivity.COLOUR_SETTING, colour);
+                    editor.commit();
+                }
+            });
+            colourSelectrow3.addView(b);
         }
         view.addView(colourSelectrow1);
         view.addView(colourSelectrow2);
+        view.addView(colourSelectrow3);
         sv.addView(view);
       return sv;
     }
+
+
 
     public View getSourceCard(){
         ScrollView sv = new ScrollView(getActivity());

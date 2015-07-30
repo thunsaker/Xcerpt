@@ -16,11 +16,10 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Random;
 
-import com.transcendentlabs.xcerpt.BuildConfig;
-
 public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private final String TAG = getClass().getName();
+    private final int MAX_QUERY_LENGTH = 1961;
 
     private String mSearchStr;
     private int mNumOfResults = 0;
@@ -38,7 +37,24 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         try {
-            String searchStr = URLEncoder.encode(mSearchStr);
+            mSearchStr = mSearchStr.replaceAll("\\s+", " ");
+            // mSearchStr = mSearchStr.replaceAll("\\p{P}", "");
+
+            int numSpaces = mSearchStr.length() - mSearchStr.replaceAll(" ", "").length();
+            int less = 10;
+            int encodedLength = mSearchStr.length() + numSpaces*2;
+            String subSearch = mSearchStr;
+            while(encodedLength > MAX_QUERY_LENGTH){
+                int lastSpace = subSearch.lastIndexOf(" ", MAX_QUERY_LENGTH - less);
+                subSearch = subSearch.substring(0, lastSpace);
+                numSpaces = subSearch.length() - subSearch.replaceAll(" ", "").length();
+                encodedLength = subSearch.length() + numSpaces*2;
+                less = less*2;
+                Log.e("temp", subSearch);
+            }
+
+            String searchStr = URLEncoder.encode(subSearch);
+            Log.e("temp", searchStr);
             String numOfResultsStr = mNumOfResults <= 0 ? "" : "&$top=" + mNumOfResults;
 
             Random rand = new Random();
