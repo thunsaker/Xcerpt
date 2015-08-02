@@ -28,7 +28,6 @@ import com.crashlytics.android.Crashlytics;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
-import com.transcendentlabs.xcerpt.BuildConfig;
 import io.fabric.sdk.android.Fabric;
 
 
@@ -68,17 +67,24 @@ public class PasteActivity extends AppCompatActivity {
         clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         Intent intent = getIntent();
-        String intentAction = intent.getAction();
-
-        if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){
-            mShareHint.setVisibility(View.GONE);
-        }
+        onNewIntent(intent);
 
         mEditText.setTypeface(Typeface.SERIF);
 
         if (!isNetworkAvailable(getApplicationContext())) {
             CharSequence text = getString(R.string.no_internet_error);
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String intentAction = intent.getAction();
+
+        if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){
+            mShareHint.setVisibility(View.GONE);
+            mEditText.setText(intent.getStringExtra(Intent.EXTRA_TEXT).trim());
         }
     }
 
@@ -97,13 +103,6 @@ public class PasteActivity extends AppCompatActivity {
         } else {
             // This enables the paste menu item, since the clipboard contains plain text.
             pasteItem.setEnabled(true);
-        }
-
-        Intent intent = getIntent();
-        String intentAction = intent.getAction();
-
-        if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){
-            mEditText.setText(intent.getStringExtra(Intent.EXTRA_TEXT).trim());
         }
 
         if(mEditText.getText().length() > 0){
