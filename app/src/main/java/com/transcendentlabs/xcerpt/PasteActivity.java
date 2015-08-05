@@ -52,15 +52,7 @@ public class PasteActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_paste);
 
-        ActionBar bar = getSupportActionBar();
-        if(bar != null){
-            bar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.material_blue_grey_800)));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Window window = getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_900));
-            }
-        }
+        setActionBarTheme();
 
         mEditText = (EditText) findViewById(R.id.edit_message);
         mShareHint = (TextView) findViewById(R.id.share_hint);
@@ -71,9 +63,22 @@ public class PasteActivity extends AppCompatActivity {
 
         mEditText.setTypeface(Typeface.SERIF);
 
+        // error when there is no internet
         if (!isNetworkAvailable(getApplicationContext())) {
             CharSequence text = getString(R.string.no_internet_error);
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setActionBarTheme() {
+        ActionBar bar = getSupportActionBar();
+        if(bar != null){
+            bar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.material_blue_grey_800)));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_900));
+            }
         }
     }
 
@@ -95,6 +100,8 @@ public class PasteActivity extends AppCompatActivity {
         pasteItem =  menu.getItem(1);
         nextItem = menu.getItem(2);
         nextItem.setEnabled(false);
+
+        //
         if (!(clipboard.hasPrimaryClip())) {
             pasteItem.setEnabled(false);
         } else if (!(clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN))) {
@@ -156,6 +163,12 @@ public class PasteActivity extends AppCompatActivity {
             intent.setAction(Intent.ACTION_DEFAULT);
             String content = mEditText.getText().toString();
             intent.putExtra(EXCERPT, content);
+
+            if(getCurrentFocus() != null) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+            }
             startActivity(intent);
         } else {
             CharSequence text = getString(R.string.no_internet_error);
