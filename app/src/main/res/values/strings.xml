@@ -34,4 +34,11 @@
     <string name="paste_hint">Paste the excerpt you want to share.</string>
     <string name="share_hint">Hint: Next time, after selecting the passage you want, instead of pressing the COPY button, press the SHARE button, and select Xcerpt!</string>
     <string name="view_on_twitter">View on Twitter</string>
+    <string name="title_activity_input">InputActivity</string>
+    <string name="paste_instructions">Paste an excerpt of the web page from clipoard</string>
+    <string name="select_image_instructions">Select a screenshot of the web page</string>
+    <string name="title_activity_crop">Crop screenshot</string>
+    <string name="empty_clipboard_toast">Clipboard is empty!</string>
+    <string name="crop_item">Crop</string>
+
 </resources>

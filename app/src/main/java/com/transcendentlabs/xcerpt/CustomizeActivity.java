@@ -126,7 +126,7 @@ public class CustomizeActivity extends AppCompatActivity {
         if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){
             excerpt = intent.getStringExtra(Intent.EXTRA_TEXT).trim();
         }else if(intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT)){
-            excerpt = intent.getStringExtra(PasteActivity.EXCERPT);
+            excerpt = intent.getStringExtra(InputActivity.EXCERPT);
         }
 
 
@@ -158,7 +158,7 @@ public class CustomizeActivity extends AppCompatActivity {
                         contentPreview.performLongClick();
                     }
                 });
-                int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor("#9C27B0"));
+                int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor(DEFAULT_COLOUR));
                 actionModeOpen = false;
                 setColour(defaultColour);
             }

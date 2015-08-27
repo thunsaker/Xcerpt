@@ -10,6 +10,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    jcenter()
 }
 
 def BING_ACCOUNT_KEY = '"' + BingAccountKeyProp + '"' ?: '"Define Bing account key"';
@@ -57,4 +58,6 @@ dependencies {
         transitive = true;
     }
     compile files('libs/twitter4j-core-3.0.4.jar')
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.isseiaoki:simplecropview:1.0.7'
 }

@@ -43,7 +43,7 @@ public class PasteActivity extends AppCompatActivity {
     private EditText mEditText;
     private TextView mShareHint;
     private ClipboardManager clipboard;
-    public static final String EXCERPT = "com.ericbai.xcerpt.excerpt";
+    public static final String EXCERPT = "com.transcendentlabs.xcerpt.excerpt";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,54 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.transcendentlabs.xcerpt">
+    package="com.transcendentlabs.xcerpt" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:icon="@mipmap/ic_launcher">
-        <activity
-            android:name=".PasteActivity"
-            android:logo="@mipmap/ic_launcher_white"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity>
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".CustomizeActivity"
-            android:logo="@mipmap/ic_launcher_white"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            android:parentActivityName=".PasteActivity" >
+            android:logo="@mipmap/ic_launcher_white"
+            android:parentActivityName=".InputActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".PasteActivity" />
+                android:value=".InputActivity" />
         </activity>
         <activity
             android:name=".ShareActivity"
-            android:logo="@mipmap/ic_launcher_white"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize"
-            android:parentActivityName=".CustomizeActivity" >
+            android:logo="@mipmap/ic_launcher_white"
+            android:parentActivityName=".CustomizeActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".CustomizeActivity" />
         </activity>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="359ddc091b7c9586ca7cde1a6ff8d64f85d9c5cb" />
+
+        <activity
+            android:name=".InputActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".CropActivity"
+            android:label="@string/title_activity_crop" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".InputActivity" />
+        </activity>
     </application>
 
 </manifest>
