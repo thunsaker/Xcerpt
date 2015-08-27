@@ -25,7 +25,7 @@ public class PaintUtil {
 
     // Private Constants ///////////////////////////////////////////////////////
 
-    private static final int DEFAULT_CORNER_COLOR = Color.WHITE;
+    private static final String DEFAULT_CORNER_COLOR = "#009688"; // teal;
     private static final String SEMI_TRANSPARENT = "#AAFFFFFF";
     private static final String DEFAULT_BACKGROUND_COLOR_ID = "#B0000000";
     private static final float DEFAULT_LINE_THICKNESS_DP = 3;
@@ -98,7 +98,7 @@ public class PaintUtil {
                                                                 context.getResources().getDisplayMetrics());
 
         final Paint cornerPaint = new Paint();
-        cornerPaint.setColor(DEFAULT_CORNER_COLOR);
+        cornerPaint.setColor(Color.parseColor(DEFAULT_CORNER_COLOR));
         cornerPaint.setStrokeWidth(lineThicknessPx);
         cornerPaint.setStyle(Paint.Style.STROKE);
 

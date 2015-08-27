@@ -50,6 +50,8 @@ import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
+import static com.transcendentlabs.xcerpt.ColourUtil.setActionBarColour;
+
 
 public class ShareActivity extends AppCompatActivity {
 
@@ -90,14 +92,8 @@ public class ShareActivity extends AppCompatActivity {
         setContentView(R.layout.activity_share);
 
         ActionBar bar = getSupportActionBar();
-        if(bar != null){
-            bar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.material_blue_grey_800)));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Window window = getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_900));
-            }
-        }
+        Window window = getWindow();
+        setActionBarColour(bar, window, this);
 
         finalImage = (ImageView) findViewById(R.id.final_image);
         tweetButton = (Button) findViewById(R.id.tweet_button);

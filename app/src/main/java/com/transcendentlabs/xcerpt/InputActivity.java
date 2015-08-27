@@ -6,13 +6,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -26,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.widget.ImageView.ScaleType.CENTER_CROP;
+import static com.transcendentlabs.xcerpt.ColourUtil.*;
 
 
 public class InputActivity extends AppCompatActivity{
@@ -38,6 +45,10 @@ public class InputActivity extends AppCompatActivity{
 
         GridView gv = (GridView) findViewById(R.id.image_grid);
         gv.setAdapter(new GridViewAdapter(this));
+
+        ActionBar bar = getSupportActionBar();
+        Window window = getWindow();
+        setActionBarColour(bar, window, this);
     }
 
     @Override
@@ -64,11 +75,6 @@ public class InputActivity extends AppCompatActivity{
         }
         cursor.close();
         return result;
-    }
-
-    private Bitmap getBitmap(Uri uri) throws IOException {
-        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-        return bitmap;
     }
 
     public static boolean isNetworkAvailable(Context context) {
@@ -126,7 +132,7 @@ public class InputActivity extends AppCompatActivity{
 
             Picasso.with(context) //
                     .load(source) //
-                    .placeholder(R.color.tw__medium_gray) // placeholder
+                    .placeholder(R.color.tw__light_gray) // placeholder
                     .error(R.color.material_blue_grey_800) // error
                     .fit() //
                     .centerCrop()

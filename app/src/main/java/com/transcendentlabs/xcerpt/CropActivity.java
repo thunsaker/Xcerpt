@@ -3,10 +3,15 @@ package com.transcendentlabs.xcerpt;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+
 import com.edmodo.cropper.CropImageView;
+
+import static com.transcendentlabs.xcerpt.ColourUtil.setActionBarColour;
 
 public class CropActivity extends AppCompatActivity {
 
@@ -25,7 +30,9 @@ public class CropActivity extends AppCompatActivity {
         Bitmap img = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         cropImageView.setImageBitmap(img);
 
-
+        ActionBar bar = getSupportActionBar();
+        Window window = getWindow();
+        setActionBarColour(bar, window, this);
     }
 
 
@@ -44,7 +51,8 @@ public class CropActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_crop) {
+            Bitmap finalImage = cropImageView.getCroppedImage();
             return true;
         }
 

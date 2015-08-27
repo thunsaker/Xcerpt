@@ -1,10 +1,12 @@
 package com.transcendentlabs.xcerpt;
 
 import android.animation.ObjectAnimator;
+import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -36,6 +38,8 @@ import com.astuetz.PagerSlidingTabStrip;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import static com.transcendentlabs.xcerpt.ColourUtil.*;
+
 public class CustomizeActivity extends AppCompatActivity {
 
     private String excerpt;
@@ -63,7 +67,6 @@ public class CustomizeActivity extends AppCompatActivity {
     public static final String URL = "URL";
     public static final String COLOUR_SETTING = "colour";
     private static final String SHOW_HINT_SETTING = "hint";
-    private final String DEFAULT_COLOUR = "#009688"; // teal
     public boolean actionModeOpen = false;
 
     volatile boolean running;
@@ -394,6 +397,15 @@ public class CustomizeActivity extends AppCompatActivity {
                 Window window = getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
+                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_white);
+
+                ActivityManager.TaskDescription taskDescription =
+                        new ActivityManager.TaskDescription(
+                                getString(R.string.app_name),
+                                icon,
+                                colour);
+                setTaskDescription(taskDescription);
+
                 float[] hsv = new float[3];
                 int darkerColour = colour;
                 Color.colorToHSV(darkerColour, hsv);
@@ -413,6 +425,7 @@ public class CustomizeActivity extends AppCompatActivity {
 
         return b;
     }
+
     public static Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {
 
         int height = Math.min(MAX_HEIGHT, totalHeight);

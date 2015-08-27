@@ -442,7 +442,7 @@ public class CropOverlayView extends View {
 
             // Initialize crop window to have 10% padding w/ respect to image.
             final float bottomPadding = 0.075f * bitmapRect.height();
-            final float topPadding = 0.05f * bitmapRect.height();
+            final float topPadding = 0.04f * bitmapRect.height();
 
             Edge.LEFT.setCoordinate(bitmapRect.left);
             Edge.TOP.setCoordinate(bitmapRect.top + topPadding);
