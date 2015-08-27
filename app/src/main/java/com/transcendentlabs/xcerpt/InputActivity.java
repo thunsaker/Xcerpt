@@ -13,16 +13,13 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.isseiaoki.simplecropview.CropImageView;
+import com.soundcloud.android.crop.Crop;
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +30,6 @@ import static android.widget.ImageView.ScaleType.CENTER_CROP;
 
 public class InputActivity extends AppCompatActivity{
 
-    public static final String IMAGE = "IMAGE";
     public static final String EXCERPT = "com.transcendentlabs.xcerpt.excerpt";
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +105,28 @@ public class InputActivity extends AppCompatActivity{
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent result) {
+        if (requestCode == Crop.REQUEST_PICK && resultCode == RESULT_OK) {
+            beginCrop(result.getData());
+        } else if (requestCode == Crop.REQUEST_CROP) {
+            handleCrop(resultCode, result);
+        }
+    }
+
+    private void beginCrop(Uri source) {
+        Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
+        Crop.of(source, destination).start(this);
+    }
+
+    private void handleCrop(int resultCode, Intent result) {
+        if (resultCode == RESULT_OK) {
+            //TODO do something with crop
+        } else if (resultCode == Crop.RESULT_ERROR) {
+            Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     class GridViewAdapter extends BaseAdapter {
         private final Context context;
         List<String> urls;
@@ -140,18 +158,7 @@ public class InputActivity extends AppCompatActivity{
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    try {
-                        Bitmap bitmap = getBitmap(source);
-
-                        Intent intent = new Intent(context, CropActivity.class);
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                        byte[] byteArray = stream.toByteArray();
-                        intent.putExtra(IMAGE, byteArray);
-                        startActivity(intent);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    beginCrop(source);
                 }
             });
 
