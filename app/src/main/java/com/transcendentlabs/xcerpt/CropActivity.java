@@ -1,12 +1,14 @@
 package com.transcendentlabs.xcerpt;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,9 +21,12 @@ import com.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
-import static com.transcendentlabs.xcerpt.Util.*;
+import static com.transcendentlabs.xcerpt.Util.EXCERPT;
+import static com.transcendentlabs.xcerpt.Util.isNetworkAvailable;
+import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 
 public class CropActivity extends AppCompatActivity {
 
@@ -36,9 +41,13 @@ public class CropActivity extends AppCompatActivity {
         cropImageView.setGuidelines(0);
 
         Bundle extras = getIntent().getExtras();
-        byte[] byteArray = extras.getByteArray(CustomizeActivity.IMAGE);
-        Bitmap img = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        cropImageView.setImageBitmap(img);
+        Uri uri = Uri.parse(extras.getString(InputActivity.IMAGE));
+        try {
+            Bitmap img = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            cropImageView.setImageBitmap(img);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         ActionBar bar = getSupportActionBar();
         Window window = getWindow();
@@ -95,28 +104,31 @@ public class CropActivity extends AppCompatActivity {
                 }
             }
 
-            TessOCR tesseract = new TessOCR();
+            final Activity activity = this;
 
-            ProgressDialog progress;
-            progress = ProgressDialog.show(this, "Processing image...",
-                    "dialog message", true);
+            OcrAsyncTask ocrTask = new OcrAsyncTask(this, finalImage, new OcrAsyncTask.Callback() {
+                @Override
+                public void onComplete(Object o, Error error) {
+                    if (error != null) {
+                        Log.e("OcrAsyncTask", error.getMessage());
+                        return;
+                    }
+                    String excerpt = (String) o;
 
-            String excerpt = tesseract.getOCRResult(finalImage);
-            excerpt = excerpt.replaceAll("\n", " ");
-            excerpt = excerpt.replaceAll("  ", "\n\n");
-            excerpt = excerpt.replaceAll("\\p{Pd}", "-");
+                    if (isNetworkAvailable(getApplicationContext())) {
+                        Intent intent = new Intent(activity, CustomizeActivity.class);
+                        intent.setAction(Intent.ACTION_DEFAULT);
+                        intent.putExtra(EXCERPT, excerpt);
+                        startActivity(intent);
+                    } else {
+                        CharSequence text = getString(R.string.no_internet_error);
+                        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
 
-            progress.dismiss();
+            ocrTask.execute();
 
-            if (isNetworkAvailable(getApplicationContext())) {
-                Intent intent = new Intent(this, CustomizeActivity.class);
-                intent.setAction(Intent.ACTION_DEFAULT);
-                intent.putExtra(EXCERPT, excerpt);
-                startActivity(intent);
-            } else {
-                CharSequence text = getString(R.string.no_internet_error);
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            }
             return true;
         }
 

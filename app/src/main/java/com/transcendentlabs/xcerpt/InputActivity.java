@@ -32,6 +32,8 @@ import static com.transcendentlabs.xcerpt.Util.*;
 
 public class InputActivity extends AppCompatActivity{
 
+    public static final String IMAGE = "com.transcendentlabs.xcerpt.image";
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
@@ -130,21 +132,9 @@ public class InputActivity extends AppCompatActivity{
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // beginCrop(source);
-                    Bitmap bitmap = null;
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), source);
-
-                        Intent intent = new Intent(context, CropActivity.class);
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                        byte[] byteArray = stream.toByteArray();
-                        intent.putExtra("IMAGE", byteArray);
-                        startActivity(intent);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
+                    Intent intent = new Intent(context, CropActivity.class);
+                    intent.putExtra(IMAGE, source.toString());
+                    startActivity(intent);
                 }
             });
 

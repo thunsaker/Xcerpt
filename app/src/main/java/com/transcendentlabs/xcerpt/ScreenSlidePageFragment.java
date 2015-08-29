@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
@@ -251,7 +252,7 @@ public class ScreenSlidePageFragment extends Fragment {
                 final String pasteData = item.getText().toString();
                 if(pasteData != null){
                     // check if text is URL
-                    try { URL url = new URL(pasteData);
+                    try { new URL(pasteData);
                         ParseHtmlAsyncTask titleTask =
                                 new ParseHtmlAsyncTask(pasteData, new ParseHtmlAsyncTask.Callback(){
                                     @Override
@@ -301,21 +302,7 @@ public class ScreenSlidePageFragment extends Fragment {
             }
         });
 
-        TextView loadingText = new TextView(getActivity());
-        loadingText.setText(getString(R.string.loading));
-        if(articles[0] == null){
-            if(((CustomizeActivity)getActivity()).no_results){
-                // do something?
-            }else{
-                layout.addView(loadingText);
-            }
-            layout.addView(customSourceButton);
-            return layout;
-        }
-
-        if(sourceSelect != null){
-            sourceSelect.removeAllViews();
-        }
+        ProgressBar spinner = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleSmall);
 
         sourceSelect = new RadioGroup(getActivity());
         RadioGroup.LayoutParams rgParams =
@@ -327,11 +314,9 @@ public class ScreenSlidePageFragment extends Fragment {
         rgParams.setMargins(margin, margin, margin, margin);
         sourceSelect.setLayoutParams(rgParams);
 
-        //TODO implement showLoadingText properly
-        // boolean showLoadingText = false;
-        for(int i = 0; i < articles.length; i++){
+        for(int i = 0; i < ((CustomizeActivity)getActivity()).numResults; i++){
+
             if(articles[i] == null){
-                // showLoadingText = true;
                 continue;
             }
 
@@ -357,9 +342,12 @@ public class ScreenSlidePageFragment extends Fragment {
         });
 
         layout.addView(sourceSelect);
-//        if(showLoadingText){
-//            layout.addView(loadingText);
-//        }
+
+        boolean loading = sourceSelect.getChildCount() < ((CustomizeActivity)getActivity()).numResults;
+        if(loading){
+            layout.addView(spinner);
+        }
+
         layout.addView(customSourceButton);
         sv.addView(layout);
         return sv;

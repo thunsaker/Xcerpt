@@ -58,7 +58,8 @@ public class CustomizeActivity extends AppCompatActivity {
     public MenuItem nextItem;
     public MenuItem actionModeNextItem = null;
 
-    public Article[] articles = new Article[3];
+    public Article[] articles = new Article[NUM_RESULTS];
+    public int numResults;
 
     private static final float TEXT_SIZE = 16;
     private static final int NUM_RESULTS = 3;
@@ -237,7 +238,6 @@ public class CustomizeActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         });
         searchTask.execute();
@@ -257,6 +257,8 @@ public class CustomizeActivity extends AppCompatActivity {
             mPagerAdapter.notifyDataSetChanged();
             return;
         }
+
+        numResults = results.length;
 
         for(int i = 0; i < results.length; i++){
             final int finalI = i;
