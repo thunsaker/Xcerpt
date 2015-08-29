@@ -60,4 +60,5 @@ dependencies {
     compile files('libs/twitter4j-core-3.0.4.jar')
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile project(':cropper')
+    compile project(':tess-two')
 }

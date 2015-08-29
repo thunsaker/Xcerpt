@@ -6,11 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
@@ -18,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -32,12 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.widget.ImageView.ScaleType.CENTER_CROP;
-import static com.transcendentlabs.xcerpt.ColourUtil.*;
+import static com.transcendentlabs.xcerpt.Util.*;
 
 
 public class InputActivity extends AppCompatActivity{
-
-    public static final String EXCERPT = "com.transcendentlabs.xcerpt.excerpt";
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,11 +68,6 @@ public class InputActivity extends AppCompatActivity{
         }
         cursor.close();
         return result;
-    }
-
-    public static boolean isNetworkAvailable(Context context) {
-        return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE))
-                .getActiveNetworkInfo() != null;
     }
 
     public void pasteClipboard(View view) {

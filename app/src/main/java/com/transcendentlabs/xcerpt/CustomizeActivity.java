@@ -38,7 +38,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static com.transcendentlabs.xcerpt.ColourUtil.*;
+import static com.transcendentlabs.xcerpt.Util.*;
 
 public class CustomizeActivity extends AppCompatActivity {
 
@@ -129,7 +129,7 @@ public class CustomizeActivity extends AppCompatActivity {
         if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){
             excerpt = intent.getStringExtra(Intent.EXTRA_TEXT).trim();
         }else if(intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT)){
-            excerpt = intent.getStringExtra(InputActivity.EXCERPT);
+            excerpt = intent.getStringExtra(EXCERPT);
         }
 
 
