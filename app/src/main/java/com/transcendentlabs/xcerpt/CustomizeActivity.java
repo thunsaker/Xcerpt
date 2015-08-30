@@ -2,7 +2,6 @@ package com.transcendentlabs.xcerpt;
 
 import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -21,7 +20,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
@@ -63,7 +61,7 @@ public class CustomizeActivity extends AppCompatActivity {
 
     public String selectedUrl;
     public int selected_index = 0;
-    public boolean no_results = false;
+    public boolean no_results_or_error = false;
 
     public MenuItem nextItem;
     public MenuItem actionModeNextItem = null;
@@ -71,11 +69,9 @@ public class CustomizeActivity extends AppCompatActivity {
     public Article[] articles = new Article[NUM_RESULTS];
     public int numResults;
 
-    private static final float TEXT_SIZE = 16;
     private static final int NUM_RESULTS = 3;
-    private static final int MAX_IMAGE_HEIGHT = 1920;
     private static final String SHOW_HINT_SETTING = "hint";
-    private static final double MAX_SCROLL_VIEW_HEIGHT = 0.54; // as percentage of screen height
+    private static final double MAX_SCROLL_VIEW_HEIGHT = 0.5; // as percentage of screen height
 
     public static final String IMAGE = "IMAGE";
     public static final String URL = "URL";
@@ -133,6 +129,7 @@ public class CustomizeActivity extends AppCompatActivity {
     }
 
     private void initContentPreview(final SharedPreferences settings, String text) {
+        final float TEXT_SIZE = 16;
 
         // set scroll view (content preview's parent) to max height
         Display display = getWindowManager().getDefaultDisplay();
@@ -251,6 +248,8 @@ public class CustomizeActivity extends AppCompatActivity {
             public void onComplete(Object o, Error error) {
                 if (error != null) {
                     Log.e("SearchAsyncTask", error.getMessage());
+                    no_results_or_error = true;
+                    mPagerAdapter.notifyDataSetChanged();
                     return;
                 }
                 BingSearchResults results = (BingSearchResults) o;
@@ -272,10 +271,21 @@ public class CustomizeActivity extends AppCompatActivity {
 
     public void processResults(final BingSearchResults.Result[] results) throws IOException {
         if(results == null || results.length == 0){
-            titleView.setText(getString(R.string.no_source_found));
-            websiteView.setText(R.string.no_source_instructions);
-            no_results = true;
-            mPagerAdapter.notifyDataSetChanged();
+            scrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    final ObjectAnimator animScrollToTop =
+                            ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getBottom());
+                    animScrollToTop.setDuration(500);
+                    animScrollToTop.start();
+
+                    setTitleText(getString(R.string.no_source_found));
+                    websiteView.setText(R.string.no_source_instructions);
+
+                    no_results_or_error = true;
+                    mPagerAdapter.notifyDataSetChanged();
+                }
+            });
             return;
         }
 
@@ -290,7 +300,13 @@ public class CustomizeActivity extends AppCompatActivity {
                             if (error != null) {
                                 if (error.getMessage() != null) {
                                     Log.e("SearchAsyncTask", error.getMessage());
-                                    //TODO: show user something went wrong
+                                    // fall back on search result data
+                                    articles[finalI] = createArticle(
+                                            results[finalI].Title,
+                                            results[finalI].DisplayUrl,
+                                            results[finalI].Url
+                                    );
+                                    mPagerAdapter.notifyDataSetChanged();
                                     return;
                                 } else {
                                     Log.e("SearchAsyncTask", "Unknown error");
@@ -299,22 +315,18 @@ public class CustomizeActivity extends AppCompatActivity {
                             }
                             String pageTitle = (String) o;
                             if (pageTitle.length() == 0) {
-                                //TODO handle when JSoup thinks there's no title?
-                            }
-                            String baseUrl = results[finalI].DisplayUrl;
-                            String https = "https://";
-                            if (baseUrl.startsWith(https)) {
-                                baseUrl = baseUrl.substring(https.length());
-                            }
-                            int backslashAt = baseUrl.indexOf('/');
-                            if (backslashAt > 0) {
-                                baseUrl = baseUrl.substring(0, backslashAt);
+                                // fall back to search result title
+                                pageTitle = results[finalI].Title;
                             }
 
-                            articles[finalI] = new Article(pageTitle, baseUrl, results[finalI].Url);
+                            articles[finalI] = createArticle(
+                                    pageTitle,
+                                    results[finalI].DisplayUrl,
+                                    results[finalI].Url
+                            );
 
                             if (finalI == 0) {
-                                titleView.setText(articles[0].title);
+                                setTitleText(articles[0].title);
                                 websiteView.setText(articles[0].displayUrl);
                                 selectedUrl = articles[0].url;
                                 nextItem.setEnabled(true);
@@ -325,6 +337,30 @@ public class CustomizeActivity extends AppCompatActivity {
                         }
                     });
             titleTask.execute();
+        }
+    }
+
+    private Article createArticle(String title, String displayUrl, String url){
+        String baseUrl = displayUrl;
+        String https = "https://";
+        if (baseUrl.startsWith(https)) {
+            baseUrl = baseUrl.substring(https.length());
+        }
+        int backslashAt = baseUrl.indexOf('/');
+        if (backslashAt > 0) {
+            baseUrl = baseUrl.substring(0, backslashAt);
+        }
+
+        return new Article(title, baseUrl, url);
+    }
+
+    private void setTitleText(String title){
+        if (title == null) return;
+        if(title.isEmpty()){
+            titleView.setVisibility(View.GONE);
+        }else{
+            titleView.setText(title);
+            titleView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -378,7 +414,7 @@ public class CustomizeActivity extends AppCompatActivity {
                         ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getBottom());
                 animScrollToTop.setDuration(500);
                 animScrollToTop.start();
-                titleView.setText(articles[articleIndex].title);
+                setTitleText(articles[articleIndex].title);
                 websiteView.setText(articles[articleIndex].displayUrl);
                 selectedUrl = articles[articleIndex].url;
                 selected_index = articleIndex;
@@ -395,7 +431,7 @@ public class CustomizeActivity extends AppCompatActivity {
                 animScrollToTop.setDuration(500);
                 animScrollToTop.start();
 
-                titleView.setText(article.title);
+                setTitleText(article.title);
                 websiteView.setText(article.displayUrl);
                 selectedUrl = article.url;
             }
@@ -443,6 +479,7 @@ public class CustomizeActivity extends AppCompatActivity {
     }
 
     public static Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {
+        final int MAX_IMAGE_HEIGHT = 1920;
 
         int height = Math.min(MAX_IMAGE_HEIGHT, totalHeight);
         float percent = height / (float)totalHeight;

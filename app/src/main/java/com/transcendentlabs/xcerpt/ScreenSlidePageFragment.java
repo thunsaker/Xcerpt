@@ -39,6 +39,7 @@ public class ScreenSlidePageFragment extends Fragment {
     private final int NUM_COLOUR_ROWS = 3;
     private final String BUTTON_SIZE = "ButtonSize";
     private final int SIZE_IN_DP = 50;
+    private static ProgressBar spinner;
 
     List[] colourRows = new List[]{ // must have # of elements == NUM_COLOUR_ROWS
             Collections.unmodifiableList(Arrays.asList(
@@ -206,7 +207,7 @@ public class ScreenSlidePageFragment extends Fragment {
         layout.setLayoutParams(params);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        ProgressBar spinner = new ProgressBar(
+        spinner = new ProgressBar(
                 getActivity(),
                 null,
                 android.R.attr.progressBarStyleSmall
@@ -218,7 +219,7 @@ public class ScreenSlidePageFragment extends Fragment {
 
         boolean loading = sourceSelect.getChildCount() == 0
                 || sourceSelect.getChildCount() < ((CustomizeActivity)getActivity()).numResults;
-        if(loading){
+        if(loading && !((CustomizeActivity)getActivity()).no_results_or_error){
             layout.addView(spinner);
         }
 
@@ -270,8 +271,14 @@ public class ScreenSlidePageFragment extends Fragment {
 
     private RadioButton getRadioButton(Article article, int index) {
         RadioButton rb = new RadioButton(getActivity());
-        String html = "<b>" + article.title + "</b> - "
-                + article.displayUrl;
+
+        String html;
+        if(article.title == null || article.title.isEmpty()) {
+            html = article.displayUrl;
+        }else{
+            html = "<b>" + article.title + "</b> - "
+                    + article.displayUrl;
+        }
         rb.setId(index);
         rb.setText(Html.fromHtml(html), TextView.BufferType.SPANNABLE);
         return rb;
@@ -365,5 +372,11 @@ public class ScreenSlidePageFragment extends Fragment {
         DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
+    }
+
+    public static void hideSpinner(){
+        if(spinner != null){
+            spinner.setVisibility(View.GONE);
+        }
     }
 }

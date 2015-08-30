@@ -9,6 +9,9 @@ public class BingSearchResults {
     }
 
     public static class Result {
+        public String ID;
+        public String Title;
+        public String Description;
         public String DisplayUrl;
         public String Url;
 
