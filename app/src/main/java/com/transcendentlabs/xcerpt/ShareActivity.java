@@ -293,7 +293,7 @@ public class ShareActivity extends AppCompatActivity {
             super.onPreExecute();
 
             pDialog = new ProgressDialog(ShareActivity.this);
-            pDialog.setMessage("Posting to twitter...");
+            pDialog.setMessage("Posting to Twitter...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();
