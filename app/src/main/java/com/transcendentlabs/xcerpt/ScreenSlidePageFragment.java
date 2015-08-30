@@ -234,6 +234,8 @@ public class ScreenSlidePageFragment extends Fragment {
         layout.setOrientation(LinearLayout.VERTICAL);
 
         Button customSourceButton = new Button(getActivity());
+        customSourceButton.setTextColor(Color.WHITE);
+        customSourceButton.setBackgroundResource(R.drawable.customize_button);
 
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -343,7 +345,8 @@ public class ScreenSlidePageFragment extends Fragment {
 
         layout.addView(sourceSelect);
 
-        boolean loading = sourceSelect.getChildCount() < ((CustomizeActivity)getActivity()).numResults;
+        boolean loading = sourceSelect.getChildCount() == 0
+                || sourceSelect.getChildCount() < ((CustomizeActivity)getActivity()).numResults;
         if(loading){
             layout.addView(spinner);
         }

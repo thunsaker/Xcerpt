@@ -5,11 +5,13 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -122,9 +124,14 @@ public class InputActivity extends AppCompatActivity{
         }
 
         @Override public View getView(int position, View convertView, ViewGroup parent) {
-            SquaredImageView view = (SquaredImageView) convertView;
+            AspectRatioImageView view = (AspectRatioImageView) convertView;
             if (view == null) {
-                view = new SquaredImageView(context);
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                float ratio = ((float) size.y) / size.x;
+
+                view = new AspectRatioImageView(context, ratio);
                 view.setScaleType(CENTER_CROP);
             }
 

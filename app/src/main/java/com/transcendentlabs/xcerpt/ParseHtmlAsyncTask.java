@@ -23,7 +23,7 @@ public class ParseHtmlAsyncTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         try {
-            Document doc = Jsoup.connect(mUrl).get();
+            Document doc = Jsoup.connect(mUrl).ignoreContentType(true).get();
 
             Elements twitterTitleElems = doc.select("meta[property=twitter:title]");
             if (twitterTitleElems!=null && twitterTitleElems.attr("content").length() > 0) {

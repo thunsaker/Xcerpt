@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="MaxHeightScrollView">
+        <attr name="maxHeight" format="integer" />
+    </declare-styleable>
+</resources>

@@ -1,7 +1,6 @@
 package com.transcendentlabs.xcerpt;
 
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -25,13 +25,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -39,7 +39,8 @@ import com.astuetz.PagerSlidingTabStrip;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static com.transcendentlabs.xcerpt.Util.*;
+import static com.transcendentlabs.xcerpt.Util.DEFAULT_COLOUR;
+import static com.transcendentlabs.xcerpt.Util.EXCERPT;
 
 public class CustomizeActivity extends AppCompatActivity {
 
@@ -50,7 +51,7 @@ public class CustomizeActivity extends AppCompatActivity {
     private LinearLayout backgroundView;
     private TextView titleView;
     private TextView websiteView;
-    public ScrollView scrollView;
+    public MaxHeightScrollView scrollView;
 
     public String selectedUrl;
     public int selected_index = 0;
@@ -106,14 +107,21 @@ public class CustomizeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customize_2);
+        setContentView(R.layout.activity_customize);
         running = true;
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int height = size.y;
 
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
         contentPreview = (TextView) findViewById(R.id.content_preview);
-        scrollView = (ScrollView) findViewById(R.id.preview_scroll);
+        scrollView = (MaxHeightScrollView) findViewById(R.id.preview_scroll);
+
+        scrollView.setMaxHeight((int) (0.54 * height));
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
@@ -134,7 +142,6 @@ public class CustomizeActivity extends AppCompatActivity {
             excerpt = intent.getStringExtra(EXCERPT);
         }
 
-
         final SharedPreferences settings = getPreferences(0);
         int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor(DEFAULT_COLOUR));
         setColour(defaultColour);
@@ -147,7 +154,7 @@ public class CustomizeActivity extends AppCompatActivity {
         contentPreview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    contentPreview.performLongClick();
+                contentPreview.performLongClick();
             }
         });
         contentPreview.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
@@ -380,7 +387,6 @@ public class CustomizeActivity extends AppCompatActivity {
 
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setColour(int colour){
         backgroundView.setBackgroundColor(colour);
         String hexColour = String.format("#%06X", (0xFFFFFF & colour));

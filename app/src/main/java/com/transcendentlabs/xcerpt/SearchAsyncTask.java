@@ -29,7 +29,7 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
     private Error mError;
 
     public SearchAsyncTask(String searchStr, int numOfResults, Callback callback) {
-        mSearchStr = "\"" + searchStr +  "\"";
+        mSearchStr = "" + searchStr +  "";
         mNumOfResults = numOfResults;
         mCallback = callback;
     }

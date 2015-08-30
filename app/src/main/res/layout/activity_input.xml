@@ -15,7 +15,7 @@
         android:drawableLeft="@drawable/abc_ic_menu_paste_mtrl_am_alpha"
         android:text="@string/paste_instructions"
         android:onClick="pasteClipboard"
-        android:background="@drawable/default_button"
+        android:background="@drawable/input_button"
         android:textSize="24sp"
         android:textAllCaps="false"
         android:textColor="@android:color/white"/>
@@ -32,10 +32,11 @@
 
     <GridView
         android:id="@+id/image_grid"
+        android:numColumns="2"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:verticalSpacing="10dp"
-        android:horizontalSpacing="10dp"
+        android:verticalSpacing="5dp"
+        android:horizontalSpacing="5dp"
         android:stretchMode="columnWidth"
         android:gravity="center" />
 
