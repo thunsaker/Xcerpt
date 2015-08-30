@@ -5,9 +5,6 @@ import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
-/**
- * Created by Eric on 2015-08-29.
- */
 public class OcrAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private Bitmap mBitmap;

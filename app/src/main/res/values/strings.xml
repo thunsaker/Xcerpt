@@ -42,6 +42,6 @@
     <string name="crop_item">Crop</string>
     <string name="crop_instructions">Crop so that only the excerpt you wish to share is in frame.</string>
     <string name="crop_instructions_2">Try to avoid including any other elements in the final image.</string>
-    <string name="first_time_setup_dialog_text">Performing first time setup...</string>
+    <string name="first_time_setup_dialog_text">Performing first time setup…</string>
 
 </resources>

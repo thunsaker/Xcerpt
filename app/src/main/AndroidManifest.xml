@@ -17,7 +17,6 @@
             android:name=".CustomizeActivity"
             android:launchMode="singleTask"
             android:logo="@mipmap/ic_launcher_white"
-            android:parentActivityName=".InputActivity"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -35,7 +34,6 @@
             android:name=".ShareActivity"
             android:launchMode="singleTask"
             android:logo="@mipmap/ic_launcher_white"
-            android:parentActivityName=".CustomizeActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" >
             <meta-data

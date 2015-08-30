@@ -1,16 +1,8 @@
 package com.transcendentlabs.xcerpt;
 
-import android.app.Activity;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.os.Environment;
-import android.util.Log;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 
 /**
  * Created by Eric on 2015-08-29.

@@ -116,10 +116,10 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
         StringBuilder sb = new StringBuilder();
         try {
             reader = new BufferedReader(new InputStreamReader(in));
-            String line = "";
+            String line;
             while ((line = reader.readLine()) != null) {
                 //System.out.println(line);
-                sb.append(line + "\n");
+                sb.append(line).append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();

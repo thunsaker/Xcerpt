@@ -1,6 +1,7 @@
 package com.transcendentlabs.xcerpt;
 
 import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -353,8 +354,6 @@ public class CustomizeActivity extends AppCompatActivity {
                         ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getBottom());
                 animScrollToTop.setDuration(500);
                 animScrollToTop.start();
-
-                // scrollView.scrollTo(0, scrollView.getBottom());
                 titleView.setText(articles[articleIndex].title);
                 websiteView.setText(articles[articleIndex].displayUrl);
                 selectedUrl = articles[articleIndex].url;
@@ -381,6 +380,7 @@ public class CustomizeActivity extends AppCompatActivity {
 
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setColour(int colour){
         backgroundView.setBackgroundColor(colour);
         String hexColour = String.format("#%06X", (0xFFFFFF & colour));
@@ -423,9 +423,7 @@ public class CustomizeActivity extends AppCompatActivity {
         int totalHeight = backgroundView.getHeight();
         int totalWidth = backgroundView.getWidth();
 
-        Bitmap b = getBitmapFromView(backgroundView,totalHeight,totalWidth);
-
-        return b;
+        return getBitmapFromView(backgroundView,totalHeight,totalWidth);
     }
 
     public static Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {

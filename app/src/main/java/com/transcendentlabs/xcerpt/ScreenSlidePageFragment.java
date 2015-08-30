@@ -353,21 +353,6 @@ public class ScreenSlidePageFragment extends Fragment {
         return sv;
     }
 
-    public TextView setInstructions(String instructions){
-        TextView text = new TextView(getActivity());
-        text.setGravity(Gravity.CENTER_HORIZONTAL);
-        text.setText(instructions);
-        return text;
-    }
-
-
-    /**
-     * Returns the page number represented by this fragment object.
-     */
-    public int getPageNumber() {
-        return mPageNumber;
-    }
-
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));

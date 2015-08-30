@@ -478,8 +478,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
      * @throws FileNotFoundException
      */
     private boolean installZipFromAssets(String sourceFilename,
-                                         File destinationDir, File destinationFile) throws IOException,
-            FileNotFoundException {
+                                         File destinationDir, File destinationFile) throws IOException{
         // Attempt to open the zip archive
         publishProgress("Uncompressing data...", "0");
         ZipInputStream inputStream = new ZipInputStream(context.getAssets().open(sourceFilename));
@@ -500,7 +499,8 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
                 final int BUFFER = 8192;
 
                 // Buffer the output to the file
-                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream, BUFFER);
+                BufferedOutputStream bufferedOutputStream =
+                        new BufferedOutputStream(outputStream, BUFFER);
                 int unzippedSize = 0;
 
                 // Write the contents
