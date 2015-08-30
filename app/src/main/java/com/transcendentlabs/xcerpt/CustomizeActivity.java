@@ -26,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,16 +40,22 @@ import com.astuetz.PagerSlidingTabStrip;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import tourguide.tourguide.Overlay;
+import tourguide.tourguide.Pointer;
+import tourguide.tourguide.ToolTip;
+import tourguide.tourguide.TourGuide;
+
 import static com.transcendentlabs.xcerpt.Util.DEFAULT_COLOUR;
 import static com.transcendentlabs.xcerpt.Util.EXCERPT;
 
 public class CustomizeActivity extends AppCompatActivity {
 
-    LinearLayout backgroundView;
+    private LinearLayout backgroundView;
     private PagerAdapter mPagerAdapter;
     private TextView titleView;
     private TextView websiteView;
     private PagerSlidingTabStrip tabs;
+    private TourGuide mTourGuideHandler;
 
     // public parameters (are highly coupled in ScreenSlidePageFragment at the moment...)
     public TextView contentPreview;
@@ -153,6 +160,14 @@ public class CustomizeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 contentPreview.performLongClick();
+
+                boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
+                if(showHint) {
+                    mTourGuideHandler.cleanUp();
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean(SHOW_HINT_SETTING, false);
+                    editor.commit();
+                }
             }
         });
         contentPreview.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
@@ -218,22 +233,15 @@ public class CustomizeActivity extends AppCompatActivity {
         boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
 
         if(showHint) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-            builder.setMessage(getString(R.string.highlight_hint));
-            builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                }
-            });
-            builder.setNegativeButton("Don't show again", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putBoolean(SHOW_HINT_SETTING, false);
-                    editor.commit();
-                }
-            });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            TextView contentPreview = (TextView) findViewById(R.id.content_preview);
+            mTourGuideHandler = TourGuide.init(this).with(TourGuide.Technique.Click)
+                    .setPointer(new Pointer().setGravity(Gravity.TOP))
+                    .setToolTip(new ToolTip()
+                            .setTitle(getString(R.string.highlight_hint_title))
+                            .setDescription(getString(R.string.highlight_hint))
+                            .setGravity(Gravity.TOP))
+                    .setOverlay(new Overlay())
+                    .playOn(contentPreview);
         }
     }
 

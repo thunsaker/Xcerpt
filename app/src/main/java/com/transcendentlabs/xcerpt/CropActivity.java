@@ -1,22 +1,33 @@
 package com.transcendentlabs.xcerpt;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
+
+import tourguide.tourguide.Overlay;
+import tourguide.tourguide.Pointer;
+import tourguide.tourguide.ToolTip;
+import tourguide.tourguide.TourGuide;
+
 import static com.transcendentlabs.xcerpt.Util.*;
 
 import static com.transcendentlabs.xcerpt.Util.EXCERPT;
@@ -26,6 +37,7 @@ import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 public class CropActivity extends AppCompatActivity {
 
     CropImageView cropImageView;
+    private static final String SHOW_HINT_SETTING = "hint";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +59,30 @@ public class CropActivity extends AppCompatActivity {
         ActionBar bar = getSupportActionBar();
         Window window = getWindow();
         setActionBarColour(bar, window, this);
+
+        SharedPreferences settings = getPreferences(0);
+        showGuide(settings);
     }
 
+    private void showGuide(final SharedPreferences settings) {
+        boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
+
+        if(showHint) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle(getString(R.string.crop_instructions));
+            builder.setMessage(getString(R.string.crop_instructions_2));
+            builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean(SHOW_HINT_SETTING, false);
+                    editor.commit();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

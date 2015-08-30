@@ -27,7 +27,7 @@
     <string name="no_source_instructions">Please provide the URL in the Source tab.</string>
     <string name="highlight">Highlight</string>
     <string name="done">Done</string>
-    <string name="highlight_hint">Tap any word in your excerpt to begin highlighting a selection.</string>
+    <string name="highlight_hint">Tap any word in your excerpt to begin highlighting a selection. Give it a try!</string>
     <string name="ok">OK</string>
     <string name="no_internet_error">Error: Check your internet connection.</string>
     <string name="preview">Preview:</string>
@@ -40,8 +40,9 @@
     <string name="title_activity_crop">Crop screenshot</string>
     <string name="empty_clipboard_toast">Clipboard is empty!</string>
     <string name="crop_item">Crop</string>
-    <string name="crop_instructions">Crop so that only the excerpt you wish to share is in frame.</string>
-    <string name="crop_instructions_2">Try to avoid including any other elements in the final image.</string>
+    <string name="crop_instructions">For best results</string>
+    <string name="crop_instructions_2">Crop so that only the excerpt you wish to share is in frame. Try to avoid including any other elements in the final image.</string>
     <string name="first_time_setup_dialog_text">Performing first time setup…</string>
+    <string name="highlight_hint_title">Highlight text to add emphasis</string>
 
 </resources>
