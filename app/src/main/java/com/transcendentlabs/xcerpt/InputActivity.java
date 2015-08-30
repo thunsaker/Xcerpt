@@ -5,7 +5,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,9 +19,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +31,13 @@ public class InputActivity extends AppCompatActivity{
 
     public static final String IMAGE = "com.transcendentlabs.xcerpt.image";
 
+    /** Resource to use for data file downloads. */
+    static final String DOWNLOAD_BASE = "http://tesseract-ocr.googlecode.com/files/";
+
+    private final String FIRST_TIME = "first-time";
+
+    private final String TAG = "InputActivity";
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
@@ -44,6 +48,13 @@ public class InputActivity extends AppCompatActivity{
         ActionBar bar = getSupportActionBar();
         Window window = getWindow();
         setActionBarColour(bar, window, this);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        // Do OCR engine initialization, if necessary
+        initOcrIfNecessary(this);
     }
 
     @Override

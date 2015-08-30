@@ -100,6 +100,7 @@
     <orderEntry type="library" exported="" name="crashlytics-2.5.0" level="project" />
     <orderEntry type="library" exported="" name="pagerslidingtabstrip-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="twitter4j-core-3.0.4" level="project" />
+    <orderEntry type="library" exported="" name="jtar-1.1" level="project" />
     <orderEntry type="library" exported="" name="twitter-core-1.4.1" level="project" />
     <orderEntry type="library" exported="" name="twitter-1.6.1" level="project" />
     <orderEntry type="library" exported="" name="twitter4j-core-4.0.4" level="project" />

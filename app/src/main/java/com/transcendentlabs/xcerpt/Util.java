@@ -3,21 +3,28 @@ package com.transcendentlabs.xcerpt;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
+import android.os.Environment;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+
+import java.io.File;
 
 public class Util {
 
     // Colour Util
 
     public static final String DEFAULT_COLOUR = "#009688"; // teal
+    private static final String TAG = "Util";
 
     public static void setActionBarColour(ActionBar bar, Window window, Activity activity){
         setActionBarColour(bar, window, activity, DEFAULT_COLOUR);
@@ -55,5 +62,107 @@ public class Util {
     public static boolean isNetworkAvailable(Context context) {
         return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE))
                 .getActiveNetworkInfo() != null;
+    }
+
+    public static void initOcrIfNecessary(Activity activity){
+
+        boolean doNewInit = false;
+        File storageDirectory = getStorageDirectory(activity);
+        if(storageDirectory != null){
+            File data = new File(storageDirectory.toString()
+                    + File.separator + "tessdata"
+                    + File.separator + "eng.traineddata");
+            doNewInit = !data.exists() || data.isDirectory();
+        }
+        if (doNewInit) {
+            new OcrInitAsyncTask(activity).execute(storageDirectory.toString());
+        }
+    }
+
+
+    public static File getStorageDirectory(Activity activity) {
+        //Log.d(TAG, "getStorageDirectory(): API level is " + Integer.valueOf(android.os.Build.VERSION.SDK_INT));
+
+        String state = null;
+        try {
+            state = Environment.getExternalStorageState();
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Is the SD card visible?", e);
+            showErrorMessage(activity,
+                    "Error",
+                    "Required external storage (such as an SD card) is unavailable.");
+        }
+
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+
+            // We can read and write the media
+            //    	if (Integer.valueOf(android.os.Build.VERSION.SDK_INT) > 7) {
+            // For Android 2.2 and above
+
+            try {
+                return activity.getExternalFilesDir(Environment.MEDIA_MOUNTED);
+            } catch (NullPointerException e) {
+                // We get an error here if the SD card is visible, but full
+                Log.e(TAG, "External storage is unavailable");
+                showErrorMessage(activity,
+                        "Error",
+                        "Required external storage (such as an SD card) is full or unavailable.");
+            }
+
+            //        } else {
+            //          // For Android 2.1 and below, explicitly give the path as, for example,
+            //          // "/mnt/sdcard/Android/data/edu.sfsu.cs.orange.ocr/files/"
+            //          return new File(Environment.getExternalStorageDirectory().toString() + File.separator +
+            //                  "Android" + File.separator + "data" + File.separator + getPackageName() +
+            //                  File.separator + "files" + File.separator);
+            //        }
+
+        } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            // We can only read the media
+            Log.e(TAG, "External storage is read-only");
+            showErrorMessage(activity,
+                    "Error",
+                    "Required external storage (such as an SD card) is unavailable for data storage.");
+        } else {
+            // Something else is wrong. It may be one of many other states, but all we need
+            // to know is we can neither read nor write
+            Log.e(TAG, "External storage is unavailable");
+            showErrorMessage(activity,
+                    "Error",
+                    "Required external storage (such as an SD card) is unavailable or corrupted.");
+        }
+        return null;
+    }
+
+    public static void showErrorMessage(Activity activity, String title, String message) {
+        new AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(message)
+                .setOnCancelListener(new FinishListener(activity))
+                .setPositiveButton( "Done", new FinishListener(activity))
+                .show();
+    }
+
+    private static final class FinishListener
+            implements DialogInterface.OnClickListener, DialogInterface.OnCancelListener, Runnable {
+
+        private final Activity activityToFinish;
+
+        FinishListener(Activity activityToFinish) {
+            this.activityToFinish = activityToFinish;
+        }
+
+        public void onCancel(DialogInterface dialogInterface) {
+            run();
+        }
+
+        public void onClick(DialogInterface dialogInterface, int i) {
+            run();
+        }
+
+        public void run() {
+            activityToFinish.finish();
+        }
+
     }
 }

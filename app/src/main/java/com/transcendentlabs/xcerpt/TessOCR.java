@@ -18,10 +18,9 @@ import java.io.InputStream;
 public class TessOCR {
     private TessBaseAPI mTess;
 
-    public TessOCR() {
+    public TessOCR(String datapath) {
         // TODO Auto-generated constructor stub
         mTess = new TessBaseAPI();
-        String datapath = Environment.getExternalStorageDirectory() + "/Xcerpt/";
         String language = "eng";
         mTess.init(datapath, language);
     }

@@ -46,11 +46,16 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
             String subSearch = mSearchStr;
             while(encodedLength > MAX_QUERY_LENGTH){
                 int lastSpace = subSearch.lastIndexOf(" ", MAX_QUERY_LENGTH - less);
-                subSearch = subSearch.substring(0, lastSpace);
-                numSpaces = subSearch.length() - subSearch.replaceAll(" ", "").length();
-                encodedLength = subSearch.length() + numSpaces*2;
-                less = less*2;
-                Log.e("temp", subSearch);
+
+                if(lastSpace == -1){
+                    subSearch = subSearch.substring(0, MAX_QUERY_LENGTH - less);
+                }else {
+                    subSearch = subSearch.substring(0, lastSpace);
+                    numSpaces = subSearch.length() - subSearch.replaceAll(" ", "").length();
+                    encodedLength = subSearch.length() + numSpaces * 2;
+                    less = less * 2;
+                    Log.e("temp", subSearch);
+                }
             }
 
             String searchStr = URLEncoder.encode(subSearch);

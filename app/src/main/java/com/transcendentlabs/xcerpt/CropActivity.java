@@ -2,12 +2,9 @@ package com.transcendentlabs.xcerpt;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,10 +16,8 @@ import android.widget.Toast;
 
 import com.edmodo.cropper.CropImageView;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import static com.transcendentlabs.xcerpt.Util.*;
 
 import static com.transcendentlabs.xcerpt.Util.EXCERPT;
 import static com.transcendentlabs.xcerpt.Util.isNetworkAvailable;
@@ -72,41 +67,12 @@ public class CropActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_crop) {
             Bitmap finalImage = cropImageView.getCroppedImage();
-
-            String datapath = Environment.getExternalStorageDirectory() + "/Xcerpt/";
-            String language = "eng";
-            File dir = new File(datapath + "tessdata/");
-            if (!dir.exists()){
-                dir.mkdirs();
-                File dataFile = new File(dir + language + ".traineddata");
-                if(!dataFile.exists()){
-                    try {
-                        AssetManager am = getAssets();
-                        String[] list = am.list("");
-                        for (String s:list) {
-                            if (s.endsWith("traineddata")) {
-                                Log.d("TessOCR", "Copying asset file " + s);
-                                InputStream inStream = am.open(s);
-                                int size = inStream.available();
-                                byte[] buffer = new byte[size];
-                                inStream.read(buffer);
-                                inStream.close();
-                                FileOutputStream fos = new FileOutputStream(dir + "/" + s);
-                                fos.write(buffer);
-                                fos.close();
-                            }
-                        }
-                    }
-                    catch (Exception e) {
-                        // Better to handle specific exceptions such as IOException etc
-                        // as this is just a catch-all
-                    }
-                }
-            }
-
             final Activity activity = this;
+            initOcrIfNecessary(this);
+            String dir = getStorageDirectory(this).toString();
 
-            OcrAsyncTask ocrTask = new OcrAsyncTask(this, finalImage, new OcrAsyncTask.Callback() {
+            OcrAsyncTask ocrTask =
+                    new OcrAsyncTask(this, finalImage, dir, new OcrAsyncTask.Callback() {
                 @Override
                 public void onComplete(Object o, Error error) {
                     if (error != null) {
@@ -134,6 +100,4 @@ public class CropActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
 }
