@@ -36,9 +36,6 @@ public class InputActivity extends AppCompatActivity{
     /** Resource to use for data file downloads. */
     static final String DOWNLOAD_BASE = "http://tesseract-ocr.googlecode.com/files/";
 
-    private final String FIRST_TIME = "first-time";
-
-    private final String TAG = "InputActivity";
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,12 +65,14 @@ public class InputActivity extends AppCompatActivity{
     public static List<String> getCameraImages(Context context) {
         final String[] columns = { MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED};
 
-        final Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        final Cursor cursor = context.getContentResolver().query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 columns,
                 MediaStore.Images.Media.DATA + " like ? ",
                 new String[] {"%/Screenshots/%"},
-                MediaStore.Images.Media.DATE_ADDED + " DESC");
-        ArrayList<String> result = new ArrayList<String>(cursor.getCount());
+                MediaStore.Images.Media.DATE_ADDED + " DESC"
+        );
+        ArrayList<String> result = new ArrayList<>(cursor.getCount());
         if (cursor.moveToFirst()) {
             final int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             do {
@@ -164,8 +163,7 @@ public class InputActivity extends AppCompatActivity{
         }
 
         @Override public Uri getItem(int position) {
-            Uri uri = Uri.fromFile(new File(urls.get(position)));
-            return uri;
+            return Uri.fromFile(new File(urls.get(position)));
         }
 
         @Override public long getItemId(int position) {

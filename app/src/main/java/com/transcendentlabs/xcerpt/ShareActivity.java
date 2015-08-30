@@ -54,32 +54,24 @@ public class ShareActivity extends AppCompatActivity {
     private static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
     private static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
     private static final int CHAR_LIMIT = 94;
-    private final int LINK_PREVIEW_LENGTH = 32;
 
     private TwitterSession twitterSession;
 
     private ProgressDialog pDialog;
 
-    private ImageView finalImage;
     private TwitterLoginButton loginButton;
     private TextView userName;
     private Button tweetButton;
     private TextView characterCount;
     private EditText tweet;
     private LinearLayout tweetLayout;
-    private TextView linkPreview;
     private LinearLayout tweetBar;
-    private TextView logOut;
 
-    private Bitmap img;
     private String fileName;
     private String tweetText;
-    // private File imageFile;
-    private boolean imageSaved = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        final String PREFIX = "Post as @";
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
@@ -91,16 +83,15 @@ public class ShareActivity extends AppCompatActivity {
         Window window = getWindow();
         setActionBarColour(bar, window, this);
 
-        finalImage = (ImageView) findViewById(R.id.final_image);
         tweetButton = (Button) findViewById(R.id.tweet_button);
-        characterCount = (TextView) findViewById(R.id.character_count);
-        tweet = (EditText) findViewById(R.id.tweet);
-        tweetLayout = (LinearLayout) findViewById(R.id.tweet_layout);
         userName = (TextView) findViewById(R.id.user_name);
-        linkPreview = (TextView) findViewById(R.id.link_preview);
-        tweetBar = (LinearLayout) findViewById(R.id.tweet_bar);
-        logOut = (TextView) findViewById(R.id.logout);
 
+        tweetLayout = (LinearLayout) findViewById(R.id.tweet_layout);
+        tweetBar = (LinearLayout) findViewById(R.id.tweet_bar);
+        tweetLayout.setVisibility(View.GONE);
+        tweetBar.setVisibility(View.GONE);
+
+        TextView logOut = (TextView) findViewById(R.id.logout);
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,37 +99,21 @@ public class ShareActivity extends AppCompatActivity {
                 loginButton.setVisibility(View.VISIBLE);
                 tweetLayout.setVisibility(View.GONE);
                 tweetBar.setVisibility(View.GONE);
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm =
+                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
 
         final String selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
-        String baseUrl = selectedUrl;
-        if(baseUrl.startsWith("https://www.")){
-            baseUrl = baseUrl.substring("https://www.".length());
-        }else if(baseUrl.startsWith("http://www.")){
-            baseUrl = baseUrl.substring("http://www.".length());
-        }else if(baseUrl.startsWith("https://")){
-            baseUrl = baseUrl.substring("https://".length());
-        }else if(baseUrl.startsWith("http://")){
-            baseUrl = baseUrl.substring("http://".length());
-        }
-        String urlPreview;
-        if(baseUrl.length() < LINK_PREVIEW_LENGTH){
-            urlPreview = baseUrl;
-        }else {
-            urlPreview = baseUrl.substring(0, LINK_PREVIEW_LENGTH) + "...";
-        }
-        linkPreview.setText(urlPreview);
-        linkPreview.setTextColor(getResources().getColor(R.color.tw__blue_default));
 
-        tweetLayout.setVisibility(View.GONE);
-        tweetBar.setVisibility(View.GONE);
-        characterCount.setText(Integer.toString(CHAR_LIMIT));
-        characterCount.setTextColor(Color.BLACK);
+        initLinkPreviewView(selectedUrl);
+        initCharacterCountView();
 
         tweetText = selectedUrl;
+
+        // initialize tweet edittext to listen to character count
+        tweet = (EditText) findViewById(R.id.tweet);
         tweet.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -165,16 +140,15 @@ public class ShareActivity extends AppCompatActivity {
         twitterSession =
                 TwitterCore.getInstance().getSessionManager().getActiveSession();
 
-        Bundle extras = getIntent().getExtras();
-        byte[] byteArray = extras.getByteArray(CustomizeActivity.IMAGE);
-        img = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        Bitmap img = getImagePreview();
+        ImageView finalImage = (ImageView) findViewById(R.id.final_image);
         finalImage.setImageBitmap(img);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
         Date now = new Date();
         String strDate = sdf.format(now);
         fileName = strDate + ".png";
-        imageSaved = saveFile(fileName, img);
+        boolean imageSaved = saveFile(fileName, img);
 
         if(!imageSaved){
             //TODO throw error
@@ -183,17 +157,58 @@ public class ShareActivity extends AppCompatActivity {
 
         // final Uri imageUri = Uri.fromFile(imageFile);
 
-        loginButton = (TwitterLoginButton)
-                findViewById(R.id.twitter_login_button);
+        initLoginButton();
+
+        if(twitterSession != null){
+            showLoggedInState(twitterSession);
+        }
+    }
+
+    private void initLinkPreviewView(String selectedUrl) {
+        final int LINK_PREVIEW_LENGTH = 32;
+
+        String baseUrl = selectedUrl;
+        if(baseUrl.startsWith("https://www.")){
+            baseUrl = baseUrl.substring("https://www.".length());
+        }else if(baseUrl.startsWith("http://www.")){
+            baseUrl = baseUrl.substring("http://www.".length());
+        }else if(baseUrl.startsWith("https://")){
+            baseUrl = baseUrl.substring("https://".length());
+        }else if(baseUrl.startsWith("http://")){
+            baseUrl = baseUrl.substring("http://".length());
+        }
+        String urlPreview;
+        if(baseUrl.length() < LINK_PREVIEW_LENGTH){
+            urlPreview = baseUrl;
+        }else {
+            urlPreview = baseUrl.substring(0, LINK_PREVIEW_LENGTH) + "...";
+        }
+        TextView linkPreview = (TextView) findViewById(R.id.link_preview);
+        linkPreview.setText(urlPreview);
+        linkPreview.setTextColor(getResources().getColor(R.color.tw__blue_default));
+    }
+
+    private void initCharacterCountView() {
+        characterCount = (TextView) findViewById(R.id.character_count);
+        characterCount.setText(Integer.toString(CHAR_LIMIT));
+        characterCount.setTextColor(Color.BLACK);
+    }
+
+    private void showLoggedInState(TwitterSession twitterSession) {
+        final String PREFIX = "Post as @";
+        loginButton.setVisibility(View.GONE);
+        tweetLayout.setVisibility(View.VISIBLE);
+        tweetBar.setVisibility(View.VISIBLE);
+        userName.setText(PREFIX + twitterSession.getUserName());
+    }
+
+    private void initLoginButton() {
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
                 twitterSession = result.data;
-                loginButton.setVisibility(View.GONE);
-                tweetBar.setVisibility(View.VISIBLE);
-                tweetLayout.setVisibility(View.VISIBLE);
-                userName.setText(PREFIX + twitterSession.getUserName());
+                showLoggedInState(twitterSession);
 
             }
 
@@ -202,13 +217,12 @@ public class ShareActivity extends AppCompatActivity {
                 // TODO Do something on failure
             }
         });
+    }
 
-        if(twitterSession != null){
-            loginButton.setVisibility(View.GONE);
-            tweetLayout.setVisibility(View.VISIBLE);
-            tweetBar.setVisibility(View.VISIBLE);
-            userName.setText(PREFIX + twitterSession.getUserName());
-        }
+    private Bitmap getImagePreview() {
+        Bundle extras = getIntent().getExtras();
+        byte[] byteArray = extras.getByteArray(CustomizeActivity.IMAGE);
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 
     @Override
@@ -329,11 +343,17 @@ public class ShareActivity extends AppCompatActivity {
                     try {
                         // get the Twitter app if possible
                         getPackageManager().getPackageInfo("com.twitter.android", 0);
-                        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("twitter://user?user_id=" + twitterSession.getUserId()));
+                        intent = new Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("twitter://user?user_id=" + twitterSession.getUserId())
+                        );
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     } catch (Exception e) {
                         // no Twitter app, revert to browser
-                        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/" + twitterSession.getUserName()));
+                        intent = new Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://twitter.com/" + twitterSession.getUserName())
+                        );
                     }
                     startActivity(intent);
                 }

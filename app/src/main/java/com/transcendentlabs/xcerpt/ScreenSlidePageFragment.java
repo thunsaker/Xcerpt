@@ -36,38 +36,38 @@ import at.markushi.ui.CircleButton;
 public class ScreenSlidePageFragment extends Fragment {
     public static final String ARG_PAGE = "page";
     private final int MARGIN = 5;
+    private final int NUM_COLOUR_ROWS = 3;
     private final String BUTTON_SIZE = "ButtonSize";
     private final int SIZE_IN_DP = 50;
 
-    List<Integer> colourRow1 = Collections.unmodifiableList(Arrays.asList(
-            Color.parseColor("#F44336"), // red
-            Color.parseColor("#E91E63"), // pink
-            Color.parseColor("#9C27B0"), // purple
-            Color.parseColor("#673AB7"), // deep purple
-            Color.parseColor("#3F51B5") // indigo
-    ));
-
-    List<Integer> colourRow2 = Collections.unmodifiableList(Arrays.asList(
-            Color.parseColor("#2196F3"), // blue
-            Color.parseColor("#00BCD4"), // cyan
-            Color.parseColor("#009688"), // teal
-            Color.parseColor("#43A047"), // green
-            Color.parseColor("#8BC34A") // light green
-    ));
-
-    List<Integer> colourRow3 = Collections.unmodifiableList(Arrays.asList(
-            Color.parseColor("#FFB300"), // amber
-            Color.parseColor("#EF6C00"), // orange
-            Color.parseColor("#FF5722"), // deep orange
-            Color.parseColor("#795548"), // brown
-            Color.parseColor("#607D8B") // blue grey
-    ));
+    List[] colourRows = new List[]{ // must have # of elements == NUM_COLOUR_ROWS
+            Collections.unmodifiableList(Arrays.asList(
+                    Color.parseColor("#F44336"), // red
+                    Color.parseColor("#E91E63"), // pink
+                    Color.parseColor("#9C27B0"), // purple
+                    Color.parseColor("#673AB7"), // deep purple
+                    Color.parseColor("#3F51B5") // indigo
+            )),
+            Collections.unmodifiableList(Arrays.asList(
+                    Color.parseColor("#2196F3"), // blue
+                    Color.parseColor("#00BCD4"), // cyan
+                    Color.parseColor("#009688"), // teal
+                    Color.parseColor("#43A047"), // green
+                    Color.parseColor("#8BC34A") // light green
+            )),
+            Collections.unmodifiableList(Arrays.asList(
+                    Color.parseColor("#FFB300"), // amber
+                    Color.parseColor("#EF6C00"), // orange
+                    Color.parseColor("#FF5722"), // deep orange
+                    Color.parseColor("#795548"), // brown
+                    Color.parseColor("#607D8B") // blue grey
+            ))
+    };
 
     /**
      * The fragment's page number, which is set to the argument value for {@link #ARG_PAGE}.
      */
     private int mPageNumber;
-    private static RadioGroup sourceSelect;
     private ClipboardManager clipboard;
     private int dpAsPixels;
 
@@ -101,8 +101,10 @@ public class ScreenSlidePageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        FrameLayout.LayoutParams params =
-                new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+        );
         FrameLayout fl = new FrameLayout(getActivity());
 
         final int margin =
@@ -149,74 +151,45 @@ public class ScreenSlidePageFragment extends Fragment {
             editor.commit();
         }
 
-        LinearLayout colourSelectrow1 = new LinearLayout(getActivity());
-        colourSelectrow1.setGravity(Gravity.CENTER);
-        LinearLayout colourSelectrow2 = new LinearLayout(getActivity());
-        colourSelectrow2.setGravity(Gravity.CENTER);
-        LinearLayout colourSelectrow3 = new LinearLayout(getActivity());
-        colourSelectrow3.setGravity(Gravity.CENTER);
-
-        for(final int colour : colourRow1){
-            CircleButton b = new CircleButton(getActivity());
-
-            b.setMinimumWidth(buttonSize);
-            b.setMinimumHeight(buttonSize);
-            b.setColor(colour);
-            b.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("colour select", "" + colour);
-                    CustomizeActivity activity = (CustomizeActivity) getActivity();
-                    activity.setColour(colour);
-                    editor.putInt(CustomizeActivity.COLOUR_SETTING, colour);
-                    editor.commit();
-                }
-            });
-            colourSelectrow1.addView(b);
+        LinearLayout[] colourSelectRows = new LinearLayout[NUM_COLOUR_ROWS];
+        for(int i = 0; i < NUM_COLOUR_ROWS; i++ ){
+            colourSelectRows[i] = new LinearLayout(getActivity());
+            colourSelectRows[i].setGravity(Gravity.CENTER);
         }
-        for(final int colour : colourRow2){
-            CircleButton b = new CircleButton(getActivity());
 
-            b.setMinimumWidth(buttonSize);
-            b.setMinimumHeight(buttonSize);
-            b.setColor(colour);
-            b.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("colour select", "" + colour);
-                    CustomizeActivity activity = (CustomizeActivity) getActivity();
-                    activity.setColour(colour);
-                    editor.putInt(CustomizeActivity.COLOUR_SETTING, colour);
-                    editor.commit();
-                }
-            });
-            colourSelectrow2.addView(b);
+        for(int i = 0; i < NUM_COLOUR_ROWS; i++){
+            for(final Object colour : colourRows[i]){
+                CircleButton b = getCircleButton(editor, buttonSize, (int) colour);
+                colourSelectRows[i].addView(b);
+            }
+            view.addView(colourSelectRows[i]);
         }
-        for(final int colour : colourRow3){
-            CircleButton b = new CircleButton(getActivity());
-
-            b.setMinimumWidth(buttonSize);
-            b.setMinimumHeight(buttonSize);
-            b.setColor(colour);
-            b.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("colour select", "" + colour);
-                    CustomizeActivity activity = (CustomizeActivity) getActivity();
-                    activity.setColour(colour);
-                    editor.putInt(CustomizeActivity.COLOUR_SETTING, colour);
-                    editor.commit();
-                }
-            });
-            colourSelectrow3.addView(b);
-        }
-        view.addView(colourSelectrow1);
-        view.addView(colourSelectrow2);
-        view.addView(colourSelectrow3);
         sv.addView(view);
-      return sv;
+        return sv;
     }
 
+    private CircleButton getCircleButton(
+            final SharedPreferences.Editor editor,
+            int buttonSize,
+            final int colour
+    ) {
+        CircleButton b = new CircleButton(getActivity());
+
+        b.setMinimumWidth(buttonSize);
+        b.setMinimumHeight(buttonSize);
+        b.setColor(colour);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("colour select", "" + colour);
+                CustomizeActivity activity = (CustomizeActivity) getActivity();
+                activity.setColour(colour);
+                editor.putInt(CustomizeActivity.COLOUR_SETTING, colour);
+                editor.commit();
+            }
+        });
+        return b;
+    }
 
 
     public View getSourceCard(){
@@ -233,6 +206,78 @@ public class ScreenSlidePageFragment extends Fragment {
         layout.setLayoutParams(params);
         layout.setOrientation(LinearLayout.VERTICAL);
 
+        ProgressBar spinner = new ProgressBar(
+                getActivity(),
+                null,
+                android.R.attr.progressBarStyleSmall
+        );
+
+        RadioGroup sourceSelect = getSourceSelectRadioGroup(articles);
+
+        layout.addView(sourceSelect);
+
+        boolean loading = sourceSelect.getChildCount() == 0
+                || sourceSelect.getChildCount() < ((CustomizeActivity)getActivity()).numResults;
+        if(loading){
+            layout.addView(spinner);
+        }
+
+        Button customSourceButton = getCustomSourceButton(sourceSelect);
+        layout.addView(customSourceButton);
+
+        sv.addView(layout);
+        return sv;
+    }
+
+    private RadioGroup getSourceSelectRadioGroup(Article[] articles) {
+        RadioGroup sourceSelect = new RadioGroup(getActivity());
+        RadioGroup.LayoutParams rgParams = new RadioGroup.LayoutParams(
+                RadioGroup.LayoutParams.MATCH_PARENT,
+                RadioGroup.LayoutParams.WRAP_CONTENT
+        );
+
+        final int margin =
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources()
+                        .getDisplayMetrics());
+        rgParams.gravity = Gravity.CENTER_HORIZONTAL;
+        rgParams.setMargins(margin, margin, margin, margin);
+        sourceSelect.setLayoutParams(rgParams);
+
+        for(int i = 0; i < ((CustomizeActivity)getActivity()).numResults; i++){
+            if(articles[i] == null){
+                continue;
+            }
+
+            RadioButton rb = getRadioButton(articles[i], i);
+            sourceSelect.addView(rb);
+
+            if(i == ((CustomizeActivity)getActivity()).selected_index){
+                sourceSelect.check(rb.getId());
+            }
+        }
+
+        sourceSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId >= 0){
+                    ((CustomizeActivity)getActivity()).updateSource(checkedId);
+                }
+            }
+        });
+        return sourceSelect;
+    }
+
+    private RadioButton getRadioButton(Article article, int index) {
+        RadioButton rb = new RadioButton(getActivity());
+        String html = "<b>" + article.title + "</b> - "
+                + article.displayUrl;
+        rb.setId(index);
+        rb.setText(Html.fromHtml(html), TextView.BufferType.SPANNABLE);
+        return rb;
+    }
+
+    private Button getCustomSourceButton(final RadioGroup sourceSelect) {
         Button customSourceButton = new Button(getActivity());
         customSourceButton.setTextColor(Color.WHITE);
         customSourceButton.setBackgroundResource(R.drawable.customize_button);
@@ -253,49 +298,8 @@ public class ScreenSlidePageFragment extends Fragment {
                 ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
                 final String pasteData = item.getText().toString();
                 if(pasteData != null){
-                    // check if text is URL
-                    try { new URL(pasteData);
-                        ParseHtmlAsyncTask titleTask =
-                                new ParseHtmlAsyncTask(pasteData, new ParseHtmlAsyncTask.Callback(){
-                                    @Override
-                                    public void onComplete(Object o, Error error) {
-                                        if(error != null){
-                                            Log.e("ParseHtmlAsyncTask", error.getMessage());
-                                            return;
-                                        }
-                                        String title = (String) o;
+                    getSourceHtml(pasteData, sourceSelect);
 
-                                        String baseUrl = pasteData;
-                                        if(baseUrl.startsWith("https://www.")){
-                                            baseUrl = baseUrl.substring("https://www.".length());
-                                        }else if(baseUrl.startsWith("http://www.")){
-                                            baseUrl = baseUrl.substring("http://www.".length());
-                                        }else if(baseUrl.startsWith("https://")){
-                                            baseUrl = baseUrl.substring("https://".length());
-                                        }else if(baseUrl.startsWith("http://")){
-                                            baseUrl = baseUrl.substring("http://".length());
-                                        }
-                                        int backslashAt = baseUrl.indexOf('/');
-                                        if(backslashAt > 0){
-                                            baseUrl = baseUrl.substring(0, backslashAt);
-                                        }
-
-                                        Article customArticle = new Article(title, baseUrl, pasteData);
-                                        if(sourceSelect != null) sourceSelect.clearCheck();
-                                        ((CustomizeActivity)getActivity()).updateSource(customArticle);
-                                        ((CustomizeActivity)getActivity()).nextItem.setEnabled(true);
-                                        if(((CustomizeActivity)getActivity()).actionModeOpen){
-                                            ((CustomizeActivity)getActivity()).actionModeNextItem.setEnabled(true);
-                                        }
-                                    }
-                                });
-                        titleTask.execute();
-                    }
-                    catch (MalformedURLException e) {
-                        // show toast
-                        Toast.makeText(getActivity(), "The pasted text is not a valid URL.",
-                                Toast.LENGTH_SHORT).show();
-                    }
 
                 }else{
                     Toast.makeText(getActivity(), "The clipboard is empty.",
@@ -303,57 +307,58 @@ public class ScreenSlidePageFragment extends Fragment {
                 }
             }
         });
+        return customSourceButton;
+    }
 
-        ProgressBar spinner = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleSmall);
+    private void getSourceHtml(final String url, final RadioGroup sourceSelect) {
+        // check if text is URL
+        try { new URL(url);
+            ParseHtmlAsyncTask titleTask =
+                new ParseHtmlAsyncTask(url, new ParseHtmlAsyncTask.Callback(){
+                    @Override
+                    public void onComplete(Object o, Error error) {
+                        if(error != null){
+                            Log.e("ParseHtmlAsyncTask", error.getMessage());
+                            return;
+                        }
+                        String title = (String) o;
 
-        sourceSelect = new RadioGroup(getActivity());
-        RadioGroup.LayoutParams rgParams =
-                new RadioGroup.LayoutParams(RadioGroup.LayoutParams.MATCH_PARENT, RadioGroup.LayoutParams.WRAP_CONTENT);
-        final int margin =
-                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources()
-                        .getDisplayMetrics());
-        rgParams.gravity = Gravity.CENTER_HORIZONTAL;
-        rgParams.setMargins(margin, margin, margin, margin);
-        sourceSelect.setLayoutParams(rgParams);
+                        String baseUrl = getDisplayUrl(url);
 
-        for(int i = 0; i < ((CustomizeActivity)getActivity()).numResults; i++){
-
-            if(articles[i] == null){
-                continue;
-            }
-
-            RadioButton rb = new RadioButton(getActivity());
-            String html = "<b>" + articles[i].title + "</b> - "
-                    + articles[i].displayUrl;
-            rb.setId(i);
-            rb.setText(Html.fromHtml(html),TextView.BufferType.SPANNABLE);
-            sourceSelect.addView(rb);
-            if(i == ((CustomizeActivity)getActivity()).selected_index){
-                sourceSelect.check(rb.getId());
-            }
+                        Article customArticle = new Article(title, baseUrl, url);
+                        if(sourceSelect != null) sourceSelect.clearCheck();
+                        ((CustomizeActivity)getActivity()).updateSource(customArticle);
+                        ((CustomizeActivity)getActivity()).nextItem.setEnabled(true);
+                        if(((CustomizeActivity)getActivity()).actionModeOpen){
+                            ((CustomizeActivity)getActivity()).actionModeNextItem.setEnabled(true);
+                        }
+                    }
+                });
+            titleTask.execute();
         }
-
-        sourceSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId >= 0){
-                    ((CustomizeActivity)getActivity()).updateSource(checkedId);
-                }
-            }
-        });
-
-        layout.addView(sourceSelect);
-
-        boolean loading = sourceSelect.getChildCount() == 0
-                || sourceSelect.getChildCount() < ((CustomizeActivity)getActivity()).numResults;
-        if(loading){
-            layout.addView(spinner);
+        catch (MalformedURLException e) {
+            // show toast
+            Toast.makeText(getActivity(), "The pasted text is not a valid URL.",
+                    Toast.LENGTH_SHORT).show();
         }
+    }
 
-        layout.addView(customSourceButton);
-        sv.addView(layout);
-        return sv;
+    private String getDisplayUrl(String url) {
+        String baseUrl = url;
+        if(baseUrl.startsWith("https://www.")){
+            baseUrl = baseUrl.substring("https://www.".length());
+        }else if(baseUrl.startsWith("http://www.")){
+            baseUrl = baseUrl.substring("http://www.".length());
+        }else if(baseUrl.startsWith("https://")){
+            baseUrl = baseUrl.substring("https://".length());
+        }else if(baseUrl.startsWith("http://")){
+            baseUrl = baseUrl.substring("http://".length());
+        }
+        int backslashAt = baseUrl.indexOf('/');
+        if(backslashAt > 0){
+            baseUrl = baseUrl.substring(0, backslashAt);
+        }
+        return baseUrl;
     }
 
     public int dpToPx(int dp) {

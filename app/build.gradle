@@ -10,6 +10,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
+    maven(){
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
     jcenter()
 }
 
@@ -62,4 +66,7 @@ dependencies {
     compile project(':cropper')
     compile project(':tess-two')
     compile files('libs/jtar-1.1.jar')
+    compile ('com.github.worker8:tourguide:1.0.14-SNAPSHOT@aar'){
+        transitive=true
+    }
 }

@@ -44,13 +44,14 @@ import static com.transcendentlabs.xcerpt.Util.EXCERPT;
 
 public class CustomizeActivity extends AppCompatActivity {
 
-    private String excerpt;
-    private ViewPager mPager;
+    LinearLayout backgroundView;
     private PagerAdapter mPagerAdapter;
-    public TextView contentPreview;
-    private LinearLayout backgroundView;
     private TextView titleView;
     private TextView websiteView;
+    private PagerSlidingTabStrip tabs;
+
+    // public parameters (are highly coupled in ScreenSlidePageFragment at the moment...)
+    public TextView contentPreview;
     public MaxHeightScrollView scrollView;
 
     public String selectedUrl;
@@ -65,44 +66,16 @@ public class CustomizeActivity extends AppCompatActivity {
 
     private static final float TEXT_SIZE = 16;
     private static final int NUM_RESULTS = 3;
-    private static final int MAX_HEIGHT = 1920;
+    private static final int MAX_IMAGE_HEIGHT = 1920;
+    private static final String SHOW_HINT_SETTING = "hint";
+    private static final double MAX_SCROLL_VIEW_HEIGHT = 0.54; // as percentage of screen height
+
     public static final String IMAGE = "IMAGE";
     public static final String URL = "URL";
     public static final String COLOUR_SETTING = "colour";
-    private static final String SHOW_HINT_SETTING = "hint";
     public boolean actionModeOpen = false;
 
     volatile boolean running;
-
-    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-        private final String[] TITLES = {
-                getString(R.string.tab_colour),
-                getString(R.string.tab_source)
-        };
-
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        public CharSequence getPageTitle(int position) {
-            return TITLES[position];
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return ScreenSlidePageFragment.create(position);
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
-        }
-
-        @Override
-        public int getCount() {
-            return TITLES.length;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,46 +83,71 @@ public class CustomizeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_customize);
         running = true;
 
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int height = size.y;
+        String excerpt = getExcerptFromIntent();
 
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
-        contentPreview = (TextView) findViewById(R.id.content_preview);
-        scrollView = (MaxHeightScrollView) findViewById(R.id.preview_scroll);
 
-        scrollView.setMaxHeight((int) (0.54 * height));
+        initPager();
 
-        mPager = (ViewPager) findViewById(R.id.pager);
+        final SharedPreferences settings = getPreferences(0);
+        initContentPreview(settings, excerpt);
+        showGuide(settings);
+
+        executeSearchTask(excerpt);
+
+    }
+
+    private void initPager() {
+        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
-        final PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(mPager);
         tabs.setTextColorResource(R.color.tw__solid_white);
         tabs.setIndicatorColor(Color.WHITE);
         tabs.setDividerColor(Color.TRANSPARENT);
+    }
 
+    private String getExcerptFromIntent() {
         Intent intent = getIntent();
         String intentAction = intent.getAction();
 
-        if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){
-            excerpt = intent.getStringExtra(Intent.EXTRA_TEXT).trim();
-        }else if(intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT)){
-            excerpt = intent.getStringExtra(EXCERPT);
+        if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){ // from sharing
+            return intent.getStringExtra(Intent.EXTRA_TEXT).trim();
+        }else if(intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT)){ // from Xcerpt
+            return intent.getStringExtra(EXCERPT);
         }
 
-        final SharedPreferences settings = getPreferences(0);
+        Log.e("CustomizeActivity", "Unexpected intent, excerpt String returned null");
+        return null;
+    }
+
+    private void initContentPreview(final SharedPreferences settings, String text) {
+
+        // set scroll view (content preview's parent) to max height
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int height = size.y;
+        scrollView = (MaxHeightScrollView) findViewById(R.id.preview_scroll);
+        scrollView.setMaxHeight((int) (MAX_SCROLL_VIEW_HEIGHT * height));
+
+        contentPreview = (TextView) findViewById(R.id.content_preview);
+
+        // set background colour to preferred colour
         int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor(DEFAULT_COLOUR));
         setColour(defaultColour);
 
+        // format text
         contentPreview.setTypeface(Typeface.SERIF);
         contentPreview.setTextColor(Color.BLACK);
         contentPreview.setTextSize(TEXT_SIZE);
-        contentPreview.setText(excerpt);
+        contentPreview.setText(text);
+
+        // highlighting
         contentPreview.setKeyListener(null);
         contentPreview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,7 +168,10 @@ public class CustomizeActivity extends AppCompatActivity {
                         contentPreview.performLongClick();
                     }
                 });
-                int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor(DEFAULT_COLOUR));
+                int defaultColour = settings.getInt(
+                        COLOUR_SETTING,
+                        Color.parseColor(DEFAULT_COLOUR)
+                );
                 actionModeOpen = false;
                 setColour(defaultColour);
             }
@@ -211,7 +212,9 @@ public class CustomizeActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
 
+    private void showGuide(final SharedPreferences settings) {
         boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
 
         if(showHint) {
@@ -232,8 +235,10 @@ public class CustomizeActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         }
+    }
 
-        SearchAsyncTask searchTask = new SearchAsyncTask(excerpt, NUM_RESULTS, new SearchAsyncTask.Callback() {
+    private void executeSearchTask(String textToSearch) {
+        SearchAsyncTask searchTask = new SearchAsyncTask(textToSearch, NUM_RESULTS, new SearchAsyncTask.Callback() {
             @Override
             public void onComplete(Object o, Error error) {
                 if (error != null) {
@@ -342,13 +347,17 @@ public class CustomizeActivity extends AppCompatActivity {
 
     private void share(){
         Intent intent = new Intent(this, ShareActivity.class);
-
         intent.putExtra(URL, selectedUrl);
 
-        Bitmap image = takeScreenShot();
+        Bitmap image = getBitmapFromView(
+                backgroundView,
+                backgroundView.getHeight(),
+                backgroundView.getWidth()
+        );
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
+
         intent.putExtra(IMAGE, byteArray);
         startActivity(intent);
     }
@@ -377,7 +386,6 @@ public class CustomizeActivity extends AppCompatActivity {
                         ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getBottom());
                 animScrollToTop.setDuration(500);
                 animScrollToTop.start();
-                // scrollView.scrollTo(0, scrollView.getBottom());
 
                 titleView.setText(article.title);
                 websiteView.setText(article.displayUrl);
@@ -389,11 +397,12 @@ public class CustomizeActivity extends AppCompatActivity {
 
     public void setColour(int colour){
         backgroundView.setBackgroundColor(colour);
+
+        // set highlight colour to a lighter version of colour
         String hexColour = String.format("#%06X", (0xFFFFFF & colour));
         String highlightColour = "#40" + hexColour.substring(1);
         contentPreview.setHighlightColor(Color.parseColor(highlightColour));
 
-        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setBackgroundColor(colour);
         tabs.setIndicatorHeight(15);
 
@@ -405,7 +414,8 @@ public class CustomizeActivity extends AppCompatActivity {
                 Window window = getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_white);
+                Bitmap icon =
+                        BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_white);
 
                 ActivityManager.TaskDescription taskDescription =
                         new ActivityManager.TaskDescription(
@@ -418,23 +428,15 @@ public class CustomizeActivity extends AppCompatActivity {
                 int darkerColour = colour;
                 Color.colorToHSV(darkerColour, hsv);
                 hsv[2] *= 0.8f; // value component
-                darkerColour = Color.HSVToColor(hsv);
+                darkerColour = Color.HSVToColor(hsv); // make colour darker
                 window.setStatusBarColor(darkerColour);
             }
         }
     }
 
-    private Bitmap takeScreenShot()
-    {
-        int totalHeight = backgroundView.getHeight();
-        int totalWidth = backgroundView.getWidth();
-
-        return getBitmapFromView(backgroundView,totalHeight,totalWidth);
-    }
-
     public static Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {
 
-        int height = Math.min(MAX_HEIGHT, totalHeight);
+        int height = Math.min(MAX_IMAGE_HEIGHT, totalHeight);
         float percent = height / (float)totalHeight;
 
         Bitmap canvasBitmap = Bitmap.createBitmap(
@@ -456,5 +458,36 @@ public class CustomizeActivity extends AppCompatActivity {
         canvas.restore();
 
         return canvasBitmap;
+    }
+
+
+    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
+        private final String[] TITLES = {
+                getString(R.string.tab_colour),
+                getString(R.string.tab_source)
+        };
+
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        public CharSequence getPageTitle(int position) {
+            return TITLES[position];
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return ScreenSlidePageFragment.create(position);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public int getCount() {
+            return TITLES.length;
+        }
     }
 }
