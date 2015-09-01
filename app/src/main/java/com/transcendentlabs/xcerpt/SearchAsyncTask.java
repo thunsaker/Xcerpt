@@ -29,7 +29,7 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
     private Error mError;
 
     public SearchAsyncTask(String searchStr, int numOfResults, Callback callback) {
-        mSearchStr = "" + searchStr +  "";
+        mSearchStr = searchStr;
         mNumOfResults = numOfResults;
         mCallback = callback;
     }
@@ -37,8 +37,10 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         try {
-            mSearchStr = mSearchStr.replaceAll("\\s+", " ");
-            // mSearchStr = mSearchStr.replaceAll("\\p{P}", "");
+            // remove quotation marks and extra whitespace
+            mSearchStr = mSearchStr.replaceAll("\"", "").replaceAll("\\s+", " ");
+            // wrapped with quotation marks for verbatim search
+            mSearchStr = "\"" + mSearchStr +  "\"";
 
             int numSpaces = mSearchStr.length() - mSearchStr.replaceAll(" ", "").length();
             int less = 10;
