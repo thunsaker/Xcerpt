@@ -115,7 +115,18 @@ public class CropActivity extends AppCompatActivity {
                     }
                     String excerpt = (String) o;
 
-                    if (isNetworkAvailable(getApplicationContext())) {
+                    if(excerpt.isEmpty() || isGibberish(excerpt)){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                        builder.setTitle(getString(R.string.crop_error));
+                        builder.setMessage(getString(R.string.crop_instructions_2));
+                        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }else if (isNetworkAvailable(getApplicationContext())) {
                         Intent intent = new Intent(activity, CustomizeActivity.class);
                         intent.setAction(Intent.ACTION_DEFAULT);
                         intent.putExtra(EXCERPT, excerpt);
@@ -133,5 +144,16 @@ public class CropActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // this function won't be necessary when we use the actual image
+    private boolean isGibberish(String text){
+        // strategy: see if the amount of non alphanumeric characters is too high for actual text
+        // may want to make this strategy smarter in the future
+
+        int numAlphanumericChars = text.replaceAll("[^a-zA-Z ]", "").length();
+        double ratio = (double) numAlphanumericChars / text.length();
+        Log.e("isGibberish", "Ratio: " + ratio);
+        return ratio < 0.75;
     }
 }

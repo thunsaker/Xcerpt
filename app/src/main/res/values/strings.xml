@@ -44,5 +44,6 @@
     <string name="crop_instructions_2">Crop so that only the excerpt you wish to share is in frame. Try to avoid including any other elements in the final image.</string>
     <string name="first_time_setup_dialog_text">Performing first time setup…</string>
     <string name="highlight_hint_title">Highlight text to add emphasis</string>
+    <string name="crop_error">Error: It doesn\'t seem like you cropped a text passage.</string>
 
 </resources>
