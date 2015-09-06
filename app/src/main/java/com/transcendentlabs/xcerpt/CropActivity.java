@@ -12,25 +12,18 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
 
-import tourguide.tourguide.Overlay;
-import tourguide.tourguide.Pointer;
-import tourguide.tourguide.ToolTip;
-import tourguide.tourguide.TourGuide;
-
-import static com.transcendentlabs.xcerpt.Util.*;
-
 import static com.transcendentlabs.xcerpt.Util.EXCERPT;
+import static com.transcendentlabs.xcerpt.Util.getStorageDirectory;
+import static com.transcendentlabs.xcerpt.Util.initOcrIfNecessary;
 import static com.transcendentlabs.xcerpt.Util.isNetworkAvailable;
 import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 

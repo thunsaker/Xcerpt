@@ -54,6 +54,7 @@ public class CustomizeActivity extends AppCompatActivity {
     private TextView websiteView;
     private PagerSlidingTabStrip tabs;
     private TourGuide mTourGuideHandler;
+    private String excerpt;
 
     // public parameters (are highly coupled in ScreenSlidePageFragment at the moment...)
     public TextView contentPreview;
@@ -86,20 +87,35 @@ public class CustomizeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_customize);
         running = true;
 
-        String excerpt = getExcerptFromIntent();
-
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
 
         initPager();
 
+        excerpt = getExcerptFromIntent();
+
         final SharedPreferences settings = getPreferences(0);
         initContentPreview(settings, excerpt);
         showGuide(settings);
 
         executeSearchTask(excerpt);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        String newExcerpt = getExcerptFromIntent();
+        if(!newExcerpt.equals(excerpt)){
+            titleView.setText(getString(R.string.loading));
+            websiteView.setText(getString(R.string.loading));
+            initPager();
+            excerpt = newExcerpt;
+            final SharedPreferences settings = getPreferences(0);
+            initContentPreview(settings, excerpt);
+            showGuide(settings);
+            executeSearchTask(excerpt);
+        }
     }
 
     private void initPager() {
@@ -298,15 +314,15 @@ public class CustomizeActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(Object o, Error error) {
                             if (error != null) {
+                                // fall back on search result data
+                                articles[finalI] = createArticle(
+                                        results[finalI].Title,
+                                        results[finalI].DisplayUrl,
+                                        results[finalI].Url
+                                );
+                                mPagerAdapter.notifyDataSetChanged();
                                 if (error.getMessage() != null) {
                                     Log.e("SearchAsyncTask", error.getMessage());
-                                    // fall back on search result data
-                                    articles[finalI] = createArticle(
-                                            results[finalI].Title,
-                                            results[finalI].DisplayUrl,
-                                            results[finalI].Url
-                                    );
-                                    mPagerAdapter.notifyDataSetChanged();
                                     return;
                                 } else {
                                     Log.e("SearchAsyncTask", "Unknown error");
@@ -387,6 +403,12 @@ public class CustomizeActivity extends AppCompatActivity {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
     }
 
     private void share(){

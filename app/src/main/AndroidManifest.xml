@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".CustomizeActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:logo="@mipmap/ic_launcher_white"
             android:screenOrientation="portrait" >
             <intent-filter>

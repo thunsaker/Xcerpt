@@ -22,15 +22,15 @@ def TWITTER_KEY = '"' + TwitterKeyProp + '"' ?: '"Define Twitter key"';
 def TWITTER_SECRET_KEY = '"' + TwitterSecretKeyProp + '"' ?: '"Define Twitter secret key"';
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 22
     buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "com.transcendentlabs.xcerpt"
         minSdkVersion 14
-        targetSdkVersion 21
-        versionCode 4
-        versionName "1"
+        targetSdkVersion 22
+        versionCode 5
+        versionName "1.0.1"
     }
     buildTypes {
         debug{
@@ -52,7 +52,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
-    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.google.code.gson:gson:2.3'
     compile 'com.github.markushi:circlebutton:1.1'
     compile 'org.jsoup:jsoup:1.7.3'
     compile('com.twitter.sdk.android:twitter:1.6.1@aar') {
