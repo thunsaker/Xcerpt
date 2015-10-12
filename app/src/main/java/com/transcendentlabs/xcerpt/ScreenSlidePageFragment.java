@@ -301,16 +301,16 @@ public class ScreenSlidePageFragment extends Fragment {
         customSourceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(clipboard.getPrimaryClip() == null){
+                    Toast.makeText(getActivity(), "The clipboard is empty.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 // get text from clipboard
                 ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
                 final String pasteData = item.getText().toString();
                 if(pasteData != null){
                     getSourceHtml(pasteData, sourceSelect);
-
-
-                }else{
-                    Toast.makeText(getActivity(), "The clipboard is empty.",
-                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
