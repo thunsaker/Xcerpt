@@ -37,6 +37,7 @@ import com.astuetz.PagerSlidingTabStrip;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import tourguide.tourguide.Overlay;
 import tourguide.tourguide.Pointer;
@@ -109,6 +110,7 @@ public class CustomizeActivity extends AppCompatActivity {
         if(!newExcerpt.equals(excerpt)){
             titleView.setText(getString(R.string.loading));
             websiteView.setText(getString(R.string.loading));
+            Arrays.fill(articles, null);
             initPager();
             excerpt = newExcerpt;
             final SharedPreferences settings = getPreferences(0);

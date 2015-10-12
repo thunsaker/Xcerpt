@@ -42,7 +42,8 @@ public class InputActivity extends AppCompatActivity{
         setContentView(R.layout.activity_input);
 
         GridView gv = (GridView) findViewById(R.id.image_grid);
-        gv.setAdapter(new GridViewAdapter(this));
+        GridViewAdapter gvAdapter = new GridViewAdapter(this);
+        gv.setAdapter(gvAdapter);
 
         ActionBar bar = getSupportActionBar();
         Window window = getWindow();
@@ -86,6 +87,13 @@ public class InputActivity extends AppCompatActivity{
 
     public void pasteClipboard(View view) {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if(clipboard.getPrimaryClip() == null){
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.empty_clipboard_toast),
+                    Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
         ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
         String pasteData = item.getText().toString();
 
