@@ -32,6 +32,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 
@@ -415,6 +416,12 @@ public class CustomizeActivity extends AppCompatActivity {
     }
 
     private void share(){
+        if(selectedUrl == null){
+            // TODO selectedUrl should never be null when the share button is enabled
+            Toast.makeText(this, "You must select a source first.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent intent = new Intent(this, ShareActivity.class);
         intent.putExtra(URL, selectedUrl);
 
