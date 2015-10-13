@@ -1,6 +1,8 @@
 package com.transcendentlabs.xcerpt;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,6 +11,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -39,6 +43,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import io.fabric.sdk.android.Fabric;
 import twitter4j.StatusUpdate;
@@ -62,6 +67,7 @@ public class ShareActivity extends AppCompatActivity {
     private TwitterLoginButton loginButton;
     private TextView userName;
     private Button tweetButton;
+    private Button saveButton;
     private TextView characterCount;
     private EditText tweet;
     private LinearLayout tweetLayout;
@@ -69,6 +75,8 @@ public class ShareActivity extends AppCompatActivity {
 
     private String fileName;
     private String tweetText;
+    private Bitmap img;
+    private String selectedUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +92,7 @@ public class ShareActivity extends AppCompatActivity {
         setActionBarColour(bar, window, this);
 
         tweetButton = (Button) findViewById(R.id.tweet_button);
+        saveButton = (Button) findViewById(R.id.save_button);
         userName = (TextView) findViewById(R.id.user_name);
 
         tweetLayout = (LinearLayout) findViewById(R.id.tweet_layout);
@@ -105,7 +114,7 @@ public class ShareActivity extends AppCompatActivity {
             }
         });
 
-        final String selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
+        selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
 
         initLinkPreviewView(selectedUrl);
         initCharacterCountView();
@@ -140,11 +149,11 @@ public class ShareActivity extends AppCompatActivity {
         twitterSession =
                 TwitterCore.getInstance().getSessionManager().getActiveSession();
 
-        Bitmap img = getImagePreview();
+        img = getImagePreview();
         ImageView finalImage = (ImageView) findViewById(R.id.final_image);
         finalImage.setImageBitmap(img);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MMdd_HHmm_ssSS");
         Date now = new Date();
         String strDate = sdf.format(now);
         fileName = strDate + ".png";
@@ -271,6 +280,59 @@ public class ShareActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void saveImage(View view) {
+        if(isExternalStorageWritable()){
+            String root =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+            File dir = new File(root + "/Xcerpt");
+            dir.mkdirs();
+            File file = new File(dir, fileName);
+            Log.i("ShareActivity", "" + file);
+            if (file.exists())
+                file.delete();
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+                img.compress(Bitmap.CompressFormat.PNG, 100, out);
+                out.flush();
+                out.close();
+                saveButton.setEnabled(false);
+                saveButton.setText("Image Saved");
+            } catch (Exception e) {
+                Toast.makeText(ShareActivity.this,
+                        "Error: File could not be saved.",
+                        Toast.LENGTH_LONG
+                ).show();
+                e.printStackTrace();
+            }
+
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, fileName);
+            values.put(MediaStore.Images.Media.DESCRIPTION, selectedUrl);
+            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis ());
+            values.put(MediaStore.Images.ImageColumns.BUCKET_ID, file.toString().toLowerCase(Locale.US).hashCode());
+            values.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, file.getName().toLowerCase(Locale.US));
+            values.put("_data", file.getAbsolutePath());
+
+            ContentResolver cr = getContentResolver();
+            cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        }else{
+            Toast.makeText(ShareActivity.this,
+                    "Error: External storage is not writable.",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
     }
 
     public void postTweet(View view) {

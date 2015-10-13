@@ -28,7 +28,7 @@
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".InputActivity" />
+                android:value=".CropActivity" />
         </activity>
         <activity
             android:name=".ShareActivity"

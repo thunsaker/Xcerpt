@@ -53,12 +53,23 @@
             android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
             />
 
-        <TextView
-            android:id="@+id/link_preview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        </LinearLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/link_preview"
+                    android:layout_alignParentLeft="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/character_count"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
 
+        </LinearLayout>
         <ImageView
             android:id="@+id/final_image"
             android:layout_width="wrap_content"
@@ -85,23 +96,27 @@
             android:paddingBottom="5dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
-        <TextView
-            android:id="@+id/character_count"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:id="@+id/tweet_button"
-            android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/tweet"
-            android:textColor="@color/tw__solid_white"
-            android:background="@drawable/tweet_button"
-            android:onClick="postTweet"/>
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:id="@+id/save_button"
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save_button"
+                android:textColor="@color/tw__solid_white"
+                android:background="@drawable/tweet_button"
+                android:onClick="saveImage"/>
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:id="@+id/tweet_button"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tweet"
+                android:textColor="@color/tw__solid_white"
+                android:background="@drawable/tweet_button"
+                android:onClick="postTweet"/>
             </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

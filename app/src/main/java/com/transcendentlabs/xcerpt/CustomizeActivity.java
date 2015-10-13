@@ -107,7 +107,7 @@ public class CustomizeActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();  // Always call the superclass method first
         String newExcerpt = getExcerptFromIntent();
-        if(!newExcerpt.equals(excerpt)){
+        if(newExcerpt != null && !newExcerpt.equals(excerpt)){
             titleView.setText(getString(R.string.loading));
             websiteView.setText(getString(R.string.loading));
             Arrays.fill(articles, null);
@@ -348,6 +348,7 @@ public class CustomizeActivity extends AppCompatActivity {
                                 websiteView.setText(articles[0].displayUrl);
                                 selectedUrl = articles[0].url;
                                 nextItem.setEnabled(true);
+                                if(actionModeOpen) actionModeNextItem.setEnabled(true);
                             }
                             if (running) {
                                 mPagerAdapter.notifyDataSetChanged();

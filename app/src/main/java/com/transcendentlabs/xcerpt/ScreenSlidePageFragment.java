@@ -302,7 +302,7 @@ public class ScreenSlidePageFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(clipboard.getPrimaryClip() == null){
-                    Toast.makeText(getActivity(), "The clipboard is empty.",
+                    Toast.makeText(getActivity(), getString(R.string.empty_clipboard_toast),
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -311,6 +311,9 @@ public class ScreenSlidePageFragment extends Fragment {
                 final String pasteData = item.getText().toString();
                 if(pasteData != null){
                     getSourceHtml(pasteData, sourceSelect);
+                }else{
+                    Toast.makeText(getActivity(), getString(R.string.empty_clipboard_toast),
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
