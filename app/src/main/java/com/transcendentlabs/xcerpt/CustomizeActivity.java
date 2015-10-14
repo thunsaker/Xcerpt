@@ -208,10 +208,8 @@ public class CustomizeActivity extends AppCompatActivity {
             }
 
             public boolean onCreateActionMode(final ActionMode mode, Menu menu) {
-
+                menu.clear();
                 mode.getMenuInflater().inflate(R.menu.highlight, menu);
-                menu.removeItem(android.R.id.copy);
-                menu.removeItem(android.R.id.selectAll);
 
                 actionModeNextItem = menu.getItem(0);
                 actionModeNextItem.setEnabled(nextItem.isEnabled());
