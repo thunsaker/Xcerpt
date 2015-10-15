@@ -20,6 +20,7 @@
         android:textColor="@android:color/white"/>
 
     <TextView
+        android:id="@+id/select_screenshot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/select_image_instructions"
@@ -27,6 +28,18 @@
         android:layout_marginBottom="10dp"
         android:textSize="20sp"
         android:textColor="@android:color/white"
+        android:gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/no_screenshot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/no_screenshots"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:visibility="gone"
         android:gravity="center_horizontal"/>
 
     <GridView

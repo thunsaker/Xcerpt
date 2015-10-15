@@ -1,6 +1,7 @@
 package com.transcendentlabs.xcerpt;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +22,8 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Display;
@@ -175,14 +178,15 @@ public class CustomizeActivity extends AppCompatActivity {
         contentPreview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                contentPreview.performLongClick();
-
-                boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
-                if(showHint) {
-                    mTourGuideHandler.cleanUp();
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putBoolean(SHOW_HINT_SETTING, false);
-                    editor.commit();
+                if(!actionModeOpen){
+                    contentPreview.performLongClick();
+                    actionModeOpen = true;
+                }else{
+                    contentPreview.setTextIsSelectable(false);
+                    Spannable str = new SpannableString(contentPreview.getText().toString());
+                    contentPreview.setText(str);
+                    contentPreview.setTextIsSelectable(true);
+                    actionModeOpen = false;
                 }
             }
         });
@@ -193,17 +197,10 @@ public class CustomizeActivity extends AppCompatActivity {
             }
 
             public void onDestroyActionMode(ActionMode mode) {
-                contentPreview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        contentPreview.performLongClick();
-                    }
-                });
                 int defaultColour = settings.getInt(
                         COLOUR_SETTING,
                         Color.parseColor(DEFAULT_COLOUR)
                 );
-                actionModeOpen = false;
                 setColour(defaultColour);
             }
 
@@ -214,19 +211,19 @@ public class CustomizeActivity extends AppCompatActivity {
                 actionModeNextItem = menu.getItem(0);
                 actionModeNextItem.setEnabled(nextItem.isEnabled());
 
-                contentPreview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mode.finish();
-                    }
-                });
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Window window = getWindow();
                     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                     window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_900));
                 }
 
-                actionModeOpen = true;
+                boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
+                if(showHint) {
+                    mTourGuideHandler.cleanUp();
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean(SHOW_HINT_SETTING, false);
+                    editor.commit();
+                }
                 return true;
             }
 

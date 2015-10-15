@@ -46,5 +46,6 @@
     <string name="highlight_hint_title">Highlight text to add emphasis</string>
     <string name="crop_error">Error: It doesn\'t seem like you cropped a text passage.</string>
     <string name="save_button">Save Image</string>
+    <string name="no_screenshots">You have no screenshots.</string>
 
 </resources>

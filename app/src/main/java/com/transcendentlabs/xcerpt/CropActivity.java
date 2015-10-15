@@ -90,6 +90,11 @@ public class CropActivity extends AppCompatActivity {
 
         if (id == R.id.action_crop) {
             Bitmap finalImage = cropImageView.getCroppedImage();
+            if(finalImage == null){
+                Toast.makeText(getApplicationContext(),
+                        "Error: Crop failed.",
+                        Toast.LENGTH_SHORT).show();
+            }
             final Activity activity = this;
             initOcrIfNecessary(this);
             String dir = getStorageDirectory(this).toString();

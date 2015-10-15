@@ -16,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -36,14 +38,28 @@ public class InputActivity extends AppCompatActivity{
     /** Resource to use for data file downloads. */
     static final String DOWNLOAD_BASE = "http://tesseract-ocr.googlecode.com/files/";
 
+    private GridView gv;
+    private GridViewAdapter gvAdapter;
+    private TextView selectScreenshot;
+    private TextView noScreenshot;
+
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
+        selectScreenshot = (TextView) findViewById(R.id.select_screenshot);
+        noScreenshot = (TextView) findViewById(R.id.no_screenshot);
 
-        GridView gv = (GridView) findViewById(R.id.image_grid);
-        GridViewAdapter gvAdapter = new GridViewAdapter(this);
+        gv = (GridView) findViewById(R.id.image_grid);
+        gvAdapter = new GridViewAdapter(this);
         gv.setAdapter(gvAdapter);
+        if(gvAdapter.isEmpty()){
+            noScreenshot.setVisibility(View.VISIBLE);
+            selectScreenshot.setVisibility(View.GONE);
+        }else{
+            noScreenshot.setVisibility(View.GONE);
+            selectScreenshot.setVisibility(View.VISIBLE);
+        }
 
         ActionBar bar = getSupportActionBar();
         Window window = getWindow();
@@ -55,6 +71,16 @@ public class InputActivity extends AppCompatActivity{
         super.onResume();
         // Do OCR engine initialization, if necessary
         initOcrIfNecessary(this);
+        gvAdapter = new GridViewAdapter(this);
+        gv.setAdapter(gvAdapter);
+
+        if(gvAdapter.isEmpty()){
+            noScreenshot.setVisibility(View.VISIBLE);
+            selectScreenshot.setVisibility(View.GONE);
+        }else{
+            noScreenshot.setVisibility(View.GONE);
+            selectScreenshot.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -95,6 +121,13 @@ public class InputActivity extends AppCompatActivity{
             return;
         }
         ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+        if(item == null){
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.empty_clipboard_toast),
+                    Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
         String pasteData = item.getText().toString();
 
         String excerpt = "";
