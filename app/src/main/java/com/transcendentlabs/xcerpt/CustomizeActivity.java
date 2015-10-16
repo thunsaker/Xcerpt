@@ -1,7 +1,6 @@
 package com.transcendentlabs.xcerpt;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -175,21 +174,34 @@ public class CustomizeActivity extends AppCompatActivity {
 
         // highlighting
         contentPreview.setKeyListener(null);
-        contentPreview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!actionModeOpen){
-                    contentPreview.performLongClick();
-                    actionModeOpen = true;
-                }else{
-                    contentPreview.setTextIsSelectable(false);
-                    Spannable str = new SpannableString(contentPreview.getText().toString());
-                    contentPreview.setText(str);
-                    contentPreview.setTextIsSelectable(true);
-                    actionModeOpen = false;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+            contentPreview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("onClick", "actionModeOpen =" + Boolean.toString(actionModeOpen));
+                    if (!actionModeOpen) {
+                        contentPreview.performLongClick();
+
+                        boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
+                        if (showHint) {
+                            mTourGuideHandler.cleanUp();
+                            SharedPreferences.Editor editor = settings.edit();
+                            editor.putBoolean(SHOW_HINT_SETTING, false);
+                            editor.commit();
+                        }
+
+                        actionModeOpen = true;
+                    } else {
+                        contentPreview.setTextIsSelectable(false);
+                        Spannable str = new SpannableString(contentPreview.getText().toString());
+                        contentPreview.setText(str);
+                        contentPreview.setTextIsSelectable(true);
+                        actionModeOpen = false;
+                    }
                 }
-            }
-        });
+            });
+        }
+
         contentPreview.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
 
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
@@ -202,27 +214,23 @@ public class CustomizeActivity extends AppCompatActivity {
                         Color.parseColor(DEFAULT_COLOUR)
                 );
                 setColour(defaultColour);
+
+                actionModeOpen = false;
             }
 
             public boolean onCreateActionMode(final ActionMode mode, Menu menu) {
+                actionModeOpen = true;
                 menu.clear();
                 mode.getMenuInflater().inflate(R.menu.highlight, menu);
 
                 actionModeNextItem = menu.getItem(0);
                 actionModeNextItem.setEnabled(nextItem.isEnabled());
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
                     Window window = getWindow();
                     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                     window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_900));
-                }
-
-                boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
-                if(showHint) {
-                    mTourGuideHandler.cleanUp();
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putBoolean(SHOW_HINT_SETTING, false);
-                    editor.commit();
                 }
                 return true;
             }
@@ -344,7 +352,9 @@ public class CustomizeActivity extends AppCompatActivity {
                                 websiteView.setText(articles[0].displayUrl);
                                 selectedUrl = articles[0].url;
                                 nextItem.setEnabled(true);
-                                if(actionModeOpen) actionModeNextItem.setEnabled(true);
+                                if(actionModeNextItem != null && actionModeOpen) {
+                                    actionModeNextItem.setEnabled(true);
+                                }
                             }
                             if (running) {
                                 mPagerAdapter.notifyDataSetChanged();

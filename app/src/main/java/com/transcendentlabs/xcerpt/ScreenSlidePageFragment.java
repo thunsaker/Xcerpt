@@ -308,6 +308,11 @@ public class ScreenSlidePageFragment extends Fragment {
                 }
                 // get text from clipboard
                 ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+                if(item == null){
+                    Toast.makeText(getActivity(), getString(R.string.empty_clipboard_toast),
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 final String pasteData = item.getText().toString();
                 if(pasteData != null){
                     getSourceHtml(pasteData, sourceSelect);
