@@ -47,5 +47,6 @@
     <string name="crop_error">Error: It doesn\'t seem like you cropped a text passage.</string>
     <string name="save_button">Save Image</string>
     <string name="no_screenshots">You have no screenshots.</string>
+    <string name="highlight_hint_marshmallow">Long press and drag to begin highlighting a selection. Give it a try!</string>
 
 </resources>

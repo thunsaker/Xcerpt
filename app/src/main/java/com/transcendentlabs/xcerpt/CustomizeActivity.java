@@ -200,6 +200,30 @@ public class CustomizeActivity extends AppCompatActivity {
                     }
                 }
             });
+        }else{
+            contentPreview.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if (!actionModeOpen) {
+                        boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
+                        if (showHint) {
+                            mTourGuideHandler.cleanUp();
+                            SharedPreferences.Editor editor = settings.edit();
+                            editor.putBoolean(SHOW_HINT_SETTING, false);
+                            editor.commit();
+                        }
+
+                        actionModeOpen = true;
+                    } else {
+                        contentPreview.setTextIsSelectable(false);
+                        Spannable str = new SpannableString(contentPreview.getText().toString());
+                        contentPreview.setText(str);
+                        contentPreview.setTextIsSelectable(true);
+                        actionModeOpen = false;
+                    }
+                    return false;
+                }
+            });
         }
 
         contentPreview.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
@@ -225,13 +249,6 @@ public class CustomizeActivity extends AppCompatActivity {
 
                 actionModeNextItem = menu.getItem(0);
                 actionModeNextItem.setEnabled(nextItem.isEnabled());
-
-
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
-                    Window window = getWindow();
-                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_900));
-                }
                 return true;
             }
 
@@ -253,11 +270,17 @@ public class CustomizeActivity extends AppCompatActivity {
 
         if(showHint) {
             TextView contentPreview = (TextView) findViewById(R.id.content_preview);
+            String description;
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+                description = getString(R.string.highlight_hint);
+            }else{
+                description = getString(R.string.highlight_hint_marshmallow);
+            }
             mTourGuideHandler = TourGuide.init(this).with(TourGuide.Technique.Click)
                     .setPointer(new Pointer().setGravity(Gravity.TOP))
                     .setToolTip(new ToolTip()
                             .setTitle(getString(R.string.highlight_hint_title))
-                            .setDescription(getString(R.string.highlight_hint))
+                            .setDescription(description)
                             .setGravity(Gravity.TOP))
                     .setOverlay(new Overlay())
                     .playOn(contentPreview);
