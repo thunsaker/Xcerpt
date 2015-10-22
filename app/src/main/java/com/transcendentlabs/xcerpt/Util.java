@@ -2,6 +2,8 @@ package com.transcendentlabs.xcerpt;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -16,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -141,6 +144,34 @@ public class Util {
                 .setOnCancelListener(new FinishListener(activity))
                 .setPositiveButton( "Done", new FinishListener(activity))
                 .show();
+    }
+
+    public static String getTextFromClipboard(Activity activity, ClipboardManager clipboard){
+        if(clipboard.getPrimaryClip() == null){
+            Toast.makeText(activity,
+                    activity.getString(R.string.empty_clipboard_toast),
+                    Toast.LENGTH_SHORT)
+                    .show();
+            return null;
+        }
+        ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+        if(item == null){
+            Toast.makeText(activity,
+                    activity.getString(R.string.empty_clipboard_toast),
+                    Toast.LENGTH_SHORT)
+                    .show();
+            return null;
+        }
+        CharSequence text = item.getText();
+        if(text == null){
+            Toast.makeText(activity,
+                    activity.getString(R.string.clipboard_no_text),
+                    Toast.LENGTH_SHORT)
+                    .show();
+            return null;
+        }
+
+        return text.toString();
     }
 
     private static final class FinishListener

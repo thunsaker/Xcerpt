@@ -29,8 +29,8 @@ android {
         applicationId "com.transcendentlabs.xcerpt"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 10
-        versionName "1.1.4"
+        versionCode 11
+        versionName "1.1.5"
     }
     buildTypes {
         debug{

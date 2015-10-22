@@ -178,7 +178,6 @@ public class CustomizeActivity extends AppCompatActivity {
             contentPreview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.e("onClick", "actionModeOpen =" + Boolean.toString(actionModeOpen));
                     if (!actionModeOpen) {
                         contentPreview.performLongClick();
 
@@ -514,7 +513,7 @@ public class CustomizeActivity extends AppCompatActivity {
         if(bar != null){
             bar.setElevation(0);
             bar.setBackgroundDrawable(new ColorDrawable(colour));
-            if (!actionModeOpen && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Window window = getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 

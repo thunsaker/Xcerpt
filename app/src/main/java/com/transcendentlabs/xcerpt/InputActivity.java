@@ -1,6 +1,5 @@
 package com.transcendentlabs.xcerpt;
 
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -113,26 +111,13 @@ public class InputActivity extends AppCompatActivity{
 
     public void pasteClipboard(View view) {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        if(clipboard.getPrimaryClip() == null){
-            Toast.makeText(getApplicationContext(),
-                    getString(R.string.empty_clipboard_toast),
-                    Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
-        ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-        if(item == null){
-            Toast.makeText(getApplicationContext(),
-                    getString(R.string.empty_clipboard_toast),
-                    Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
-        String pasteData = item.getText().toString();
+        String pasteData = getTextFromClipboard(this, clipboard);
 
         String excerpt = "";
         if(pasteData != null){
             excerpt = pasteData.trim();
+        }else{
+            return;
         }
 
         if(excerpt.length() <= 0){

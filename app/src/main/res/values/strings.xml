@@ -48,5 +48,6 @@
     <string name="save_button">Save Image</string>
     <string name="no_screenshots">You have no screenshots.</string>
     <string name="highlight_hint_marshmallow">Long press and drag to begin highlighting a selection. Give it a try!</string>
+    <string name="clipboard_no_text">The clipboard does not contain text.</string>
 
 </resources>

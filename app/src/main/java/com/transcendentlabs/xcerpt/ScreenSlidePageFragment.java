@@ -1,6 +1,5 @@
 package com.transcendentlabs.xcerpt;
 
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -31,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.transcendentlabs.xcerpt.Util.*;
 import at.markushi.ui.CircleButton;
 
 public class ScreenSlidePageFragment extends Fragment {
@@ -301,19 +301,7 @@ public class ScreenSlidePageFragment extends Fragment {
         customSourceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(clipboard.getPrimaryClip() == null){
-                    Toast.makeText(getActivity(), getString(R.string.empty_clipboard_toast),
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                // get text from clipboard
-                ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-                if(item == null){
-                    Toast.makeText(getActivity(), getString(R.string.empty_clipboard_toast),
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                final String pasteData = item.getText().toString();
+                final String pasteData = getTextFromClipboard(getActivity(), clipboard);
                 if(pasteData != null){
                     getSourceHtml(pasteData, sourceSelect);
                 }else{
@@ -380,11 +368,5 @@ public class ScreenSlidePageFragment extends Fragment {
         DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
-    }
-
-    public static void hideSpinner(){
-        if(spinner != null){
-            spinner.setVisibility(View.GONE);
-        }
     }
 }
