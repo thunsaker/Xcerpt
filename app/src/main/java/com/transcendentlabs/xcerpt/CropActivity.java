@@ -119,7 +119,11 @@ public class CropActivity extends AppCompatActivity {
                             }
                         });
                         AlertDialog dialog = builder.create();
-                        dialog.show();
+                        try{
+                            dialog.show();
+                        }catch(Exception ignored){
+
+                        }
                     }else if (isNetworkAvailable(getApplicationContext())) {
                         Intent intent = new Intent(activity, CustomizeActivity.class);
                         intent.setAction(Intent.ACTION_DEFAULT);

@@ -327,7 +327,11 @@ public class CustomizeActivity extends AppCompatActivity {
                     websiteView.setText(R.string.no_source_instructions);
 
                     no_results_or_error = true;
-                    mPagerAdapter.notifyDataSetChanged();
+                    try{
+                        mPagerAdapter.notifyDataSetChanged();
+                    }catch(IllegalStateException ignored){
+
+                    }
                 }
             });
             return;
