@@ -1,6 +1,7 @@
 package com.transcendentlabs.xcerpt;
 
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.content.ClipboardManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -77,12 +79,16 @@ public class ShareActivity extends AppCompatActivity {
     private String tweetText;
     private Bitmap img;
     private String selectedUrl;
+    private Uri shareImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
+
+        twitterSession =
+                TwitterCore.getInstance().getSessionManager().getActiveSession();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
@@ -146,9 +152,6 @@ public class ShareActivity extends AppCompatActivity {
             }
         });
 
-        twitterSession =
-                TwitterCore.getInstance().getSessionManager().getActiveSession();
-
         img = getImagePreview();
         ImageView finalImage = (ImageView) findViewById(R.id.final_image);
         finalImage.setImageBitmap(img);
@@ -171,6 +174,8 @@ public class ShareActivity extends AppCompatActivity {
         if(twitterSession != null){
             showLoggedInState(twitterSession);
         }
+
+        shareImageUri = null;
     }
 
     private void initLinkPreviewView(String selectedUrl) {
@@ -278,6 +283,52 @@ public class ShareActivity extends AppCompatActivity {
         if(id == R.id.home){
             onBackPressed();
             return true;
+        } else if (id == R.id.action_share) {
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("image/jpeg");
+
+            if(shareImageUri == null){
+                if(isExternalStorageWritable()){
+                    String root =
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+                    File dir = new File(root + File.separator + "Xcerpt" + File.separator + "tmp");
+                    dir.mkdirs();
+                    File file = new File(dir, fileName);
+                    Log.i("ShareActivity", "" + file);
+                    if (file.exists())
+                        file.delete();
+                    try {
+                        FileOutputStream out = new FileOutputStream(file);
+                        img.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                        out.flush();
+                        out.close();
+                        shareImageUri = Uri.fromFile(file);
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("Xcerpt URL", selectedUrl);
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(ShareActivity.this,
+                                "Source URL copied to clipboard.",
+                                Toast.LENGTH_LONG
+                        ).show();
+                        share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
+                        startActivity(Intent.createChooser(share, "Share Image"));
+                    } catch (Exception e) {
+                        Toast.makeText(ShareActivity.this,
+                                "Error: File could not be saved.",
+                                Toast.LENGTH_LONG
+                        ).show();
+                        e.printStackTrace();
+                    }
+                } else{
+                    Toast.makeText(ShareActivity.this,
+                            "Error: External storage is not writable.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            }else{
+                share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
+                startActivity(Intent.createChooser(share, "Share Image"));
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -285,17 +336,14 @@ public class ShareActivity extends AppCompatActivity {
     /* Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     public void saveImage(View view) {
         if(isExternalStorageWritable()){
             String root =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-            File dir = new File(root + "/Xcerpt");
+            File dir = new File(root + File.separator + "Xcerpt");
             dir.mkdirs();
             File file = new File(dir, fileName);
             Log.i("ShareActivity", "" + file);
@@ -303,7 +351,7 @@ public class ShareActivity extends AppCompatActivity {
                 file.delete();
             try {
                 FileOutputStream out = new FileOutputStream(file);
-                img.compress(Bitmap.CompressFormat.PNG, 100, out);
+                img.compress(Bitmap.CompressFormat.JPEG, 100, out);
                 out.flush();
                 out.close();
                 saveButton.setEnabled(false);

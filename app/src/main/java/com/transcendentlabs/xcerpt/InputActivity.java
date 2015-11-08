@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +20,10 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.squareup.picasso.Picasso;
 
+import io.fabric.sdk.android.Fabric;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +65,11 @@ public class InputActivity extends AppCompatActivity{
         ActionBar bar = getSupportActionBar();
         Window window = getWindow();
         setActionBarColour(bar, window, this);
+
+        String root =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        File dir = new File(root + File.separator + "Xcerpt" + File.separator + "tmp");
+        deleteFolder(dir);
     }
 
     @Override
@@ -137,6 +145,15 @@ public class InputActivity extends AppCompatActivity{
             CharSequence text = getString(R.string.no_internet_error);
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+    void deleteFolder(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles())
+                deleteFolder(child);
+
+        fileOrDirectory.delete();
     }
 
     class GridViewAdapter extends BaseAdapter {

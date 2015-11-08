@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static com.transcendentlabs.xcerpt.Util.EXCERPT;
 import static com.transcendentlabs.xcerpt.Util.getStorageDirectory;
@@ -31,12 +33,14 @@ public class CropActivity extends AppCompatActivity {
 
     CropImageView cropImageView;
     private static final String SHOW_HINT_SETTING = "hint";
+    private ArrayList<AsyncTask> tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crop);
         cropImageView = (CropImageView) findViewById(R.id.CropImageView);
+        tasks = new ArrayList<>();
 
         cropImageView.setGuidelines(0);
 
@@ -55,6 +59,14 @@ public class CropActivity extends AppCompatActivity {
 
         SharedPreferences settings = getPreferences(0);
         showGuide(settings);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        for(AsyncTask task : tasks){
+            task.cancel(true);
+        }
     }
 
     private void showGuide(final SharedPreferences settings) {
@@ -135,7 +147,7 @@ public class CropActivity extends AppCompatActivity {
                     }
                 }
             });
-
+            tasks.add(ocrTask);
             ocrTask.execute();
 
             return true;

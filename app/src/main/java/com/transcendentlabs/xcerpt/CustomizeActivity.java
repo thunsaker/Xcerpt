@@ -12,6 +12,7 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -40,6 +41,7 @@ import com.astuetz.PagerSlidingTabStrip;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import tourguide.tourguide.Overlay;
@@ -59,6 +61,7 @@ public class CustomizeActivity extends AppCompatActivity {
     private PagerSlidingTabStrip tabs;
     private TourGuide mTourGuideHandler;
     private String excerpt;
+    private ArrayList<AsyncTask> tasks;
 
     // public parameters (are highly coupled in ScreenSlidePageFragment at the moment...)
     public TextView contentPreview;
@@ -83,13 +86,11 @@ public class CustomizeActivity extends AppCompatActivity {
     public static final String COLOUR_SETTING = "colour";
     public boolean actionModeOpen = false;
 
-    volatile boolean running;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customize);
-        running = true;
+        tasks = new ArrayList<>();
 
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
@@ -246,8 +247,8 @@ public class CustomizeActivity extends AppCompatActivity {
                 menu.clear();
                 mode.getMenuInflater().inflate(R.menu.highlight, menu);
 
-                actionModeNextItem = menu.getItem(0);
-                actionModeNextItem.setEnabled(nextItem.isEnabled());
+                // actionModeNextItem = menu.getItem(0);
+                // actionModeNextItem.setEnabled(nextItem.isEnabled());
                 return true;
             }
 
@@ -304,13 +305,16 @@ public class CustomizeActivity extends AppCompatActivity {
                 }
             }
         });
+        tasks.add(searchTask);
         searchTask.execute();
     }
 
     @Override
     protected void onDestroy() {
-        running = false;
         super.onDestroy();
+        for(AsyncTask task : tasks){
+            task.cancel(true);
+        }
     }
 
     public void processResults(final BingSearchResults.Result[] results) throws IOException {
@@ -327,11 +331,7 @@ public class CustomizeActivity extends AppCompatActivity {
                     websiteView.setText(R.string.no_source_instructions);
 
                     no_results_or_error = true;
-                    try{
-                        mPagerAdapter.notifyDataSetChanged();
-                    }catch(IllegalStateException ignored){
-
-                    }
+                    mPagerAdapter.notifyDataSetChanged();
                 }
             });
             return;
@@ -352,26 +352,24 @@ public class CustomizeActivity extends AppCompatActivity {
                                         results[finalI].DisplayUrl,
                                         results[finalI].Url
                                 );
-                                mPagerAdapter.notifyDataSetChanged();
                                 if (error.getMessage() != null) {
                                     Log.e("SearchAsyncTask", error.getMessage());
-                                    return;
                                 } else {
                                     Log.e("SearchAsyncTask", "Unknown error");
-                                    return;
                                 }
-                            }
-                            String pageTitle = (String) o;
-                            if (pageTitle.length() == 0) {
-                                // fall back to search result title
-                                pageTitle = results[finalI].Title;
-                            }
+                            }else {
+                                String pageTitle = (String) o;
+                                if (pageTitle.length() == 0) {
+                                    // fall back to search result title
+                                    pageTitle = results[finalI].Title;
+                                }
 
-                            articles[finalI] = createArticle(
-                                    pageTitle,
-                                    results[finalI].DisplayUrl,
-                                    results[finalI].Url
-                            );
+                                articles[finalI] = createArticle(
+                                        pageTitle,
+                                        results[finalI].DisplayUrl,
+                                        results[finalI].Url
+                                );
+                            }
 
                             if (finalI == 0) {
                                 setTitleText(articles[0].title);
@@ -382,11 +380,10 @@ public class CustomizeActivity extends AppCompatActivity {
                                     actionModeNextItem.setEnabled(true);
                                 }
                             }
-                            if (running) {
-                                mPagerAdapter.notifyDataSetChanged();
-                            }
+                            mPagerAdapter.notifyDataSetChanged();
                         }
                     });
+            tasks.add(titleTask);
             titleTask.execute();
         }
     }
