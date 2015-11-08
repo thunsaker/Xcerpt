@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -26,44 +25,17 @@ import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
-import static com.transcendentlabs.xcerpt.Util.*;
-import at.markushi.ui.CircleButton;
+import uz.shift.colorpicker.LineColorPicker;
+import uz.shift.colorpicker.OnColorChangedListener;
+
+import static com.transcendentlabs.xcerpt.Util.getTextFromClipboard;
 
 public class ScreenSlidePageFragment extends Fragment {
     public static final String ARG_PAGE = "page";
     private final int MARGIN = 5;
-    private final int NUM_COLOUR_ROWS = 3;
-    private final String BUTTON_SIZE = "ButtonSize";
-    private final int SIZE_IN_DP = 50;
     private static ProgressBar spinner;
 
-    List[] colourRows = new List[]{ // must have # of elements == NUM_COLOUR_ROWS
-            Collections.unmodifiableList(Arrays.asList(
-                    Color.parseColor("#F44336"), // red
-                    Color.parseColor("#E91E63"), // pink
-                    Color.parseColor("#9C27B0"), // purple
-                    Color.parseColor("#673AB7"), // deep purple
-                    Color.parseColor("#3F51B5") // indigo
-            )),
-            Collections.unmodifiableList(Arrays.asList(
-                    Color.parseColor("#2196F3"), // blue
-                    Color.parseColor("#00BCD4"), // cyan
-                    Color.parseColor("#009688"), // teal
-                    Color.parseColor("#43A047"), // green
-                    Color.parseColor("#8BC34A") // light green
-            )),
-            Collections.unmodifiableList(Arrays.asList(
-                    Color.parseColor("#FFB300"), // amber
-                    Color.parseColor("#EF6C00"), // orange
-                    Color.parseColor("#FF5722"), // deep orange
-                    Color.parseColor("#795548"), // brown
-                    Color.parseColor("#607D8B") // blue grey
-            ))
-    };
 
     /**
      * The fragment's page number, which is set to the argument value for {@link #ARG_PAGE}.
@@ -75,6 +47,7 @@ public class ScreenSlidePageFragment extends Fragment {
     public static final int COLOUR = 0;
     public static final int SOURCE = 1;
 
+    private final String MAIN_COLOUR = "main_colour";
     /**
      * Factory method for this fragment class. Constructs a new fragment for the given page number.
      */
@@ -130,66 +103,65 @@ public class ScreenSlidePageFragment extends Fragment {
     }
     public View getColourCard(){
         final SharedPreferences settings = getActivity().getPreferences(0);
-
-        ScrollView sv = new ScrollView(getActivity());
-        LinearLayout view = new LinearLayout(getActivity());
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-        view.setLayoutParams(params);
-        view.setPadding(0, dpAsPixels, 0, 0);
-        view.setOrientation(LinearLayout.VERTICAL);
-        view.setGravity(Gravity.CENTER);
-
         final SharedPreferences.Editor editor = settings.edit();
 
-        int buttonSize = settings.getInt(BUTTON_SIZE, -1);
-        if(buttonSize == -1){
-            buttonSize = Math.round(dpToPx(SIZE_IN_DP));
-            editor.putInt(BUTTON_SIZE, buttonSize);
-            editor.commit();
-        }
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        final View colourLayout = inflater.inflate(R.layout.fragment_colour_picker, null);
 
-        LinearLayout[] colourSelectRows = new LinearLayout[NUM_COLOUR_ROWS];
-        for(int i = 0; i < NUM_COLOUR_ROWS; i++ ){
-            colourSelectRows[i] = new LinearLayout(getActivity());
-            colourSelectRows[i].setGravity(Gravity.CENTER);
-        }
+        LineColorPicker colorPicker = (LineColorPicker) colourLayout.findViewById(R.id.picker);
+        final LineColorPicker colorPicker2 = (LineColorPicker) colourLayout.findViewById(R.id.picker2);
 
-        for(int i = 0; i < NUM_COLOUR_ROWS; i++){
-            for(final Object colour : colourRows[i]){
-                CircleButton b = getCircleButton(editor, buttonSize, (int) colour);
-                colourSelectRows[i].addView(b);
-            }
-            view.addView(colourSelectRows[i]);
-        }
-        sv.addView(view);
-        return sv;
-    }
+        colorPicker.setColors(new int[]{
+                getResources().getColor(R.color.md_red_500),
+                getResources().getColor(R.color.md_pink_500),
+                getResources().getColor(R.color.md_purple_500),
+                getResources().getColor(R.color.md_deep_purple_500),
+                getResources().getColor(R.color.md_indigo_500),
+                getResources().getColor(R.color.md_blue_500),
+                getResources().getColor(R.color.md_light_blue_500),
+                getResources().getColor(R.color.md_cyan_500),
+                getResources().getColor(R.color.md_teal_500),
+                getResources().getColor(R.color.md_green_500),
+                getResources().getColor(R.color.md_light_green_500),
+                getResources().getColor(R.color.md_lime_500),
+                getResources().getColor(R.color.md_yellow_500),
+                getResources().getColor(R.color.md_amber_500),
+                getResources().getColor(R.color.md_orange_500),
+                getResources().getColor(R.color.md_deep_orange_500),
+                getResources().getColor(R.color.md_brown_500),
+                getResources().getColor(R.color.md_grey_500),
+                getResources().getColor(R.color.md_blue_grey_500),
 
-    private CircleButton getCircleButton(
-            final SharedPreferences.Editor editor,
-            int buttonSize,
-            final int colour
-    ) {
-        CircleButton b = new CircleButton(getActivity());
+        });
 
-        b.setMinimumWidth(buttonSize);
-        b.setMinimumHeight(buttonSize);
-        b.setColor(colour);
-        b.setOnClickListener(new View.OnClickListener() {
+        int colour = settings.getInt(MAIN_COLOUR, getResources().getColor(R.color.md_teal_500));
+        colorPicker.setSelectedColor(colour);
+        colorPicker2.setColors(getColors(colour));
+        colorPicker2.setSelectedColor(settings.getInt(CustomizeActivity.COLOUR_SETTING, getResources().getColor(R.color.md_teal_500)));
+
+        colorPicker.setOnColorChangedListener(new OnColorChangedListener() {
             @Override
-            public void onClick(View v) {
-                Log.e("colour select", "" + colour);
+            public void onColorChanged(int c) {
+                editor.putInt(MAIN_COLOUR, c);
+                editor.commit();
+                colorPicker2.setColors(getColors(c));
+                colorPicker2.setSelectedColor(c);
+
+
+            }
+        });
+
+        colorPicker2.setOnColorChangedListener(new OnColorChangedListener() {
+            @Override
+            public void onColorChanged(int i) {
                 CustomizeActivity activity = (CustomizeActivity) getActivity();
-                activity.setColour(colour);
-                editor.putInt(CustomizeActivity.COLOUR_SETTING, colour);
+                activity.setColour(i);
+                editor.putInt(CustomizeActivity.COLOUR_SETTING, i);
                 editor.commit();
             }
         });
-        return b;
+
+        return colourLayout;
     }
 
 
@@ -364,9 +336,236 @@ public class ScreenSlidePageFragment extends Fragment {
         return baseUrl;
     }
 
-    public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return px;
+    public int[] getColors(int c) {
+        if (c == getResources().getColor(R.color.md_red_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_red_100),
+                    getResources().getColor(R.color.md_red_200),
+                    getResources().getColor(R.color.md_red_300),
+                    getResources().getColor(R.color.md_red_400),
+                    getResources().getColor(R.color.md_red_500),
+                    getResources().getColor(R.color.md_red_600),
+                    getResources().getColor(R.color.md_red_700),
+                    getResources().getColor(R.color.md_red_800),
+                    getResources().getColor(R.color.md_red_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_pink_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_pink_100),
+                    getResources().getColor(R.color.md_pink_200),
+                    getResources().getColor(R.color.md_pink_300),
+                    getResources().getColor(R.color.md_pink_400),
+                    getResources().getColor(R.color.md_pink_500),
+                    getResources().getColor(R.color.md_pink_600),
+                    getResources().getColor(R.color.md_pink_700),
+                    getResources().getColor(R.color.md_pink_800),
+                    getResources().getColor(R.color.md_pink_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_purple_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_purple_100),
+                    getResources().getColor(R.color.md_purple_200),
+                    getResources().getColor(R.color.md_purple_300),
+                    getResources().getColor(R.color.md_purple_400),
+                    getResources().getColor(R.color.md_purple_500),
+                    getResources().getColor(R.color.md_purple_600),
+                    getResources().getColor(R.color.md_purple_700),
+                    getResources().getColor(R.color.md_purple_800),
+                    getResources().getColor(R.color.md_purple_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_deep_purple_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_deep_purple_100),
+                    getResources().getColor(R.color.md_deep_purple_200),
+                    getResources().getColor(R.color.md_deep_purple_300),
+                    getResources().getColor(R.color.md_deep_purple_400),
+                    getResources().getColor(R.color.md_deep_purple_500),
+                    getResources().getColor(R.color.md_deep_purple_600),
+                    getResources().getColor(R.color.md_deep_purple_700),
+                    getResources().getColor(R.color.md_deep_purple_800),
+                    getResources().getColor(R.color.md_deep_purple_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_indigo_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_indigo_100),
+                    getResources().getColor(R.color.md_indigo_200),
+                    getResources().getColor(R.color.md_indigo_300),
+                    getResources().getColor(R.color.md_indigo_400),
+                    getResources().getColor(R.color.md_indigo_500),
+                    getResources().getColor(R.color.md_indigo_600),
+                    getResources().getColor(R.color.md_indigo_700),
+                    getResources().getColor(R.color.md_indigo_800),
+                    getResources().getColor(R.color.md_indigo_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_blue_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_blue_100),
+                    getResources().getColor(R.color.md_blue_200),
+                    getResources().getColor(R.color.md_blue_300),
+                    getResources().getColor(R.color.md_blue_400),
+                    getResources().getColor(R.color.md_blue_500),
+                    getResources().getColor(R.color.md_blue_600),
+                    getResources().getColor(R.color.md_blue_700),
+                    getResources().getColor(R.color.md_blue_800),
+                    getResources().getColor(R.color.md_blue_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_light_blue_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_light_blue_100),
+                    getResources().getColor(R.color.md_light_blue_200),
+                    getResources().getColor(R.color.md_light_blue_300),
+                    getResources().getColor(R.color.md_light_blue_400),
+                    getResources().getColor(R.color.md_light_blue_500),
+                    getResources().getColor(R.color.md_light_blue_600),
+                    getResources().getColor(R.color.md_light_blue_700),
+                    getResources().getColor(R.color.md_light_blue_800),
+                    getResources().getColor(R.color.md_light_blue_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_cyan_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_cyan_100),
+                    getResources().getColor(R.color.md_cyan_200),
+                    getResources().getColor(R.color.md_cyan_300),
+                    getResources().getColor(R.color.md_cyan_400),
+                    getResources().getColor(R.color.md_cyan_500),
+                    getResources().getColor(R.color.md_cyan_600),
+                    getResources().getColor(R.color.md_cyan_700),
+                    getResources().getColor(R.color.md_cyan_800),
+                    getResources().getColor(R.color.md_cyan_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_teal_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_teal_100),
+                    getResources().getColor(R.color.md_teal_200),
+                    getResources().getColor(R.color.md_teal_300),
+                    getResources().getColor(R.color.md_teal_400),
+                    getResources().getColor(R.color.md_teal_500),
+                    getResources().getColor(R.color.md_teal_600),
+                    getResources().getColor(R.color.md_teal_700),
+                    getResources().getColor(R.color.md_teal_800),
+                    getResources().getColor(R.color.md_teal_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_green_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_green_100),
+                    getResources().getColor(R.color.md_green_200),
+                    getResources().getColor(R.color.md_green_300),
+                    getResources().getColor(R.color.md_green_400),
+                    getResources().getColor(R.color.md_green_500),
+                    getResources().getColor(R.color.md_green_600),
+                    getResources().getColor(R.color.md_green_700),
+                    getResources().getColor(R.color.md_green_800),
+                    getResources().getColor(R.color.md_green_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_light_green_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_light_green_100),
+                    getResources().getColor(R.color.md_light_green_200),
+                    getResources().getColor(R.color.md_light_green_300),
+                    getResources().getColor(R.color.md_light_green_400),
+                    getResources().getColor(R.color.md_light_green_500),
+                    getResources().getColor(R.color.md_light_green_600),
+                    getResources().getColor(R.color.md_light_green_700),
+                    getResources().getColor(R.color.md_light_green_800),
+                    getResources().getColor(R.color.md_light_green_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_lime_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_lime_100),
+                    getResources().getColor(R.color.md_lime_200),
+                    getResources().getColor(R.color.md_lime_300),
+                    getResources().getColor(R.color.md_lime_400),
+                    getResources().getColor(R.color.md_lime_500),
+                    getResources().getColor(R.color.md_lime_600),
+                    getResources().getColor(R.color.md_lime_700),
+                    getResources().getColor(R.color.md_lime_800),
+                    getResources().getColor(R.color.md_lime_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_yellow_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_yellow_100),
+                    getResources().getColor(R.color.md_yellow_200),
+                    getResources().getColor(R.color.md_yellow_300),
+                    getResources().getColor(R.color.md_yellow_400),
+                    getResources().getColor(R.color.md_yellow_500),
+                    getResources().getColor(R.color.md_yellow_600),
+                    getResources().getColor(R.color.md_yellow_700),
+                    getResources().getColor(R.color.md_yellow_800),
+                    getResources().getColor(R.color.md_yellow_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_amber_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_amber_100),
+                    getResources().getColor(R.color.md_amber_200),
+                    getResources().getColor(R.color.md_amber_300),
+                    getResources().getColor(R.color.md_amber_400),
+                    getResources().getColor(R.color.md_amber_500),
+                    getResources().getColor(R.color.md_amber_600),
+                    getResources().getColor(R.color.md_amber_700),
+                    getResources().getColor(R.color.md_amber_800),
+                    getResources().getColor(R.color.md_amber_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_orange_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_orange_100),
+                    getResources().getColor(R.color.md_orange_200),
+                    getResources().getColor(R.color.md_orange_300),
+                    getResources().getColor(R.color.md_orange_400),
+                    getResources().getColor(R.color.md_orange_500),
+                    getResources().getColor(R.color.md_orange_600),
+                    getResources().getColor(R.color.md_orange_700),
+                    getResources().getColor(R.color.md_orange_800),
+                    getResources().getColor(R.color.md_orange_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_deep_orange_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_deep_orange_100),
+                    getResources().getColor(R.color.md_deep_orange_200),
+                    getResources().getColor(R.color.md_deep_orange_300),
+                    getResources().getColor(R.color.md_deep_orange_400),
+                    getResources().getColor(R.color.md_deep_orange_500),
+                    getResources().getColor(R.color.md_deep_orange_600),
+                    getResources().getColor(R.color.md_deep_orange_700),
+                    getResources().getColor(R.color.md_deep_orange_800),
+                    getResources().getColor(R.color.md_deep_orange_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_brown_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_brown_100),
+                    getResources().getColor(R.color.md_brown_200),
+                    getResources().getColor(R.color.md_brown_300),
+                    getResources().getColor(R.color.md_brown_400),
+                    getResources().getColor(R.color.md_brown_500),
+                    getResources().getColor(R.color.md_brown_600),
+                    getResources().getColor(R.color.md_brown_700),
+                    getResources().getColor(R.color.md_brown_800),
+                    getResources().getColor(R.color.md_brown_900)
+            };
+        } else if (c == getResources().getColor(R.color.md_grey_500)) {
+            return new int[]{
+                    getResources().getColor(R.color.md_grey_100),
+                    getResources().getColor(R.color.md_grey_200),
+                    getResources().getColor(R.color.md_grey_300),
+                    getResources().getColor(R.color.md_grey_400),
+                    getResources().getColor(R.color.md_grey_500),
+                    getResources().getColor(R.color.md_grey_600),
+                    getResources().getColor(R.color.md_grey_700),
+                    getResources().getColor(R.color.md_grey_800),
+                    getResources().getColor(R.color.md_grey_900)
+            };
+        } else {
+            return new int[]{
+                    getResources().getColor(R.color.md_blue_grey_100),
+                    getResources().getColor(R.color.md_blue_grey_200),
+                    getResources().getColor(R.color.md_blue_grey_300),
+                    getResources().getColor(R.color.md_blue_grey_400),
+                    getResources().getColor(R.color.md_blue_grey_500),
+                    getResources().getColor(R.color.md_blue_grey_600),
+                    getResources().getColor(R.color.md_blue_grey_700),
+                    getResources().getColor(R.color.md_blue_grey_800),
+                    getResources().getColor(R.color.md_blue_grey_900)
+            };
+
+        }
     }
 }
