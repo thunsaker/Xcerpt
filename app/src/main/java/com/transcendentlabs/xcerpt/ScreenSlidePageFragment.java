@@ -123,8 +123,6 @@ public class ScreenSlidePageFragment extends Fragment {
                 getResources().getColor(R.color.md_teal_500),
                 getResources().getColor(R.color.md_green_500),
                 getResources().getColor(R.color.md_light_green_500),
-                getResources().getColor(R.color.md_lime_500),
-                getResources().getColor(R.color.md_yellow_500),
                 getResources().getColor(R.color.md_amber_500),
                 getResources().getColor(R.color.md_orange_500),
                 getResources().getColor(R.color.md_deep_orange_500),
@@ -339,8 +337,6 @@ public class ScreenSlidePageFragment extends Fragment {
     public int[] getColors(int c) {
         if (c == getResources().getColor(R.color.md_red_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_red_100),
-                    getResources().getColor(R.color.md_red_200),
                     getResources().getColor(R.color.md_red_300),
                     getResources().getColor(R.color.md_red_400),
                     getResources().getColor(R.color.md_red_500),
@@ -351,8 +347,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_pink_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_pink_100),
-                    getResources().getColor(R.color.md_pink_200),
                     getResources().getColor(R.color.md_pink_300),
                     getResources().getColor(R.color.md_pink_400),
                     getResources().getColor(R.color.md_pink_500),
@@ -363,8 +357,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_purple_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_purple_100),
-                    getResources().getColor(R.color.md_purple_200),
                     getResources().getColor(R.color.md_purple_300),
                     getResources().getColor(R.color.md_purple_400),
                     getResources().getColor(R.color.md_purple_500),
@@ -375,8 +367,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_deep_purple_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_deep_purple_100),
-                    getResources().getColor(R.color.md_deep_purple_200),
                     getResources().getColor(R.color.md_deep_purple_300),
                     getResources().getColor(R.color.md_deep_purple_400),
                     getResources().getColor(R.color.md_deep_purple_500),
@@ -387,8 +377,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_indigo_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_indigo_100),
-                    getResources().getColor(R.color.md_indigo_200),
                     getResources().getColor(R.color.md_indigo_300),
                     getResources().getColor(R.color.md_indigo_400),
                     getResources().getColor(R.color.md_indigo_500),
@@ -399,8 +387,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_blue_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_blue_100),
-                    getResources().getColor(R.color.md_blue_200),
                     getResources().getColor(R.color.md_blue_300),
                     getResources().getColor(R.color.md_blue_400),
                     getResources().getColor(R.color.md_blue_500),
@@ -411,8 +397,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_light_blue_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_light_blue_100),
-                    getResources().getColor(R.color.md_light_blue_200),
                     getResources().getColor(R.color.md_light_blue_300),
                     getResources().getColor(R.color.md_light_blue_400),
                     getResources().getColor(R.color.md_light_blue_500),
@@ -423,8 +407,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_cyan_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_cyan_100),
-                    getResources().getColor(R.color.md_cyan_200),
                     getResources().getColor(R.color.md_cyan_300),
                     getResources().getColor(R.color.md_cyan_400),
                     getResources().getColor(R.color.md_cyan_500),
@@ -435,8 +417,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_teal_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_teal_100),
-                    getResources().getColor(R.color.md_teal_200),
                     getResources().getColor(R.color.md_teal_300),
                     getResources().getColor(R.color.md_teal_400),
                     getResources().getColor(R.color.md_teal_500),
@@ -447,8 +427,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_green_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_green_100),
-                    getResources().getColor(R.color.md_green_200),
                     getResources().getColor(R.color.md_green_300),
                     getResources().getColor(R.color.md_green_400),
                     getResources().getColor(R.color.md_green_500),
@@ -459,8 +437,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_light_green_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_light_green_100),
-                    getResources().getColor(R.color.md_light_green_200),
                     getResources().getColor(R.color.md_light_green_300),
                     getResources().getColor(R.color.md_light_green_400),
                     getResources().getColor(R.color.md_light_green_500),
@@ -469,34 +445,8 @@ public class ScreenSlidePageFragment extends Fragment {
                     getResources().getColor(R.color.md_light_green_800),
                     getResources().getColor(R.color.md_light_green_900)
             };
-        } else if (c == getResources().getColor(R.color.md_lime_500)) {
-            return new int[]{
-                    getResources().getColor(R.color.md_lime_100),
-                    getResources().getColor(R.color.md_lime_200),
-                    getResources().getColor(R.color.md_lime_300),
-                    getResources().getColor(R.color.md_lime_400),
-                    getResources().getColor(R.color.md_lime_500),
-                    getResources().getColor(R.color.md_lime_600),
-                    getResources().getColor(R.color.md_lime_700),
-                    getResources().getColor(R.color.md_lime_800),
-                    getResources().getColor(R.color.md_lime_900)
-            };
-        } else if (c == getResources().getColor(R.color.md_yellow_500)) {
-            return new int[]{
-                    getResources().getColor(R.color.md_yellow_100),
-                    getResources().getColor(R.color.md_yellow_200),
-                    getResources().getColor(R.color.md_yellow_300),
-                    getResources().getColor(R.color.md_yellow_400),
-                    getResources().getColor(R.color.md_yellow_500),
-                    getResources().getColor(R.color.md_yellow_600),
-                    getResources().getColor(R.color.md_yellow_700),
-                    getResources().getColor(R.color.md_yellow_800),
-                    getResources().getColor(R.color.md_yellow_900)
-            };
         } else if (c == getResources().getColor(R.color.md_amber_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_amber_100),
-                    getResources().getColor(R.color.md_amber_200),
                     getResources().getColor(R.color.md_amber_300),
                     getResources().getColor(R.color.md_amber_400),
                     getResources().getColor(R.color.md_amber_500),
@@ -507,8 +457,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_orange_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_orange_100),
-                    getResources().getColor(R.color.md_orange_200),
                     getResources().getColor(R.color.md_orange_300),
                     getResources().getColor(R.color.md_orange_400),
                     getResources().getColor(R.color.md_orange_500),
@@ -519,8 +467,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_deep_orange_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_deep_orange_100),
-                    getResources().getColor(R.color.md_deep_orange_200),
                     getResources().getColor(R.color.md_deep_orange_300),
                     getResources().getColor(R.color.md_deep_orange_400),
                     getResources().getColor(R.color.md_deep_orange_500),
@@ -531,8 +477,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_brown_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_brown_100),
-                    getResources().getColor(R.color.md_brown_200),
                     getResources().getColor(R.color.md_brown_300),
                     getResources().getColor(R.color.md_brown_400),
                     getResources().getColor(R.color.md_brown_500),
@@ -543,8 +487,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else if (c == getResources().getColor(R.color.md_grey_500)) {
             return new int[]{
-                    getResources().getColor(R.color.md_grey_100),
-                    getResources().getColor(R.color.md_grey_200),
                     getResources().getColor(R.color.md_grey_300),
                     getResources().getColor(R.color.md_grey_400),
                     getResources().getColor(R.color.md_grey_500),
@@ -555,8 +497,6 @@ public class ScreenSlidePageFragment extends Fragment {
             };
         } else {
             return new int[]{
-                    getResources().getColor(R.color.md_blue_grey_100),
-                    getResources().getColor(R.color.md_blue_grey_200),
                     getResources().getColor(R.color.md_blue_grey_300),
                     getResources().getColor(R.color.md_blue_grey_400),
                     getResources().getColor(R.color.md_blue_grey_500),
