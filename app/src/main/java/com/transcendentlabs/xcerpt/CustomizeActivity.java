@@ -61,7 +61,7 @@ public class CustomizeActivity extends AppCompatActivity {
     private PagerSlidingTabStrip tabs;
     private TourGuide mTourGuideHandler;
     private String excerpt;
-    private ArrayList<AsyncTask> tasks;
+    public ArrayList<AsyncTask> tasks;
 
     // public parameters (are highly coupled in ScreenSlidePageFragment at the moment...)
     public TextView contentPreview;

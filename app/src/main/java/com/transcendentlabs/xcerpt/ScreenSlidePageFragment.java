@@ -307,6 +307,7 @@ public class ScreenSlidePageFragment extends Fragment {
                         }
                     }
                 });
+            ((CustomizeActivity)getActivity()).tasks.add(titleTask);
             titleTask.execute();
         }
         catch (MalformedURLException e) {
