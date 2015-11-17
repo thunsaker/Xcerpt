@@ -70,7 +70,10 @@
             </RelativeLayout>
 
         </LinearLayout>
+
         <ImageView
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
             android:id="@+id/final_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

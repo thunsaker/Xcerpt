@@ -175,56 +175,29 @@ public class CustomizeActivity extends AppCompatActivity {
 
         // highlighting
         contentPreview.setKeyListener(null);
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
-            contentPreview.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!actionModeOpen) {
-                        contentPreview.performLongClick();
-
-                        boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
-                        if (showHint) {
-                            mTourGuideHandler.cleanUp();
-                            SharedPreferences.Editor editor = settings.edit();
-                            editor.putBoolean(SHOW_HINT_SETTING, false);
-                            editor.commit();
-                        }
-
-                        actionModeOpen = true;
-                    } else {
-                        contentPreview.setTextIsSelectable(false);
-                        Spannable str = new SpannableString(contentPreview.getText().toString());
-                        contentPreview.setText(str);
-                        contentPreview.setTextIsSelectable(true);
-                        actionModeOpen = false;
+        contentPreview.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (!actionModeOpen) {
+                    boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
+                    if (showHint) {
+                        mTourGuideHandler.cleanUp();
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putBoolean(SHOW_HINT_SETTING, false);
+                        editor.commit();
                     }
-                }
-            });
-        }else{
-            contentPreview.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    if (!actionModeOpen) {
-                        boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
-                        if (showHint) {
-                            mTourGuideHandler.cleanUp();
-                            SharedPreferences.Editor editor = settings.edit();
-                            editor.putBoolean(SHOW_HINT_SETTING, false);
-                            editor.commit();
-                        }
 
-                        actionModeOpen = true;
-                    } else {
-                        contentPreview.setTextIsSelectable(false);
-                        Spannable str = new SpannableString(contentPreview.getText().toString());
-                        contentPreview.setText(str);
-                        contentPreview.setTextIsSelectable(true);
-                        actionModeOpen = false;
-                    }
-                    return false;
+                    actionModeOpen = true;
+                } else {
+                    contentPreview.setTextIsSelectable(false);
+                    Spannable str = new SpannableString(contentPreview.getText().toString());
+                    contentPreview.setText(str);
+                    contentPreview.setTextIsSelectable(true);
+                    actionModeOpen = false;
                 }
-            });
-        }
+                return false;
+            }
+        });
 
         contentPreview.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
 
@@ -270,12 +243,7 @@ public class CustomizeActivity extends AppCompatActivity {
 
         if(showHint) {
             TextView contentPreview = (TextView) findViewById(R.id.content_preview);
-            String description;
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
-                description = getString(R.string.highlight_hint);
-            }else{
-                description = getString(R.string.highlight_hint_marshmallow);
-            }
+            String description = getString(R.string.highlight_hint_marshmallow);
             mTourGuideHandler = TourGuide.init(this).with(TourGuide.Technique.Click)
                     .setPointer(new Pointer().setGravity(Gravity.TOP))
                     .setToolTip(new ToolTip()

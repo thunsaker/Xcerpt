@@ -60,7 +60,9 @@ public class ShareActivity extends AppCompatActivity {
 
     private static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
     private static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
-    private static final int CHAR_LIMIT = 94;
+
+    // CHAR_LIMIT should be determined by a get request of Twitter's link lengths
+    private static final int CHAR_LIMIT = 91;
 
     private TwitterSession twitterSession;
 

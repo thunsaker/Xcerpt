@@ -34,7 +34,7 @@ public class OcrAsyncTask extends AsyncTask<Void, Void, Void> {
 
         excerpt = tesseract.getOCRResult(mBitmap);
         excerpt = excerpt.replaceAll("\n", " ");
-        excerpt = excerpt.replaceAll("  ", "\n\n");
+        excerpt = excerpt.replaceAll("  ", "\n");
         excerpt = excerpt.replaceAll("\\p{Pd}", "-");
 
         return null;
