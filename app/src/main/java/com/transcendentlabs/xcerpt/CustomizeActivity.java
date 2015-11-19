@@ -22,14 +22,14 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -72,7 +72,6 @@ public class CustomizeActivity extends AppCompatActivity {
     public boolean no_results_or_error = false;
 
     public MenuItem nextItem;
-    public MenuItem actionModeNextItem = null;
 
     public Article[] articles = new Article[NUM_RESULTS];
     public int numResults;
@@ -84,7 +83,6 @@ public class CustomizeActivity extends AppCompatActivity {
     public static final String IMAGE = "IMAGE";
     public static final String URL = "URL";
     public static final String COLOUR_SETTING = "colour";
-    public boolean actionModeOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,28 +172,18 @@ public class CustomizeActivity extends AppCompatActivity {
         contentPreview.setText(text);
 
         // highlighting
-        contentPreview.setKeyListener(null);
-        contentPreview.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (!actionModeOpen) {
-                    boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
-                    if (showHint) {
-                        mTourGuideHandler.cleanUp();
-                        SharedPreferences.Editor editor = settings.edit();
-                        editor.putBoolean(SHOW_HINT_SETTING, false);
-                        editor.commit();
+        final GestureDetector gestureDetector = new GestureDetector(
+                this,
+                new GestureDetector.SimpleOnGestureListener(){
+                    @Override
+                    public boolean onSingleTapConfirmed(MotionEvent e) {
+                        contentPreview.clearFocus();
+                        return true;
                     }
-
-                    actionModeOpen = true;
-                } else {
-                    contentPreview.setTextIsSelectable(false);
-                    Spannable str = new SpannableString(contentPreview.getText().toString());
-                    contentPreview.setText(str);
-                    contentPreview.setTextIsSelectable(true);
-                    actionModeOpen = false;
-                }
-                return false;
+            });
+        contentPreview.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
             }
         });
 
@@ -211,17 +199,18 @@ public class CustomizeActivity extends AppCompatActivity {
                         Color.parseColor(DEFAULT_COLOUR)
                 );
                 setColour(defaultColour);
-
-                actionModeOpen = false;
             }
 
             public boolean onCreateActionMode(final ActionMode mode, Menu menu) {
-                actionModeOpen = true;
                 menu.clear();
                 mode.getMenuInflater().inflate(R.menu.highlight, menu);
-
-                // actionModeNextItem = menu.getItem(0);
-                // actionModeNextItem.setEnabled(nextItem.isEnabled());
+                boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
+                if (showHint) {
+                    mTourGuideHandler.cleanUp();
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean(SHOW_HINT_SETTING, false);
+                    editor.commit();
+                }
                 return true;
             }
 
@@ -344,9 +333,6 @@ public class CustomizeActivity extends AppCompatActivity {
                                 websiteView.setText(articles[0].displayUrl);
                                 selectedUrl = articles[0].url;
                                 nextItem.setEnabled(true);
-                                if(actionModeNextItem != null && actionModeOpen) {
-                                    actionModeNextItem.setEnabled(true);
-                                }
                             }
                             mPagerAdapter.notifyDataSetChanged();
                         }

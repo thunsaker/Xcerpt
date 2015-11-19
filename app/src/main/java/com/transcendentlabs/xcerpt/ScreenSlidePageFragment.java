@@ -300,9 +300,6 @@ public class ScreenSlidePageFragment extends Fragment {
                     if(sourceSelect != null) sourceSelect.clearCheck();
                     ((CustomizeActivity)getActivity()).updateSource(customArticle);
                     ((CustomizeActivity)getActivity()).nextItem.setEnabled(true);
-                    if(((CustomizeActivity)getActivity()).actionModeOpen){
-                        ((CustomizeActivity)getActivity()).actionModeNextItem.setEnabled(true);
-                    }
                 }
             });
         ((CustomizeActivity)getActivity()).tasks.add(titleTask);
