@@ -23,9 +23,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import uz.shift.colorpicker.LineColorPicker;
 import uz.shift.colorpicker.OnColorChangedListener;
 
@@ -285,36 +282,31 @@ public class ScreenSlidePageFragment extends Fragment {
 
     private void getSourceHtml(final String url, final RadioGroup sourceSelect) {
         // check if text is URL
-        try { new URL(url);
-            ParseHtmlAsyncTask titleTask =
-                new ParseHtmlAsyncTask(url, new ParseHtmlAsyncTask.Callback(){
-                    @Override
-                    public void onComplete(Object o, Error error) {
-                        if(error != null){
-                            Log.e("ParseHtmlAsyncTask", error.getMessage());
-                            return;
-                        }
-                        String title = (String) o;
-
-                        String baseUrl = getDisplayUrl(url);
-
-                        Article customArticle = new Article(title, baseUrl, url);
-                        if(sourceSelect != null) sourceSelect.clearCheck();
-                        ((CustomizeActivity)getActivity()).updateSource(customArticle);
-                        ((CustomizeActivity)getActivity()).nextItem.setEnabled(true);
-                        if(((CustomizeActivity)getActivity()).actionModeOpen){
-                            ((CustomizeActivity)getActivity()).actionModeNextItem.setEnabled(true);
-                        }
+        ParseHtmlAsyncTask titleTask =
+            new ParseHtmlAsyncTask(url, new ParseHtmlAsyncTask.Callback(){
+                @Override
+                public void onComplete(Object o, Error error) {
+                    if(error != null){
+                        Log.e("ParseHtmlAsyncTask", error.getMessage());
+                        Toast.makeText(getActivity(), "The clipboard text is not a valid URL.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                });
-            ((CustomizeActivity)getActivity()).tasks.add(titleTask);
-            titleTask.execute();
-        }
-        catch (MalformedURLException e) {
-            // show toast
-            Toast.makeText(getActivity(), "The pasted text is not a valid URL.",
-                    Toast.LENGTH_SHORT).show();
-        }
+                    String title = (String) o;
+
+                    String baseUrl = getDisplayUrl(url);
+
+                    Article customArticle = new Article(title, baseUrl, url);
+                    if(sourceSelect != null) sourceSelect.clearCheck();
+                    ((CustomizeActivity)getActivity()).updateSource(customArticle);
+                    ((CustomizeActivity)getActivity()).nextItem.setEnabled(true);
+                    if(((CustomizeActivity)getActivity()).actionModeOpen){
+                        ((CustomizeActivity)getActivity()).actionModeNextItem.setEnabled(true);
+                    }
+                }
+            });
+        ((CustomizeActivity)getActivity()).tasks.add(titleTask);
+        titleTask.execute();
     }
 
     private String getDisplayUrl(String url) {

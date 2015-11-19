@@ -17,6 +17,9 @@ public class ParseHtmlAsyncTask extends AsyncTask<Void, Void, Void> {
 
     public ParseHtmlAsyncTask(String url, Callback callback) {
         mUrl = url;
+        if(!url.startsWith("http")){
+            mUrl = "http://" + url;
+        }
         mCallback = callback;
     }
 
