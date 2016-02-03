@@ -287,7 +287,6 @@ public class ScreenSlidePageFragment extends Fragment {
                 @Override
                 public void onComplete(Object o, Error error) {
                     if(error != null){
-                        Log.e("ParseHtmlAsyncTask", error.getMessage());
                         Toast.makeText(getActivity(), "The clipboard text is not a valid URL.",
                                 Toast.LENGTH_SHORT).show();
                         return;
