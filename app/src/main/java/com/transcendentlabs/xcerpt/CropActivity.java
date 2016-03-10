@@ -1,6 +1,7 @@
 package com.transcendentlabs.xcerpt;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -110,10 +112,18 @@ public class CropActivity extends AppCompatActivity {
             initOcrIfNecessary(this);
             String dir = getStorageDirectory(this).toString();
 
-            OcrAsyncTask ocrTask =
-                    new OcrAsyncTask(this, finalImage, dir, new OcrAsyncTask.Callback() {
+
+            final ProgressDialog dialog = new ProgressDialog(this);
+            dialog.setMessage("Processing image...");
+            dialog.setCancelable(false);
+
+            final OcrAsyncTask ocrTask =
+                    new OcrAsyncTask(finalImage, dir, new OcrAsyncTask.Callback() {
                 @Override
                 public void onComplete(Object o, Error error) {
+                    if(dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
                     if (error != null) {
                         Log.e("OcrAsyncTask", error.getMessage());
                         return;
@@ -121,20 +131,7 @@ public class CropActivity extends AppCompatActivity {
                     String excerpt = (String) o;
 
                     if(excerpt.isEmpty() || isGibberish(excerpt)){
-                        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-                        builder.setTitle(getString(R.string.crop_error));
-                        builder.setMessage(getString(R.string.crop_instructions_2));
-                        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                            }
-                        });
-                        AlertDialog dialog = builder.create();
-                        try{
-                            dialog.show();
-                        }catch(Exception ignored){
-
-                        }
+                        showErrorDialog(activity);
                     }else if (App.getInstance().isNetworkAvailable()) {
                         Intent intent = new Intent(activity, CustomizeActivity.class);
                         intent.setAction(Intent.ACTION_DEFAULT);
@@ -148,11 +145,43 @@ public class CropActivity extends AppCompatActivity {
             });
             tasks.add(ocrTask);
             ocrTask.execute();
+            dialog.show();
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(ocrTask.getStatus() == AsyncTask.Status.RUNNING) {
+                        ocrTask.cancel(true);
+                        showErrorDialog(activity);
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                    }
+                }
+            }, 8000);
 
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showErrorDialog(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle(getString(R.string.crop_error));
+        builder.setMessage(getString(R.string.crop_instructions_2));
+        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        AlertDialog dialog = builder.create();
+        try{
+            dialog.show();
+        }catch(Exception ignored){
+
+        }
     }
 
     // this function won't be necessary when we use the actual image

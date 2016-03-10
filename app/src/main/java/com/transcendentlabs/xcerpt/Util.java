@@ -62,11 +62,6 @@ public class Util {
 
     public static final String EXCERPT = "com.transcendentlabs.xcerpt.excerpt";
 
-    public static boolean isNetworkAvailable(Context context) {
-        return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE))
-                .getActiveNetworkInfo() != null;
-    }
-
     public static void initOcrIfNecessary(Activity activity){
 
         boolean doNewInit = false;
