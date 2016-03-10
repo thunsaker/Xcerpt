@@ -20,8 +20,10 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.squareup.picasso.Picasso;
 
+import io.fabric.sdk.android.Fabric;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,7 @@ public class InputActivity extends AppCompatActivity{
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_input);
         selectScreenshot = (TextView) findViewById(R.id.select_screenshot);
         noScreenshot = (TextView) findViewById(R.id.no_screenshot);

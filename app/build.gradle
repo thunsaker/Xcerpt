@@ -69,4 +69,11 @@ dependencies {
     compile ('com.github.worker8:tourguide:1.0.14-SNAPSHOT@aar'){
         transitive=true
     }
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+        transitive = true;
+    }
+}
+crashlytics {
+    androidNdkOut 'src/main/obj'
+    androidNdkLibsOut 'src/main/libs'
 }
