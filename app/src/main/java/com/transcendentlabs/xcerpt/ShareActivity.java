@@ -2,6 +2,7 @@ package com.transcendentlabs.xcerpt;
 
 import android.app.ProgressDialog;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -16,7 +17,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.content.ClipboardManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -35,7 +35,6 @@ import android.widget.Toast;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
@@ -47,7 +46,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import io.fabric.sdk.android.Fabric;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
@@ -57,9 +55,6 @@ import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 
 
 public class ShareActivity extends AppCompatActivity {
-
-    private static final String TWITTER_KEY = BuildConfig.TWITTER_KEY;
-    private static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
 
     // CHAR_LIMIT should be determined by a get request of Twitter's link lengths
     private static final int CHAR_LIMIT = 91;
@@ -85,10 +80,6 @@ public class ShareActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, new Twitter(authConfig));
-
         twitterSession =
                 TwitterCore.getInstance().getSessionManager().getActiveSession();
 
@@ -415,8 +406,8 @@ public class ShareActivity extends AppCompatActivity {
 
             try {
                 ConfigurationBuilder builder = new ConfigurationBuilder();
-                builder.setOAuthConsumerKey(TWITTER_KEY);
-                builder.setOAuthConsumerSecret(TWITTER_SECRET);
+                builder.setOAuthConsumerKey(App.TWITTER_KEY);
+                builder.setOAuthConsumerSecret(App.TWITTER_SECRET);
 
                 // Access Token
                 String access_token = twitterSession.getAuthToken().token;

@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import static com.transcendentlabs.xcerpt.Util.EXCERPT;
 import static com.transcendentlabs.xcerpt.Util.getStorageDirectory;
 import static com.transcendentlabs.xcerpt.Util.initOcrIfNecessary;
-import static com.transcendentlabs.xcerpt.Util.isNetworkAvailable;
 import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 
 public class CropActivity extends AppCompatActivity {
@@ -136,7 +135,7 @@ public class CropActivity extends AppCompatActivity {
                         }catch(Exception ignored){
 
                         }
-                    }else if (isNetworkAvailable(getApplicationContext())) {
+                    }else if (App.getInstance().isNetworkAvailable()) {
                         Intent intent = new Intent(activity, CustomizeActivity.class);
                         intent.setAction(Intent.ACTION_DEFAULT);
                         intent.putExtra(EXCERPT, excerpt);
