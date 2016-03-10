@@ -8,7 +8,6 @@ Try out Xcerpt today: https://play.google.com/store/apps/details?id=com.transcen
 
 ## TO-DO
 - [ ] Make an improved tutorial
-- [ ] Add timeout to OCR
 - [ ] New app icon and logo
 - [ ] Better drawables
 - [ ] Option to have no source
