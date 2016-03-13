@@ -537,7 +537,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
         percentComplete = Integer.parseInt(message[1]);
         dialog.setMessage(message[0]);
         dialog.setProgress(percentComplete);
-        activity.displayDialog(dialog);
+        dialog.show();
     }
 
     @Override
