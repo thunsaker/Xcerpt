@@ -2,6 +2,7 @@ package com.transcendentlabs.xcerpt;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 
 import com.crashlytics.android.Crashlytics;
@@ -18,6 +19,7 @@ public class App extends Application {
     public static final String TWITTER_SECRET = BuildConfig.TWITTER_SECRET_KEY;
 
     private static App singleton;
+    private static Typeface logoFont;
     private TwitterAuthConfig authConfig;
 
     public static App getInstance() {
@@ -28,8 +30,13 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         singleton = this;
+        logoFont = Typeface.createFromAsset(getAssets(), "chunk.otf");
         authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Crashlytics(), new Twitter(authConfig));
+    }
+
+    public static Typeface getLogoFont() {
+        return logoFont;
     }
 
     public boolean isNetworkAvailable() {

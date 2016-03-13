@@ -57,6 +57,9 @@ public class CropActivity extends AppCompatActivity {
         ActionBar bar = getSupportActionBar();
         Window window = getWindow();
         setActionBarColour(bar, window, this);
+        if(bar != null) {
+            bar.setElevation(0);
+        }
 
         SharedPreferences settings = getPreferences(0);
         showGuide(settings);

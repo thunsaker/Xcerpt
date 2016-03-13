@@ -92,34 +92,47 @@
             android:layout_width="fill_parent"
             android:layout_height="2dp"
             android:background="@color/tw__light_gray"/>
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
 
-            <Button
+            <ImageButton
                 style="?android:attr/buttonStyleSmall"
                 android:id="@+id/save_button"
-                android:layout_alignParentLeft="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/save_button"
-                android:textColor="@color/tw__solid_white"
-                android:background="@drawable/tweet_button"
+                android:src="@drawable/ic_file_download_white_24dp"
+                android:background="@drawable/media_button"
                 android:onClick="saveImage"/>
+
+            <ImageButton
+                style="?android:attr/buttonStyleSmall"
+                android:id="@+id/share_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_share_white_24dp"
+                android:background="@drawable/media_button"
+                android:onClick="shareImage"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                />
             <Button
                 style="?android:attr/buttonStyleSmall"
                 android:id="@+id/tweet_button"
-                android:layout_alignParentRight="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tweet"
                 android:textColor="@color/tw__solid_white"
                 android:background="@drawable/tweet_button"
                 android:onClick="postTweet"/>
-            </RelativeLayout>
+            </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

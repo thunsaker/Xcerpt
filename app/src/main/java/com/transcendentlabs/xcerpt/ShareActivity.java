@@ -6,7 +6,9 @@ import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -16,6 +18,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,11 +30,13 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.twitter.Validator;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -56,9 +61,6 @@ import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 
 public class ShareActivity extends AppCompatActivity {
 
-    // CHAR_LIMIT should be determined by a get request of Twitter's link lengths
-    private static final int CHAR_LIMIT = 91;
-
     private TwitterSession twitterSession;
 
     private ProgressDialog pDialog;
@@ -66,7 +68,7 @@ public class ShareActivity extends AppCompatActivity {
     private TwitterLoginButton loginButton;
     private TextView userName;
     private Button tweetButton;
-    private Button saveButton;
+    private ImageButton saveButton;
     private TextView characterCount;
     private EditText tweet;
     private LinearLayout tweetLayout;
@@ -91,35 +93,33 @@ public class ShareActivity extends AppCompatActivity {
         setActionBarColour(bar, window, this);
 
         tweetButton = (Button) findViewById(R.id.tweet_button);
-        saveButton = (Button) findViewById(R.id.save_button);
+        saveButton = (ImageButton) findViewById(R.id.save_button);
         userName = (TextView) findViewById(R.id.user_name);
 
         tweetLayout = (LinearLayout) findViewById(R.id.tweet_layout);
         tweetBar = (LinearLayout) findViewById(R.id.tweet_bar);
-        tweetLayout.setVisibility(View.GONE);
-        tweetBar.setVisibility(View.GONE);
+        initLoginButton();
+
+        showLoggedOutState();
 
         TextView logOut = (TextView) findViewById(R.id.logout);
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Twitter.logOut();
-                loginButton.setVisibility(View.VISIBLE);
-                tweetLayout.setVisibility(View.GONE);
-                tweetBar.setVisibility(View.GONE);
-                InputMethodManager imm =
-                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                showLoggedOutState(view);
             }
         });
 
         selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
 
         initLinkPreviewView(selectedUrl);
-        initCharacterCountView();
 
         tweetText = selectedUrl;
 
+        final Validator twitterValidator = new Validator();
+        int charLimit = Validator.MAX_TWEET_LENGTH - (2 * (twitterValidator.getShortUrlLengthHttps() + 1));
+        initCharacterCountView(charLimit);
         // initialize tweet edittext to listen to character count
         tweet = (EditText) findViewById(R.id.tweet);
         tweet.addTextChangedListener(new TextWatcher() {
@@ -132,8 +132,10 @@ public class ShareActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
+
                 tweetText = tweet.getText() + " " + selectedUrl;
-                int charsRemaining =CHAR_LIMIT - tweet.getText().length();
+                int tweetLength = twitterValidator.getTweetLength(tweet.getText().toString()) + (2 * (twitterValidator.getShortUrlLengthHttps() + 1));
+                int charsRemaining = Validator.MAX_TWEET_LENGTH - tweetLength;
                 characterCount.setText(Integer.toString(charsRemaining));
                 if(charsRemaining >= 0){
                     tweetButton.setEnabled(true);
@@ -161,8 +163,6 @@ public class ShareActivity extends AppCompatActivity {
         }
 
         // final Uri imageUri = Uri.fromFile(imageFile);
-
-        initLoginButton();
 
         if(twitterSession != null){
             showLoggedInState(twitterSession);
@@ -195,9 +195,9 @@ public class ShareActivity extends AppCompatActivity {
         linkPreview.setTextColor(getResources().getColor(R.color.tw__blue_default));
     }
 
-    private void initCharacterCountView() {
+    private void initCharacterCountView(int characterLimit) {
         characterCount = (TextView) findViewById(R.id.character_count);
-        characterCount.setText(Integer.toString(CHAR_LIMIT));
+        characterCount.setText(Integer.toString(characterLimit));
         characterCount.setTextColor(Color.BLACK);
     }
 
@@ -207,6 +207,21 @@ public class ShareActivity extends AppCompatActivity {
         tweetLayout.setVisibility(View.VISIBLE);
         tweetBar.setVisibility(View.VISIBLE);
         userName.setText(PREFIX + twitterSession.getUserName());
+    }
+
+    private void showLoggedOutState() {
+        showLoggedOutState(null);
+    }
+
+    private void showLoggedOutState(View view) {
+        loginButton.setVisibility(View.VISIBLE);
+        tweetLayout.setVisibility(View.GONE);
+        tweetBar.setVisibility(View.GONE);
+        if(view != null) {
+            InputMethodManager imm =
+                    (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     private void initLoginButton() {
@@ -221,7 +236,7 @@ public class ShareActivity extends AppCompatActivity {
 
             @Override
             public void failure(TwitterException exception) {
-                // TODO Do something on failure
+
             }
         });
     }
@@ -276,52 +291,40 @@ public class ShareActivity extends AppCompatActivity {
         if(id == R.id.home){
             onBackPressed();
             return true;
-        } else if (id == R.id.action_share) {
-            Intent share = new Intent(Intent.ACTION_SEND);
-            share.setType("image/jpeg");
+        } else if (id == R.id.action_info) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ShareActivity.this);
 
-            if(shareImageUri == null){
-                if(isExternalStorageWritable()){
-                    String root =
-                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-                    File dir = new File(root + File.separator + "Xcerpt" + File.separator + "tmp");
-                    dir.mkdirs();
-                    File file = new File(dir, fileName);
-                    Log.i("ShareActivity", "" + file);
-                    if (file.exists())
-                        file.delete();
+            builder.setTitle("Want to see what a tweet made with Xcerpt looks like?");
+            builder.setMessage("Visit our Twitter account @XcerptApp to see how Xcerpt tweets from others look like.");
+            builder.setPositiveButton("Sure", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    Intent intent;
                     try {
-                        FileOutputStream out = new FileOutputStream(file);
-                        img.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                        out.flush();
-                        out.close();
-                        shareImageUri = Uri.fromFile(file);
-                        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("Xcerpt URL", selectedUrl);
-                        clipboard.setPrimaryClip(clip);
-                        Toast.makeText(ShareActivity.this,
-                                "Source URL copied to clipboard.",
-                                Toast.LENGTH_LONG
-                        ).show();
-                        share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
-                        startActivity(Intent.createChooser(share, "Share Image"));
+                        // get the Twitter app if possible
+                        intent = new Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("twitter://user?screen_name=XcerptApp")
+                        );
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     } catch (Exception e) {
-                        Toast.makeText(ShareActivity.this,
-                                "Error: File could not be saved.",
-                                Toast.LENGTH_LONG
-                        ).show();
-                        e.printStackTrace();
+                        // no Twitter app, revert to browser
+                        intent = new Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://twitter.com/XcerptApp")
+                        );
                     }
-                } else{
-                    Toast.makeText(ShareActivity.this,
-                            "Error: External storage is not writable.",
-                            Toast.LENGTH_LONG
-                    ).show();
+                    startActivity(intent);
                 }
-            }else{
-                share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
-                startActivity(Intent.createChooser(share, "Share Image"));
-            }
+            });
+            builder.setNegativeButton("Not Now", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -347,11 +350,10 @@ public class ShareActivity extends AppCompatActivity {
                 img.compress(Bitmap.CompressFormat.JPEG, 100, out);
                 out.flush();
                 out.close();
-                saveButton.setEnabled(false);
-                saveButton.setText("Image Saved");
+                Toast.makeText(ShareActivity.this, getString(R.string.image_saved), Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 Toast.makeText(ShareActivity.this,
-                        "Error: File could not be saved.",
+                        getString(R.string.error_file_not_saved),
                         Toast.LENGTH_LONG
                 ).show();
                 e.printStackTrace();
@@ -380,6 +382,55 @@ public class ShareActivity extends AppCompatActivity {
         File imageFile = getFileStreamPath(fileName);
         UpdateTwitterStatusTask postTweet = new UpdateTwitterStatusTask(tweetText, imageFile);
         postTweet.execute();
+    }
+
+    public void shareImage(View view) {
+
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("image/jpeg");
+
+        if(shareImageUri == null){
+            if(isExternalStorageWritable()){
+                String root =
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+                File dir = new File(root + File.separator + "Xcerpt" + File.separator + "tmp");
+                dir.mkdirs();
+                File file = new File(dir, fileName);
+                Log.i("ShareActivity", "" + file);
+                if (file.exists())
+                    file.delete();
+                try {
+                    FileOutputStream out = new FileOutputStream(file);
+                    img.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                    out.flush();
+                    out.close();
+                    shareImageUri = Uri.fromFile(file);
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("Xcerpt URL", selectedUrl);
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(ShareActivity.this,
+                            "Source URL copied to clipboard.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                    share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
+                    startActivity(Intent.createChooser(share, "Share Image"));
+                } catch (Exception e) {
+                    Toast.makeText(ShareActivity.this,
+                            "Error: File could not be saved.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                    e.printStackTrace();
+                }
+            } else{
+                Toast.makeText(ShareActivity.this,
+                        "Error: External storage is not writable.",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        }else{
+            share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
+            startActivity(Intent.createChooser(share, "Share Image"));
+        }
     }
 
     class UpdateTwitterStatusTask extends AsyncTask<String, String, Void> {

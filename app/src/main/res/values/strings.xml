@@ -50,5 +50,10 @@
     <string name="highlight_hint_marshmallow">Long press or double-tap to begin highlighting text. Give it a try!</string>
     <string name="clipboard_no_text">The clipboard does not contain text.</string>
     <string name="share_item">Share</string>
+    <string name="share">Share</string>
+    <string name="customize">Customize</string>
+    <string name="info">Info</string>
+    <string name="error_file_not_saved">Error: File could not be saved.</string>
+    <string name="image_saved">Saved to gallery!</string>
 
 </resources>

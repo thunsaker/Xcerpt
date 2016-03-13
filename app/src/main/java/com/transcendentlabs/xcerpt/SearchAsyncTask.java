@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -42,28 +43,32 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         try {
             // remove all non-alphabet characters and extra whitespace
-            String stripped = mSearchStr.replaceAll("[^\\p{L}0-9 ,'\\u2019]", " ");
-            String[] words = stripped.toLowerCase().split("\\s+");
+            String[] words = mSearchStr.toLowerCase().split("\\s+");
+            for(int i = 0; i < words.length; i++) {
+                words[i] = words[i].trim().replaceFirst("^[^^\\p{L}0-9]+", "").replaceAll("[^^\\p{L}0-9]+$", "");
+            }
 
             int startBatch = 0;
             int endBatch = 20;
             String finalQuery;
             if(words.length <= endBatch) {
                 finalQuery = "\"" + TextUtils.join(" ", words) + "\"";
-
-                int less = 10;
+                finalQuery = truncateQuery(finalQuery);
+            }
+            else if (words.length <= endBatch * 2){
+                String query1 = "";
+                for (int i = 0; i < words.length / 2; i++) {
+                    query1 = query1 + " " + words[i] + " ";
+                }
+                String query2 = "";
+                for (int i = words.length / 2; i < words.length; i++) {
+                    query2 = query2 + " " + words[i] + " ";
+                }
+                finalQuery = "\"" + query1.trim() + "\"" + " | " + "\"" + query2.trim() + "\"";
                 String encoded = URLEncoder.encode(finalQuery, "UTF-8");
-                while(encoded.length() > MAX_QUERY_LENGTH){
-                    int lastSpace = finalQuery.lastIndexOf(" ", MAX_QUERY_LENGTH - less);
-
-                    if(lastSpace == -1){
-                        finalQuery = finalQuery.substring(0, MAX_QUERY_LENGTH - less);
-                    }else {
-                        finalQuery = finalQuery.substring(0, lastSpace);
-                        // verbatim = "\"" + subSearch + "\"";
-                        encoded = URLEncoder.encode(finalQuery, "UTF-8");
-                        less = less * 2;
-                    }
+                if(encoded.length() > MAX_QUERY_LENGTH) {
+                    finalQuery = "\"" + query1.trim() + "\"";
+                    finalQuery = truncateQuery(finalQuery);
                 }
             }
             else {
@@ -84,6 +89,10 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
                 finalQuery = TextUtils.join(" | ", queries);
                 String encoded = URLEncoder.encode(finalQuery, "UTF-8");
                 while(encoded.length() > MAX_QUERY_LENGTH) {
+                    if(queries.size() == 1) {
+                        finalQuery = truncateQuery(finalQuery);
+                        break;
+                    }
                     queries.remove(queries.size() - 1);
                     finalQuery = TextUtils.join(" | ", queries);
                     encoded = URLEncoder.encode(finalQuery, "UTF-8");
@@ -132,6 +141,23 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
         }
 
         return null;
+    }
+
+    private String truncateQuery(String finalQuery) throws UnsupportedEncodingException {
+        int less = 5;
+        String encoded = URLEncoder.encode(finalQuery, "UTF-8");
+        while(encoded.length() > MAX_QUERY_LENGTH){
+            int lastSpace = finalQuery.lastIndexOf(" ", MAX_QUERY_LENGTH - less);
+
+            if(lastSpace == -1){
+                finalQuery = finalQuery.substring(0, MAX_QUERY_LENGTH - less) + "\"";
+            }else {
+                finalQuery = finalQuery.substring(0, lastSpace) + "\"";
+                encoded = URLEncoder.encode(finalQuery, "UTF-8");
+                less = less * 2;
+            }
+        }
+        return finalQuery;
     }
 
     @Override

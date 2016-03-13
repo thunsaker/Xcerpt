@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,11 +13,13 @@ import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +69,16 @@ public class InputActivity extends AppCompatActivity{
         ActionBar bar = getSupportActionBar();
         Window window = getWindow();
         setActionBarColour(bar, window, this);
+        if(bar != null) {
+            bar.setElevation(0);
+            bar.setDisplayShowCustomEnabled(true);
+            bar.setDisplayShowTitleEnabled(false);
+
+            LayoutInflater inflator = LayoutInflater.from(this);
+            View v = inflator.inflate(R.layout.custom_action_bar, null);
+            ((TextView)v.findViewById(R.id.title)).setTypeface(App.getLogoFont());
+            bar.setCustomView(v);
+        }
 
         String root =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();

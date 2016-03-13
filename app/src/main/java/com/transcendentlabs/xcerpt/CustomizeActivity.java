@@ -27,6 +27,7 @@ import android.view.ActionMode;
 import android.view.Display;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -58,6 +59,7 @@ public class CustomizeActivity extends AppCompatActivity {
     private PagerAdapter mPagerAdapter;
     private TextView titleView;
     private TextView websiteView;
+    private TextView logoView;
     private PagerSlidingTabStrip tabs;
     private TourGuide mTourGuideHandler;
     private String excerpt;
@@ -93,6 +95,9 @@ public class CustomizeActivity extends AppCompatActivity {
         backgroundView = (LinearLayout) findViewById(R.id.background);
         titleView = (TextView) findViewById(R.id.title);
         websiteView = (TextView) findViewById(R.id.website);
+
+        logoView = (TextView) findViewById(R.id.logo);
+        logoView.setTypeface(App.getLogoFont());
 
         initPager();
 
@@ -473,7 +478,7 @@ public class CustomizeActivity extends AppCompatActivity {
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
                 Bitmap icon =
-                        BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_white);
+                        BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 
                 ActivityManager.TaskDescription taskDescription =
                         new ActivityManager.TaskDescription(

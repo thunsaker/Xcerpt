@@ -25,7 +25,7 @@ public class PaintUtil {
 
     // Private Constants ///////////////////////////////////////////////////////
 
-    private static final String DEFAULT_CORNER_COLOR = "#009688"; // teal;
+    private static final String DEFAULT_CORNER_COLOR = "#40C4FF"; // blue;
     private static final String SEMI_TRANSPARENT = "#AAFFFFFF";
     private static final String DEFAULT_BACKGROUND_COLOR_ID = "#B0000000";
     private static final float DEFAULT_LINE_THICKNESS_DP = 3;

@@ -39,7 +39,7 @@ public class Util {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.mipmap.ic_launcher_white);
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.mipmap.ic_launcher);
 
                 ActivityManager.TaskDescription taskDescription =
                         new ActivityManager.TaskDescription(
