@@ -4,12 +4,4 @@ Do you want to make the articles you share on Twitter more eye-catching – and 
 
 Xcerpt is a free app that lets you create a beautiful image of a web page passage to attach to your tweets. No longer will your followers scroll past the web articles you share!
 
-Try out Xcerpt today: https://play.google.com/store/apps/details?id=com.transcendentlabs.xcerpt&ah=R3iWSFTUKkQpdHlcsrnEb9o3frw
-
-## TO-DO
-- [ ] Make an improved tutorial
-- [ ] New app icon and logo
-- [ ] Better drawables
-- [ ] Option to have no source
-- [ ] better customize the highlighting context menu
-- [ ] Lots of redesign ideas for every page... ask @baieric!
+<a href="https://play.google.com/store/apps/details?id=com.transcendentlabs.xcerpt"><img src="http://www.android.com/images/brand/get_it_on_play_logo_large.png"/></a>
