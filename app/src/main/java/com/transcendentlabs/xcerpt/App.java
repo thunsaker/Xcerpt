@@ -68,28 +68,6 @@ public class App extends Application {
         return baseUrl;
     }
 
-    public void showInfoDialog(Activity activity) {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-        builder.setTitle("Want to see how others are using Xcerpt?");
-        builder.setMessage("Visit @XcerptApp to see tweets made by others");
-        builder.setPositiveButton("Sure", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                openTwitterProfile("XcerptApp");
-            }
-        });
-        builder.setNegativeButton("Not Now", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-
     public void openTwitterProfile(String username) {
         Intent intent;
         try {

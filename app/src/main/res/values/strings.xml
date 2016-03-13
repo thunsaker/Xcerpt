@@ -41,7 +41,7 @@
     <string name="empty_clipboard_toast">The clipboard is empty.</string>
     <string name="crop_item">Crop</string>
     <string name="crop_instructions">For best results</string>
-    <string name="crop_instructions_2">Crop so that only the excerpt you wish to share is in frame. Try to avoid including any other elements in the final image.</string>
+    <string name="crop_instructions_2">Crop only the text you wish to share. Avoid including any other elements in the frame.</string>
     <string name="first_time_setup_dialog_text">Performing first time setup…</string>
     <string name="highlight_hint_title">Highlight text to add emphasis</string>
     <string name="crop_error">Error: It doesn\'t seem like you cropped a text passage.</string>
@@ -55,5 +55,6 @@
     <string name="info">Info</string>
     <string name="error_file_not_saved">Error: File could not be saved.</string>
     <string name="image_saved">Saved to gallery!</string>
+    <string name="processing_image">Processing image...</string>
 
 </resources>

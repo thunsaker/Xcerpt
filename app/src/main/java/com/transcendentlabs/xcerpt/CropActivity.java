@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,7 +29,7 @@ import static com.transcendentlabs.xcerpt.Util.getStorageDirectory;
 import static com.transcendentlabs.xcerpt.Util.initOcrIfNecessary;
 import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 
-public class CropActivity extends AppCompatActivity {
+public class CropActivity extends BaseActivity {
 
     CropImageView cropImageView;
     private static final String SHOW_HINT_SETTING = "hint";
@@ -89,7 +88,7 @@ public class CropActivity extends AppCompatActivity {
                 }
             });
             AlertDialog dialog = builder.create();
-            dialog.show();
+            displayDialog(dialog);
         }
     }
 
@@ -117,7 +116,7 @@ public class CropActivity extends AppCompatActivity {
 
 
             final ProgressDialog dialog = new ProgressDialog(this);
-            dialog.setMessage("Processing image...");
+            dialog.setMessage(getString(R.string.processing_image));
             dialog.setCancelable(false);
 
             final OcrAsyncTask ocrTask =
@@ -125,7 +124,7 @@ public class CropActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(Object o, Error error) {
                     if(dialog.isShowing()) {
-                        dialog.dismiss();
+                        closeDialog();
                     }
                     if (error != null) {
                         Log.e("OcrAsyncTask", error.getMessage());
@@ -180,11 +179,7 @@ public class CropActivity extends AppCompatActivity {
             }
         });
         AlertDialog dialog = builder.create();
-        try{
-            dialog.show();
-        }catch(Exception ignored){
-
-        }
+        displayDialog(dialog);
     }
 
     // this function won't be necessary when we use the actual image

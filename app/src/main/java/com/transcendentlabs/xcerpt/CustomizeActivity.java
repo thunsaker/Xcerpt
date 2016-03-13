@@ -24,7 +24,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Display;
@@ -57,7 +56,7 @@ import static com.transcendentlabs.xcerpt.Util.DEFAULT_COLOUR;
 import static com.transcendentlabs.xcerpt.Util.EXCERPT;
 import static com.transcendentlabs.xcerpt.Util.getTextFromClipboard;
 
-public class CustomizeActivity extends AppCompatActivity {
+public class CustomizeActivity extends BaseActivity {
 
     private LinearLayout backgroundView;
     private PagerAdapter mPagerAdapter;

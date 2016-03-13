@@ -40,7 +40,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
     /** ISO 639-3 language code indicating the default recognition language. */
     public static final String LANGUAGE_CODE = "eng";
 
-    private Activity activity;
+    private BaseActivity activity;
     private Context context;
     private TessBaseAPI baseApi;
     private ProgressDialog dialog;
@@ -52,7 +52,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
      * @param activity
      *          The calling activity
      */
-    OcrInitAsyncTask(Activity activity) {
+    OcrInitAsyncTask(BaseActivity activity) {
         this.activity = activity;
         this.context = activity.getBaseContext();
         this.baseApi = new TessBaseAPI();
@@ -68,7 +68,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
         dialog.setIndeterminate(false);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         dialog.setCancelable(false);
-        dialog.show();
+        activity.displayDialog(dialog);
     }
 
     /**

@@ -5,13 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,7 +20,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +36,7 @@ import static com.transcendentlabs.xcerpt.Util.initOcrIfNecessary;
 import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 
 
-public class InputActivity extends AppCompatActivity{
+public class InputActivity extends BaseActivity {
 
     public static final String IMAGE = "com.transcendentlabs.xcerpt.image";
 
@@ -177,7 +175,8 @@ public class InputActivity extends AppCompatActivity{
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if(id == R.id.action_info) {
-            App.getInstance().showInfoDialog(this);
+            AlertDialog infoDialog = DialogFactory.buildInfoDialog(this);
+            displayDialog(infoDialog);
         }
         return super.onOptionsItemSelected(item);
     }
