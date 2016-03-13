@@ -291,45 +291,9 @@ public class ShareActivity extends AppCompatActivity {
             onBackPressed();
             return true;
         } else if (id == R.id.action_info) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ShareActivity.this);
-
-            builder.setTitle("Want to see what a tweet made with Xcerpt looks like?");
-            builder.setMessage("Visit our Twitter account @XcerptApp to see how Xcerpt tweets from others look like.");
-            builder.setPositiveButton("Sure", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    openTwitterProfile("XcerptApp");
-                }
-            });
-            builder.setNegativeButton("Not Now", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                }
-            });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            App.getInstance().showInfoDialog(this);
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void openTwitterProfile(String username) {
-        Intent intent;
-        try {
-            // get the Twitter app if possible
-            getPackageManager().getPackageInfo("com.twitter.android", 0);
-            intent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("twitter://user?screen_name=" + username)
-            );
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        } catch (Exception e) {
-            // no Twitter app, revert to browser
-            intent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://twitter.com/" + username)
-            );
-        }
-        startActivity(intent);
     }
 
     /* Checks if external storage is available for read and write */
@@ -496,7 +460,7 @@ public class ShareActivity extends AppCompatActivity {
             tweetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    openTwitterProfile(twitterSession.getUserName());
+                    App.getInstance().openTwitterProfile(twitterSession.getUserName());
                 }
             });
         }

@@ -23,7 +23,7 @@
     <string name="title_activity_share">Xcerpt</string>
     <string name="hello_world">Hello world!</string>
     <string name="watermark">"\""</string>
-    <string name="no_source_found">No source found!</string>
+    <string name="no_source_found">No source found! Xcerpt requires a source URL.</string>
     <string name="no_source_instructions">Please provide the URL in the Source tab.</string>
     <string name="highlight">Highlight</string>
     <string name="done">Done</string>

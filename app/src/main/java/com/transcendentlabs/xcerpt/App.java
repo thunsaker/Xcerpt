@@ -1,9 +1,14 @@
 package com.transcendentlabs.xcerpt;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
+import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 
 import com.crashlytics.android.Crashlytics;
 import com.twitter.sdk.android.Twitter;
@@ -43,5 +48,65 @@ public class App extends Application {
         return ((ConnectivityManager) getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE))
                 .getActiveNetworkInfo() != null;
+    }
+
+    public static String getDisplayUrl(String url) {
+        String baseUrl = url;
+        if(baseUrl.startsWith("https://www.")){
+            baseUrl = baseUrl.substring("https://www.".length());
+        }else if(baseUrl.startsWith("http://www.")){
+            baseUrl = baseUrl.substring("http://www.".length());
+        }else if(baseUrl.startsWith("https://")){
+            baseUrl = baseUrl.substring("https://".length());
+        }else if(baseUrl.startsWith("http://")){
+            baseUrl = baseUrl.substring("http://".length());
+        }
+        int backslashAt = baseUrl.indexOf('/');
+        if(backslashAt > 0){
+            baseUrl = baseUrl.substring(0, backslashAt);
+        }
+        return baseUrl;
+    }
+
+    public void showInfoDialog(Activity activity) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+        builder.setTitle("Want to see how others are using Xcerpt?");
+        builder.setMessage("Visit @XcerptApp to see tweets made by others");
+        builder.setPositiveButton("Sure", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                openTwitterProfile("XcerptApp");
+            }
+        });
+        builder.setNegativeButton("Not Now", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+    public void openTwitterProfile(String username) {
+        Intent intent;
+        try {
+            // get the Twitter app if possible
+            getPackageManager().getPackageInfo("com.twitter.android", 0);
+            intent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("twitter://user?screen_name=" + username)
+            );
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        } catch (Exception e) {
+            // no Twitter app, revert to browser
+            intent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://twitter.com/" + username)
+            );
+        }
+        startActivity(intent);
     }
 }

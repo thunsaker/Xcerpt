@@ -251,8 +251,7 @@ public class ScreenSlidePageFragment extends Fragment {
         return rb;
     }
 
-    private Button getCustomSourceButton(final RadioGroup sourceSelect) {
-        Button customSourceButton = new Button(getActivity());
+    public void initCustomSourceButton(Button customSourceButton, final RadioGroup sourceSelect) {
         customSourceButton.setTextColor(Color.WHITE);
         customSourceButton.setBackgroundResource(R.drawable.customize_button);
 
@@ -277,6 +276,11 @@ public class ScreenSlidePageFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private Button getCustomSourceButton(final RadioGroup sourceSelect) {
+        Button customSourceButton = new Button(getActivity());
+        initCustomSourceButton(customSourceButton, sourceSelect);
         return customSourceButton;
     }
 
@@ -293,7 +297,7 @@ public class ScreenSlidePageFragment extends Fragment {
                     }
                     String title = (String) o;
 
-                    String baseUrl = getDisplayUrl(url);
+                    String baseUrl = App.getDisplayUrl(url);
 
                     Article customArticle = new Article(title, baseUrl, url);
                     if(sourceSelect != null) sourceSelect.clearCheck();
@@ -303,24 +307,6 @@ public class ScreenSlidePageFragment extends Fragment {
             });
         ((CustomizeActivity)getActivity()).tasks.add(titleTask);
         titleTask.execute();
-    }
-
-    private String getDisplayUrl(String url) {
-        String baseUrl = url;
-        if(baseUrl.startsWith("https://www.")){
-            baseUrl = baseUrl.substring("https://www.".length());
-        }else if(baseUrl.startsWith("http://www.")){
-            baseUrl = baseUrl.substring("http://www.".length());
-        }else if(baseUrl.startsWith("https://")){
-            baseUrl = baseUrl.substring("https://".length());
-        }else if(baseUrl.startsWith("http://")){
-            baseUrl = baseUrl.substring("http://".length());
-        }
-        int backslashAt = baseUrl.indexOf('/');
-        if(backslashAt > 0){
-            baseUrl = baseUrl.substring(0, backslashAt);
-        }
-        return baseUrl;
     }
 
     public int[] getColors(int c) {

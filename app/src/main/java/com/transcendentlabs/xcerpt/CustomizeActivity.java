@@ -1,7 +1,10 @@
 package com.transcendentlabs.xcerpt;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -27,13 +30,13 @@ import android.view.ActionMode;
 import android.view.Display;
 import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +55,7 @@ import tourguide.tourguide.TourGuide;
 
 import static com.transcendentlabs.xcerpt.Util.DEFAULT_COLOUR;
 import static com.transcendentlabs.xcerpt.Util.EXCERPT;
+import static com.transcendentlabs.xcerpt.Util.getTextFromClipboard;
 
 public class CustomizeActivity extends AppCompatActivity {
 
@@ -61,6 +65,8 @@ public class CustomizeActivity extends AppCompatActivity {
     private TextView websiteView;
     private TextView logoView;
     private PagerSlidingTabStrip tabs;
+    private Button customSourceButton;
+    private ClipboardManager clipboard;
     private TourGuide mTourGuideHandler;
     private String excerpt;
     public ArrayList<AsyncTask> tasks;
@@ -90,6 +96,7 @@ public class CustomizeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customize);
+        clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         tasks = new ArrayList<>();
 
         backgroundView = (LinearLayout) findViewById(R.id.background);
@@ -98,6 +105,9 @@ public class CustomizeActivity extends AppCompatActivity {
 
         logoView = (TextView) findViewById(R.id.logo);
         logoView.setTypeface(App.getLogoFont());
+
+        customSourceButton = (Button) findViewById(R.id.custom_source_button);
+        initCustomSourceButton(customSourceButton);
 
         initPager();
 
@@ -290,7 +300,8 @@ public class CustomizeActivity extends AppCompatActivity {
                     animScrollToTop.start();
 
                     setTitleText(getString(R.string.no_source_found));
-                    websiteView.setText(R.string.no_source_instructions);
+                    websiteView.setVisibility(View.GONE);
+                    customSourceButton.setVisibility(View.VISIBLE);
 
                     no_results_or_error = true;
                     mPagerAdapter.notifyDataSetChanged();
@@ -451,6 +462,8 @@ public class CustomizeActivity extends AppCompatActivity {
                 animScrollToTop.start();
 
                 setTitleText(article.title);
+                websiteView.setVisibility(View.VISIBLE);
+                customSourceButton.setVisibility(View.GONE);
                 websiteView.setText(article.displayUrl);
                 selectedUrl = article.url;
             }
@@ -524,6 +537,57 @@ public class CustomizeActivity extends AppCompatActivity {
         return canvasBitmap;
     }
 
+    public void initCustomSourceButton(Button customSourceButton) {
+        customSourceButton.setTextColor(getResources().getColor(R.color.black_trans_65));
+        customSourceButton.setBackgroundResource(R.drawable.customize_button_inline);
+
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        buttonParams.gravity = Gravity.CENTER_HORIZONTAL;
+        customSourceButton.setLayoutParams(buttonParams);
+        customSourceButton.setTextSize(12);
+
+        final Activity activity = CustomizeActivity.this;
+        customSourceButton.setText("Use URL from clipboard");
+        customSourceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String pasteData = getTextFromClipboard(activity, clipboard);
+                if(pasteData != null){
+                    getSourceHtml(pasteData);
+                }else{
+                    Toast.makeText(activity, getString(R.string.empty_clipboard_toast),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void getSourceHtml(final String url) {
+        // check if text is URL
+        ParseHtmlAsyncTask titleTask =
+                new ParseHtmlAsyncTask(url, new ParseHtmlAsyncTask.Callback(){
+                    @Override
+                    public void onComplete(Object o, Error error) {
+                        if(error != null){
+                            Toast.makeText(CustomizeActivity.this, "The clipboard text is not a valid URL.",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        String title = (String) o;
+
+                        String baseUrl = App.getDisplayUrl(url);
+
+                        Article customArticle = new Article(title, baseUrl, url);
+                        updateSource(customArticle);
+                        nextItem.setEnabled(true);
+                    }
+                });
+        tasks.add(titleTask);
+        titleTask.execute();
+    }
 
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         private final String[] TITLES = {
