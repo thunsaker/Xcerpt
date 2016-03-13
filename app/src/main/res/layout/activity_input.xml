@@ -8,6 +8,7 @@
     android:background="@color/md_teal_500">
 
     <Button
+        android:id="@+id/paste_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/abc_ic_menu_paste_mtrl_am_alpha"

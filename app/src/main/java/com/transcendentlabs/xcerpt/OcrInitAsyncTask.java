@@ -162,12 +162,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
             installSuccess = true;
         }
 
-        // Dismiss the progress dialog box, revealing the indeterminate dialog box behind it
-        try {
-            dialog.dismiss();
-        } catch (IllegalArgumentException e) {
-            // Catch "View not attached to window manager" error, and continue
-        }
+        activity.closeDialog();
 
         // Initialize the OCR engine
         if (baseApi.init(destinationDirBase + File.separator, LANGUAGE_CODE)) {
@@ -542,7 +537,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
         percentComplete = Integer.parseInt(message[1]);
         dialog.setMessage(message[0]);
         dialog.setProgress(percentComplete);
-        dialog.show();
+        activity.displayDialog(dialog);
     }
 
     @Override

@@ -6,7 +6,6 @@ import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,10 +14,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -58,7 +57,7 @@ import twitter4j.conf.ConfigurationBuilder;
 import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 
 
-public class ShareActivity extends AppCompatActivity {
+public class ShareActivity extends BaseActivity {
 
     private TwitterSession twitterSession;
 
@@ -291,7 +290,8 @@ public class ShareActivity extends AppCompatActivity {
             onBackPressed();
             return true;
         } else if (id == R.id.action_info) {
-            App.getInstance().showInfoDialog(this);
+            AlertDialog infoDialog = DialogFactory.buildInfoDialog(this);
+            displayDialog(infoDialog);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -367,18 +367,18 @@ public class ShareActivity extends AppCompatActivity {
                 if (file.exists())
                     file.delete();
                 try {
-                    FileOutputStream out = new FileOutputStream(file);
-                    img.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                    out.flush();
-                    out.close();
-                    shareImageUri = Uri.fromFile(file);
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                     ClipData clip = ClipData.newPlainText("Xcerpt URL", selectedUrl);
                     clipboard.setPrimaryClip(clip);
                     Toast.makeText(ShareActivity.this,
                             "Source URL copied to clipboard.",
-                            Toast.LENGTH_LONG
+                            Toast.LENGTH_SHORT
                     ).show();
+                    FileOutputStream out = new FileOutputStream(file);
+                    img.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                    out.flush();
+                    out.close();
+                    shareImageUri = Uri.fromFile(file);
                     share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
                     startActivity(Intent.createChooser(share, "Share Image"));
                 } catch (Exception e) {
@@ -390,7 +390,7 @@ public class ShareActivity extends AppCompatActivity {
                 }
             } else{
                 Toast.makeText(ShareActivity.this,
-                        "Error: External storage is not writable.",
+                        "Error: Cannot write to external storage.",
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -417,7 +417,7 @@ public class ShareActivity extends AppCompatActivity {
             pDialog.setMessage("Posting to Twitter...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
-            pDialog.show();
+            displayDialog(pDialog);
         }
 
         protected Void doInBackground(String... args) {
@@ -453,8 +453,8 @@ public class ShareActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
 
 			/* Dismiss the progress dialog after sharing */
-            pDialog.dismiss();
-            Toast.makeText(ShareActivity.this, "Posted to Twitter!", Toast.LENGTH_SHORT).show();
+            closeDialog();
+            Toast.makeText(ShareActivity.this, getString(R.string.posted_to_twitter), Toast.LENGTH_SHORT).show();
             tweet.setEnabled(false);
             tweetButton.setText(getString(R.string.view_on_twitter));
             tweetButton.setOnClickListener(new View.OnClickListener() {

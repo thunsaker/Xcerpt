@@ -123,9 +123,7 @@ public class CropActivity extends BaseActivity {
                     new OcrAsyncTask(finalImage, dir, new OcrAsyncTask.Callback() {
                 @Override
                 public void onComplete(Object o, Error error) {
-                    if(dialog.isShowing()) {
-                        closeDialog();
-                    }
+                    closeDialog();
                     if (error != null) {
                         Log.e("OcrAsyncTask", error.getMessage());
                         return;
@@ -147,7 +145,7 @@ public class CropActivity extends BaseActivity {
             });
             tasks.add(ocrTask);
             ocrTask.execute();
-            dialog.show();
+            displayDialog(dialog);
 
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -156,9 +154,6 @@ public class CropActivity extends BaseActivity {
                     if(ocrTask.getStatus() == AsyncTask.Status.RUNNING) {
                         ocrTask.cancel(true);
                         showErrorDialog(activity);
-                        if (dialog.isShowing()) {
-                            dialog.dismiss();
-                        }
                     }
                 }
             }, 8000);

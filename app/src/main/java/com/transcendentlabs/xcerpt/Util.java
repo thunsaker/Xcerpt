@@ -62,7 +62,7 @@ public class Util {
 
     public static final String EXCERPT = "com.transcendentlabs.xcerpt.excerpt";
 
-    public static void initOcrIfNecessary(Activity activity){
+    public static void initOcrIfNecessary(BaseActivity activity){
 
         boolean doNewInit = false;
         File storageDirectory = getStorageDirectory(activity);

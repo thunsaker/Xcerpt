@@ -1,9 +1,11 @@
 package com.transcendentlabs.xcerpt;
 
+import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,25 +50,19 @@ public class InputActivity extends BaseActivity {
     private GridViewAdapter gvAdapter;
     private TextView selectScreenshot;
     private TextView noScreenshot;
+    private Button pasteButton;
 
+    ClipboardManager clipboard;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
         selectScreenshot = (TextView) findViewById(R.id.select_screenshot);
         noScreenshot = (TextView) findViewById(R.id.no_screenshot);
-
+        pasteButton = (Button) findViewById(R.id.paste_button);
         gv = (GridView) findViewById(R.id.image_grid);
-        gvAdapter = new GridViewAdapter(this);
-        gv.setAdapter(gvAdapter);
-        if(gvAdapter.isEmpty()){
-            noScreenshot.setVisibility(View.VISIBLE);
-            selectScreenshot.setVisibility(View.GONE);
-        }else{
-            noScreenshot.setVisibility(View.GONE);
-            selectScreenshot.setVisibility(View.VISIBLE);
-        }
 
+        clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         ActionBar bar = getSupportActionBar();
         Window window = getWindow();
         setActionBarColour(bar, window, this);
@@ -101,6 +98,20 @@ public class InputActivity extends BaseActivity {
             noScreenshot.setVisibility(View.GONE);
             selectScreenshot.setVisibility(View.VISIBLE);
         }
+
+        ClipData primaryClip = clipboard.getPrimaryClip();
+        if(primaryClip == null
+                || primaryClip.getItemAt(0) == null
+                || primaryClip.getItemAt(0).getText() == null
+                || primaryClip.getItemAt(0).getText().toString().trim().isEmpty()) {
+            pasteButton.setEnabled(false);
+            pasteButton.setText(getString(R.string.clipboard_empty));
+            pasteButton.setTextColor(getResources().getColor(R.color.white_trans_65));
+        } else {
+            pasteButton.setEnabled(true);
+            pasteButton.setText(getString(R.string.paste_instructions));
+            pasteButton.setTextColor(Color.WHITE);
+        }
     }
 
     @Override
@@ -132,7 +143,6 @@ public class InputActivity extends BaseActivity {
     }
 
     public void pasteClipboard(View view) {
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         String pasteData = getTextFromClipboard(this, clipboard);
 
         String excerpt = "";
