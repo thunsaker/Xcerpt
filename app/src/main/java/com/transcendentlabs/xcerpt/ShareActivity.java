@@ -8,7 +8,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -205,7 +204,7 @@ public class ShareActivity extends AppCompatActivity {
         final String PREFIX = "Post as @";
         loginButton.setVisibility(View.GONE);
         tweetLayout.setVisibility(View.VISIBLE);
-        tweetBar.setVisibility(View.VISIBLE);
+        tweetButton.setVisibility(View.VISIBLE);
         userName.setText(PREFIX + twitterSession.getUserName());
     }
 
@@ -216,7 +215,7 @@ public class ShareActivity extends AppCompatActivity {
     private void showLoggedOutState(View view) {
         loginButton.setVisibility(View.VISIBLE);
         tweetLayout.setVisibility(View.GONE);
-        tweetBar.setVisibility(View.GONE);
+        tweetButton.setVisibility(View.GONE);
         if(view != null) {
             InputMethodManager imm =
                     (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -298,23 +297,7 @@ public class ShareActivity extends AppCompatActivity {
             builder.setMessage("Visit our Twitter account @XcerptApp to see how Xcerpt tweets from others look like.");
             builder.setPositiveButton("Sure", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-
-                    Intent intent;
-                    try {
-                        // get the Twitter app if possible
-                        intent = new Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("twitter://user?screen_name=XcerptApp")
-                        );
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    } catch (Exception e) {
-                        // no Twitter app, revert to browser
-                        intent = new Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("https://twitter.com/XcerptApp")
-                        );
-                    }
-                    startActivity(intent);
+                    openTwitterProfile("XcerptApp");
                 }
             });
             builder.setNegativeButton("Not Now", new DialogInterface.OnClickListener() {
@@ -327,6 +310,26 @@ public class ShareActivity extends AppCompatActivity {
             dialog.show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openTwitterProfile(String username) {
+        Intent intent;
+        try {
+            // get the Twitter app if possible
+            getPackageManager().getPackageInfo("com.twitter.android", 0);
+            intent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("twitter://user?screen_name=" + username)
+            );
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        } catch (Exception e) {
+            // no Twitter app, revert to browser
+            intent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://twitter.com/" + username)
+            );
+        }
+        startActivity(intent);
     }
 
     /* Checks if external storage is available for read and write */
@@ -493,23 +496,7 @@ public class ShareActivity extends AppCompatActivity {
             tweetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent;
-                    try {
-                        // get the Twitter app if possible
-                        getPackageManager().getPackageInfo("com.twitter.android", 0);
-                        intent = new Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("twitter://user?user_id=" + twitterSession.getUserId())
-                        );
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    } catch (Exception e) {
-                        // no Twitter app, revert to browser
-                        intent = new Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("https://twitter.com/" + twitterSession.getUserName())
-                        );
-                    }
-                    startActivity(intent);
+                    openTwitterProfile(twitterSession.getUserName());
                 }
             });
         }

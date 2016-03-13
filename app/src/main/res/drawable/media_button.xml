@@ -6,7 +6,7 @@
         <shape
             android:shape="oval">
             <solid
-                android:color="@color/md_blue_grey_500" />
+                android:color="@color/md_blue_grey_400" />
             <stroke
                 android:width="3dp"
                 android:color="@color/tw__transparent" />
@@ -24,7 +24,7 @@
         <shape
             android:shape="oval">
             <solid
-                android:color="@color/md_blue_grey_500" />
+                android:color="@color/md_blue_grey_400" />
             <stroke
                 android:width="3dp"
                 android:color="@color/tw__transparent" />
@@ -42,7 +42,7 @@
         <shape
             android:shape="oval">
             <solid
-                android:color="@color/md_blue_grey_400" />
+                android:color="@color/md_blue_grey_300" />
             <stroke
                 android:width="3dp"
                 android:color="@color/tw__transparent" />

@@ -85,6 +85,13 @@
                     android:layout_marginLeft="5dip"
                     android:layout_marginRight="5dip"
                     android:text="@string/loading"/>
+
+                <Button
+                    android:id="@+id/custom_source_button"
+                    android:layout_width="wrap_parent"
+                    android:layout_height="wrap_content"
+                    />
+
                 <TextView
                     android:id="@+id/logo"
                     android:layout_width="match_parent"
