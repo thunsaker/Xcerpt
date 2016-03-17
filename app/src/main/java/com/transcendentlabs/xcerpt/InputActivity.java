@@ -130,6 +130,9 @@ public class InputActivity extends BaseActivity {
                 new String[] {"%/Screenshots/%"},
                 MediaStore.Images.Media.DATE_ADDED + " DESC"
         );
+        if(cursor == null) {
+            return new ArrayList<>();
+        }
         ArrayList<String> result = new ArrayList<>(cursor.getCount());
         if (cursor.moveToFirst()) {
             final int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);

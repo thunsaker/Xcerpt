@@ -77,14 +77,16 @@ public class App extends Application {
                     Intent.ACTION_VIEW,
                     Uri.parse("twitter://user?screen_name=" + username)
             );
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         } catch (Exception e) {
             // no Twitter app, revert to browser
             intent = new Intent(
                     Intent.ACTION_VIEW,
                     Uri.parse("https://twitter.com/" + username)
             );
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 }
