@@ -355,7 +355,7 @@ public class ShareActivity extends BaseActivity {
 
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("image/jpeg");
-
+        share.putExtra(Intent.EXTRA_TEXT, selectedUrl);
         if(shareImageUri == null){
             if(isExternalStorageWritable()){
                 String root =
