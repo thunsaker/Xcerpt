@@ -16,3 +16,8 @@
 #   public *;
 #}
 -include ../proguard-com.twitter.sdk.android.twitter.txt
+-dontwarn twitter4j.**
+-keep  class twitter4j.conf.PropertyConfigurationFactory
+-keep class twitter4j.** { *; }
+-keepattributes SourceFile,LineNumberTable,*Annotation*
+-keep public class * extends java.lang.Exception

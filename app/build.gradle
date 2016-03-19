@@ -32,20 +32,22 @@ android {
         applicationId "com.transcendentlabs.xcerpt"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 19
-        versionName "1.3.1"
+        versionCode 21
+        versionName "1.3.2"
     }
     buildTypes {
         debug{
             buildConfigField 'String', 'BING_ACCOUNT_KEY', BING_ACCOUNT_KEY
             buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
             buildConfigField 'String', 'TWITTER_SECRET_KEY', TWITTER_SECRET_KEY
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
             buildConfigField 'String', 'BING_ACCOUNT_KEY', BING_ACCOUNT_KEY
             buildConfigField 'String', 'TWITTER_KEY', TWITTER_KEY
             buildConfigField 'String', 'TWITTER_SECRET_KEY', TWITTER_SECRET_KEY
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -54,6 +56,8 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'org.twitter4j:twitter4j-core:4.0.4'
+    compile 'org.xeustechnologies:jtar:1.1'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.google.code.gson:gson:2.3'
     compile 'org.jsoup:jsoup:1.7.3'
@@ -61,7 +65,6 @@ dependencies {
         transitive = true;
     }
     compile(group: 'uz.shift', name: 'colorpicker', version: '0.5', ext: 'aar')
-    compile files('libs/twitter4j-core-3.0.4.jar')
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile project(':cropper')
     compile 'com.twitter:twitter-text:1.13.0'

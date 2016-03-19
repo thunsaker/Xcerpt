@@ -335,6 +335,13 @@ public class ShareActivity extends BaseActivity {
             values.put("_data", file.getAbsolutePath());
 
             ContentResolver cr = getContentResolver();
+            if(cr == null) {
+                Toast.makeText(ShareActivity.this,
+                        getString(R.string.error_file_not_saved),
+                        Toast.LENGTH_LONG
+                ).show();
+                return;
+            }
             cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
         }else{
