@@ -263,7 +263,6 @@ public class CustomizeActivity extends BaseActivity {
             @Override
             public void onComplete(Object o, Error error) {
                 if (error != null) {
-                    Log.e("SearchAsyncTask", error.getMessage());
                     no_results_or_error = true;
                     mPagerAdapter.notifyDataSetChanged();
                     return;

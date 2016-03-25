@@ -188,8 +188,11 @@ public class InputActivity extends BaseActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if(id == R.id.action_info) {
-            AlertDialog infoDialog = DialogFactory.buildInfoDialog(this);
-            displayDialog(infoDialog);
+            // AlertDialog infoDialog = DialogFactory.buildInfoDialog(this);
+            // displayDialog(infoDialog);
+            Intent intent = new Intent(this, SettingsActivity.class);
+            intent.setAction(Intent.ACTION_DEFAULT);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }

@@ -1,0 +1,17 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference android:title="Delete original screenshot after tweeting or downloading image"
+        android:defaultValue="false"
+        android:layout="@xml/preference_layout"
+        android:key="deleteScreenshot" />
+    <SwitchPreference android:title="Use Twitter app's tweet composer"
+        android:defaultValue="false"
+        android:summary="This setting may not work with some third-party Twitter apps"
+        android:layout="@xml/preference_layout"
+        android:key="useOutsideTweetComposer" />
+    <Preference android:title="See how others use Xcerpt"
+        android:summary="Open @XcerptApp to see tweets made by others"
+        android:key="seeXcerptApp"/>
+    <Preference android:title="Say thanks"
+        android:summary="If you are enjoying Xcerpt, please leave a comment on the Play Store"
+        android:key="goToPlayStore"/>
+</PreferenceScreen>

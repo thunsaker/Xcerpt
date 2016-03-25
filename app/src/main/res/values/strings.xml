@@ -58,5 +58,6 @@
     <string name="processing_image">Processing image…</string>
     <string name="clipboard_empty">Clipboard Empty</string>
     <string name="posted_to_twitter">Posted to Twitter!</string>
+    <string name="settings">Settings</string>
 
 </resources>
