@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -42,9 +44,11 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -160,13 +164,45 @@ public class ShareActivity extends BaseActivity {
             return;
         }
 
-        // final Uri imageUri = Uri.fromFile(imageFile);
-
-        if(twitterSession != null){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPref.getBoolean(SettingsActivity.KEY_USE_TWITTER_COMPOSER, false)){
+            showJustImage();
+            openTwitterTweetComposer();
+        }
+        else if(twitterSession != null){
             showLoggedInState(twitterSession);
         }
 
         shareImageUri = null;
+    }
+
+    private void openTwitterTweetComposer() {
+        if(shareImageUri == null) {
+            try {
+                cacheImage(false);
+                TweetComposer.Builder builder = new TweetComposer.Builder(this)
+                        .text(" " + selectedUrl)
+                        .image(shareImageUri);
+                builder.show();
+            } catch (IOException ex) {
+                Toast.makeText(ShareActivity.this,
+                        "Error: File could not be saved.",
+                        Toast.LENGTH_LONG
+                ).show();
+                ex.printStackTrace();
+            }
+        } else {
+            TweetComposer.Builder builder = new TweetComposer.Builder(this)
+                    .text(" " + selectedUrl)
+                    .image(shareImageUri);
+            builder.show();
+        }
+    }
+
+    private void showJustImage() {
+        loginButton.setVisibility(View.GONE);
+        tweetLayout.setVisibility(View.GONE);
+        tweetButton.setVisibility(View.VISIBLE);
     }
 
     private void initLinkPreviewView(String selectedUrl) {
@@ -353,6 +389,11 @@ public class ShareActivity extends BaseActivity {
     }
 
     public void postTweet(View view) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPref.getBoolean(SettingsActivity.KEY_USE_TWITTER_COMPOSER, false)){
+            openTwitterTweetComposer();
+            return;
+        }
         File imageFile = getFileStreamPath(fileName);
         UpdateTwitterStatusTask postTweet = new UpdateTwitterStatusTask(tweetText, imageFile);
         postTweet.execute();
@@ -364,46 +405,52 @@ public class ShareActivity extends BaseActivity {
         share.setType("image/jpeg");
         share.putExtra(Intent.EXTRA_TEXT, selectedUrl);
         if(shareImageUri == null){
-            if(isExternalStorageWritable()){
-                String root =
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-                File dir = new File(root + File.separator + "Xcerpt" + File.separator + "tmp");
-                dir.mkdirs();
-                File file = new File(dir, fileName);
-                Log.i("ShareActivity", "" + file);
-                if (file.exists())
-                    file.delete();
-                try {
-                    ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("Xcerpt URL", selectedUrl);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(ShareActivity.this,
-                            "Source URL copied to clipboard.",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    FileOutputStream out = new FileOutputStream(file);
-                    img.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                    out.flush();
-                    out.close();
-                    shareImageUri = Uri.fromFile(file);
-                    share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
-                    startActivity(Intent.createChooser(share, "Share Image"));
-                } catch (Exception e) {
-                    Toast.makeText(ShareActivity.this,
-                            "Error: File could not be saved.",
-                            Toast.LENGTH_LONG
-                    ).show();
-                    e.printStackTrace();
-                }
-            } else{
+            try{
+                cacheImage(true);
+                share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
+                startActivity(Intent.createChooser(share, "Share Image"));
+            } catch (IOException e) {
                 Toast.makeText(ShareActivity.this,
-                        "Error: Cannot write to external storage.",
+                        "Error: File could not be saved.",
                         Toast.LENGTH_LONG
                 ).show();
+                e.printStackTrace();
             }
         }else{
             share.putExtra(Intent.EXTRA_STREAM, shareImageUri);
             startActivity(Intent.createChooser(share, "Share Image"));
+        }
+    }
+
+    private void cacheImage(boolean copyUrl) throws IOException {
+        if(isExternalStorageWritable()){
+            String root =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+            File dir = new File(root + File.separator + "Xcerpt" + File.separator + "tmp");
+            dir.mkdirs();
+            File file = new File(dir, fileName);
+            if (file.exists()) {
+                file.delete();
+            }
+            if(copyUrl) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Xcerpt URL", selectedUrl);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(ShareActivity.this,
+                        "Source URL copied to clipboard.",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+            FileOutputStream out = new FileOutputStream(file);
+            img.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.flush();
+            out.close();
+            shareImageUri = Uri.fromFile(file);
+        } else{
+            Toast.makeText(ShareActivity.this,
+                    "Error: Cannot write to external storage.",
+                    Toast.LENGTH_LONG
+            ).show();
         }
     }
 
