@@ -62,7 +62,7 @@ public class Util {
 
     public static final String EXCERPT = "com.transcendentlabs.xcerpt.excerpt";
 
-    public static void initOcrIfNecessary(BaseActivity activity){
+    public static boolean isOcrInitNecessary(BaseActivity activity){
 
         boolean doNewInit = false;
         File storageDirectory = getStorageDirectory(activity);
@@ -72,8 +72,37 @@ public class Util {
                     + File.separator + "eng.traineddata");
             doNewInit = !data.exists() || data.isDirectory();
         }
+        return doNewInit;
+    }
+
+    public static void initOcrIfNecessary(final BaseActivity activity){
+        boolean doNewInit = false;
+        final File storageDirectory = getStorageDirectory(activity);
+        if(storageDirectory != null){
+            File data = new File(storageDirectory.toString()
+                    + File.separator + "tessdata"
+                    + File.separator + "eng.traineddata");
+            doNewInit = !data.exists() || data.isDirectory();
+        }
         if (doNewInit) {
-            new OcrInitAsyncTask(activity).execute(storageDirectory.toString());
+            android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(activity);
+            // TODO dialog should have better wording
+            alertDialogBuilder.setCancelable(false)
+                    .setTitle("Proceed with Initial Set-up?")
+                    .setMessage("Initial set-up will download files. A Wi-Fi connection is recommended.")
+                    .setPositiveButton("Proceed", new DialogInterface.OnClickListener(){
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            new OcrInitAsyncTask(activity).execute(storageDirectory.toString());
+                        }
+                    })
+                    .setNegativeButton("Go back", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            activity.finish();
+                        }
+                    });
+            alertDialogBuilder.show();
         }
     }
 

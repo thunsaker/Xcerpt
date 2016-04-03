@@ -104,64 +104,69 @@ public class CropActivity extends BaseActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_crop) {
-            Bitmap finalImage = cropImageView.getCroppedImage();
-            if(finalImage == null){
-                Toast.makeText(getApplicationContext(),
-                        "Error: Crop failed.",
-                        Toast.LENGTH_SHORT).show();
-            }
-            final Activity activity = this;
-            initOcrIfNecessary(this);
-            String dir = getStorageDirectory(this).toString();
-
-
-            final ProgressDialog dialog = new ProgressDialog(this);
-            dialog.setMessage(getString(R.string.processing_image));
-            dialog.setCancelable(false);
-
-            final OcrAsyncTask ocrTask =
-                    new OcrAsyncTask(finalImage, dir, new OcrAsyncTask.Callback() {
-                @Override
-                public void onComplete(Object o, Error error) {
-                    closeDialog();
-                    if (error != null) {
-                        Log.e("OcrAsyncTask", error.getMessage());
-                        return;
-                    }
-                    String excerpt = (String) o;
-
-                    if(excerpt.isEmpty() || isGibberish(excerpt)){
-                        showErrorDialog(activity);
-                    }else if (App.getInstance().isNetworkAvailable()) {
-                        Intent intent = new Intent(activity, CustomizeActivity.class);
-                        intent.setAction(Intent.ACTION_DEFAULT);
-                        intent.putExtra(EXCERPT, excerpt);
-                        startActivity(intent);
-                    } else {
-                        CharSequence text = getString(R.string.no_internet_error);
-                        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-            tasks.add(ocrTask);
-            ocrTask.execute();
-            displayDialog(dialog);
-
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(ocrTask.getStatus() == AsyncTask.Status.RUNNING) {
-                        ocrTask.cancel(true);
-                        showErrorDialog(activity);
-                    }
-                }
-            }, 8000);
-
+            pushCroppedImageToCustomize();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void pushCroppedImageToCustomize() {
+        Bitmap finalImage = cropImageView.getCroppedImage();
+        if(finalImage == null){
+            Toast.makeText(getApplicationContext(),
+                    "Error: Crop failed.",
+                    Toast.LENGTH_SHORT).show();
+        }
+        final Activity activity = this;
+        initOcrIfNecessary(this);
+        String dir = getStorageDirectory(this).toString();
+
+
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage(getString(R.string.processing_image));
+        dialog.setCancelable(false);
+
+        final OcrAsyncTask ocrTask =
+                new OcrAsyncTask(finalImage, dir, new OcrAsyncTask.Callback() {
+            @Override
+            public void onComplete(Object o, Error error) {
+                closeDialog();
+                if (error != null) {
+                    Log.e("OcrAsyncTask", error.getMessage());
+                    return;
+                }
+                String excerpt = (String) o;
+
+                if(excerpt.isEmpty() || isGibberish(excerpt)){
+                    showErrorDialog(activity);
+                }else if (App.getInstance().isNetworkAvailable()) {
+                    Intent intent = new Intent(activity, CustomizeActivity.class);
+                    intent.setAction(Intent.ACTION_DEFAULT);
+                    intent.putExtra(EXCERPT, excerpt);
+                    Bundle extras = getIntent().getExtras();
+                    intent.putExtra(InputActivity.IMAGE, extras.getString(InputActivity.IMAGE));
+                    startActivity(intent);
+                } else {
+                    CharSequence text = getString(R.string.no_internet_error);
+                    Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        tasks.add(ocrTask);
+        ocrTask.execute();
+        displayDialog(dialog);
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(ocrTask.getStatus() == AsyncTask.Status.RUNNING) {
+                    ocrTask.cancel(true);
+                    showErrorDialog(activity);
+                }
+            }
+        }, 8000);
     }
 
     private void showErrorDialog(Activity activity) {

@@ -181,7 +181,7 @@ public class ShareActivity extends BaseActivity {
             try {
                 cacheImage(false);
                 TweetComposer.Builder builder = new TweetComposer.Builder(this)
-                        .text(" " + selectedUrl)
+                        .text(selectedUrl)
                         .image(shareImageUri);
                 builder.show();
             } catch (IOException ex) {
@@ -193,7 +193,7 @@ public class ShareActivity extends BaseActivity {
             }
         } else {
             TweetComposer.Builder builder = new TweetComposer.Builder(this)
-                    .text(" " + selectedUrl)
+                    .text(selectedUrl)
                     .image(shareImageUri);
             builder.show();
         }

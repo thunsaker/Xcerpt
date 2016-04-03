@@ -15,9 +15,12 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -43,6 +46,7 @@ import android.widget.Toast;
 import com.astuetz.PagerSlidingTabStrip;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -413,11 +417,27 @@ public class CustomizeActivity extends BaseActivity {
 
     private void share(){
         if(selectedUrl == null){
-            // TODO selectedUrl should never be null when the share button is enabled
             Toast.makeText(this, "You must select a source first.",
                     Toast.LENGTH_SHORT).show();
             return;
         }
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPref.getBoolean(SettingsActivity.KEY_DELETE_SCREENSHOT, false)) {
+            Bundle extras = getIntent().getExtras();
+            Uri uri = Uri.parse(extras.getString(InputActivity.IMAGE));
+            File file = new File(uri.getPath());
+            if(file.exists()) {
+                if (file.delete()) {
+                    MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, new MediaScannerConnection.OnScanCompletedListener() {
+                        public void onScanCompleted(String path, Uri uri)
+                        {
+                        }
+                    });
+                }
+            }
+        }
+
         Intent intent = new Intent(this, ShareActivity.class);
         intent.putExtra(URL, selectedUrl);
 

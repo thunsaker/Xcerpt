@@ -1,8 +1,10 @@
 package com.transcendentlabs.xcerpt;
 
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -12,7 +14,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,10 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.widget.ImageView.ScaleType.CENTER_CROP;
-import static com.transcendentlabs.xcerpt.Util.EXCERPT;
-import static com.transcendentlabs.xcerpt.Util.getTextFromClipboard;
-import static com.transcendentlabs.xcerpt.Util.initOcrIfNecessary;
-import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
+import static com.transcendentlabs.xcerpt.Util.*;
 
 
 public class InputActivity extends BaseActivity {
@@ -86,7 +84,6 @@ public class InputActivity extends BaseActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        // Do OCR engine initialization, if necessary
         initOcrIfNecessary(this);
         gvAdapter = new GridViewAdapter(this);
         gv.setAdapter(gvAdapter);
@@ -241,6 +238,10 @@ public class InputActivity extends BaseActivity {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if(source.toString() == null || source.toString().isEmpty()){
+                        // TODO show error
+                        return;
+                    }
                     Intent intent = new Intent(context, CropActivity.class);
                     intent.putExtra(IMAGE, source.toString());
                     startActivity(intent);
