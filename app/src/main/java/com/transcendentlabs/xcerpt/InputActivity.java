@@ -1,12 +1,11 @@
 package com.transcendentlabs.xcerpt;
 
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
@@ -30,6 +29,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -184,7 +184,7 @@ public class InputActivity extends BaseActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if(id == R.id.action_info) {
+        if(id == R.id.action_settings) {
             // AlertDialog infoDialog = DialogFactory.buildInfoDialog(this);
             // displayDialog(infoDialog);
             Intent intent = new Intent(this, SettingsActivity.class);
@@ -226,29 +226,45 @@ public class InputActivity extends BaseActivity {
             // Get the image URL for the current position.
             final Uri source = getItem(position);
 
-            Picasso.with(context) //
-                    .load(source) //
-                    .placeholder(R.color.tw__light_gray) // placeholder
-                    .error(R.color.material_blue_grey_800) // error
-                    .fit() //
+            Picasso.with(context)
+                    .load(source)
+                    .placeholder(R.color.tw__light_gray)
+                    .error(R.color.material_blue_grey_800)
+                    .fit()
                     .centerCrop()
-                    .tag(context) //
+                    .tag(context)
                     .into(view);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(source.toString() == null || source.toString().isEmpty()){
-                        // TODO show error
-                        return;
-                    }
-                    Intent intent = new Intent(context, CropActivity.class);
-                    intent.putExtra(IMAGE, source.toString());
-                    startActivity(intent);
+                    openScreenshot(source);
                 }
             });
 
             return view;
+        }
+
+        private void openScreenshot(Uri source) {
+            if(source.toString() == null || source.toString().isEmpty()){
+                // TODO show error
+                return;
+            }
+
+            try {
+                Bitmap img = MediaStore.Images.Media.getBitmap(InputActivity.this.getContentResolver(), source);
+                if(img == null) {
+                    // TODO show error
+                    return;
+                }
+            } catch (IOException e) {
+                // TODO show error
+                return;
+            }
+
+            Intent intent = new Intent(context, CropActivity.class);
+            intent.putExtra(IMAGE, source.toString());
+            startActivity(intent);
         }
 
         @Override public int getCount() {

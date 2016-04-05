@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
@@ -325,7 +324,7 @@ public class ShareActivity extends BaseActivity {
         if(id == R.id.home){
             onBackPressed();
             return true;
-        } else if (id == R.id.action_info) {
+        } else if (id == R.id.action_settings) {
             AlertDialog infoDialog = DialogFactory.buildInfoDialog(this);
             displayDialog(infoDialog);
         }

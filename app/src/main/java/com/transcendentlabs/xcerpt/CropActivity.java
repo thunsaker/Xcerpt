@@ -48,6 +48,11 @@ public class CropActivity extends BaseActivity {
         Uri uri = Uri.parse(extras.getString(InputActivity.IMAGE));
         try {
             Bitmap img = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            if(img == null) {
+                // TODO throw exception?
+                finish();
+                return;
+            }
             cropImageView.setImageBitmap(img);
         } catch (IOException e) {
             e.printStackTrace();

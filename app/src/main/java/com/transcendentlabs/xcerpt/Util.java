@@ -76,6 +76,9 @@ public class Util {
     }
 
     public static void initOcrIfNecessary(final BaseActivity activity){
+        if(activity == null) {
+            return;
+        }
         boolean doNewInit = false;
         final File storageDirectory = getStorageDirectory(activity);
         if(storageDirectory != null){
@@ -88,15 +91,15 @@ public class Util {
             android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(activity);
             // TODO dialog should have better wording
             alertDialogBuilder.setCancelable(false)
-                    .setTitle("Proceed with Initial Set-up?")
-                    .setMessage("Initial set-up will download files. A Wi-Fi connection is recommended.")
-                    .setPositiveButton("Proceed", new DialogInterface.OnClickListener(){
+                    .setTitle(activity.getString(R.string.proceed_with_initial_setup))
+                    .setMessage(activity.getString(R.string.initial_setup_wifi_recommended_message))
+                    .setPositiveButton(activity.getString(R.string.proceed), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             new OcrInitAsyncTask(activity).execute(storageDirectory.toString());
                         }
                     })
-                    .setNegativeButton("Go back", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(activity.getString(R.string.go_back), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             activity.finish();
