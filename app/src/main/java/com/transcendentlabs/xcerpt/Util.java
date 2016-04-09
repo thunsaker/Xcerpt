@@ -62,19 +62,6 @@ public class Util {
 
     public static final String EXCERPT = "com.transcendentlabs.xcerpt.excerpt";
 
-    public static boolean isOcrInitNecessary(BaseActivity activity){
-
-        boolean doNewInit = false;
-        File storageDirectory = getStorageDirectory(activity);
-        if(storageDirectory != null){
-            File data = new File(storageDirectory.toString()
-                    + File.separator + "tessdata"
-                    + File.separator + "eng.traineddata");
-            doNewInit = !data.exists() || data.isDirectory();
-        }
-        return doNewInit;
-    }
-
     public static void initOcrIfNecessary(final BaseActivity activity){
         if(activity == null) {
             return;
