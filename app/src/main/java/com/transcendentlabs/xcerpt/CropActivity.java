@@ -38,35 +38,38 @@ public class CropActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crop);
-        cropImageView = (CropImageView) findViewById(R.id.CropImageView);
         tasks = new ArrayList<>();
+        setContentView(R.layout.activity_crop);
 
+        if (!initializeCropView()) {
+            return;
+        }
+
+        setActionBarElevationOff();
+
+        SharedPreferences settings = getPreferences(0);
+        showGuide(settings);
+    }
+
+    // return true if initialization successful
+    private boolean initializeCropView() {
+        cropImageView = (CropImageView) findViewById(R.id.CropImageView);
         cropImageView.setGuidelines(0);
-
         Bundle extras = getIntent().getExtras();
         Uri uri = Uri.parse(extras.getString(InputActivity.IMAGE));
         try {
             Bitmap img = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
             if(img == null) {
-                // TODO throw exception?
                 finish();
-                return;
+                return false;
             }
             cropImageView.setImageBitmap(img);
         } catch (IOException e) {
             e.printStackTrace();
+            finish();
+            return false;
         }
-
-        ActionBar bar = getSupportActionBar();
-        Window window = getWindow();
-        setActionBarColour(bar, window, this);
-        if(bar != null) {
-            bar.setElevation(0);
-        }
-
-        SharedPreferences settings = getPreferences(0);
-        showGuide(settings);
+        return true;
     }
 
     @Override
@@ -122,11 +125,11 @@ public class CropActivity extends BaseActivity {
             Toast.makeText(getApplicationContext(),
                     "Error: Crop failed.",
                     Toast.LENGTH_SHORT).show();
+            return;
         }
-        final Activity activity = this;
+
         initOcrIfNecessary(this);
         String dir = getStorageDirectory(this).toString();
-
 
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMessage(getString(R.string.processing_image));
@@ -136,42 +139,59 @@ public class CropActivity extends BaseActivity {
                 new OcrAsyncTask(finalImage, dir, new OcrAsyncTask.Callback() {
             @Override
             public void onComplete(Object o, Error error) {
-                closeDialog();
-                if (error != null) {
-                    Log.e("OcrAsyncTask", error.getMessage());
-                    return;
-                }
-                String excerpt = (String) o;
-
-                if(excerpt.isEmpty() || isGibberish(excerpt)){
-                    showErrorDialog(activity);
-                }else if (App.getInstance().isNetworkAvailable()) {
-                    Intent intent = new Intent(activity, CustomizeActivity.class);
-                    intent.setAction(Intent.ACTION_DEFAULT);
-                    intent.putExtra(EXCERPT, excerpt);
-                    Bundle extras = getIntent().getExtras();
-                    intent.putExtra(InputActivity.IMAGE, extras.getString(InputActivity.IMAGE));
-                    startActivity(intent);
-                } else {
-                    CharSequence text = getString(R.string.no_internet_error);
-                    Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-                }
+                onOcrComplete((String) o, error);
             }
         });
         tasks.add(ocrTask);
         ocrTask.execute();
-        displayDialog(dialog);
 
+        displayOcrTaskDialogWithTimeout(dialog, ocrTask);
+    }
+
+    private void displayOcrTaskDialogWithTimeout(ProgressDialog dialog, final OcrAsyncTask ocrTask) {
+        displayDialog(dialog);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if(ocrTask.getStatus() == AsyncTask.Status.RUNNING) {
                     ocrTask.cancel(true);
-                    showErrorDialog(activity);
+                    showErrorDialog(CropActivity.this);
                 }
             }
         }, 8000);
+    }
+
+    private void onOcrComplete(String excerpt, Error error) {
+        closeDialog();
+        if (error != null) {
+            Log.e("OcrAsyncTask", error.getMessage());
+            return;
+        }
+
+        if(isGibberish(excerpt)){
+            showErrorDialog(this);
+        }else if (App.getInstance().isNetworkAvailable()) {
+            pushToCustomizePage(excerpt);
+        } else {
+            showNoInternetErrorToast();
+        }
+    }
+
+    private void showNoInternetErrorToast() {
+        Toast.makeText(getApplicationContext(),
+                getString(R.string.no_internet_error),
+                Toast.LENGTH_SHORT)
+            .show();
+    }
+
+    private void pushToCustomizePage(String excerpt) {
+        Intent intent = new Intent(this, CustomizeActivity.class);
+        intent.setAction(Intent.ACTION_DEFAULT);
+        intent.putExtra(EXCERPT, excerpt);
+        Bundle extras = getIntent().getExtras();
+        intent.putExtra(InputActivity.IMAGE, extras.getString(InputActivity.IMAGE));
+        startActivity(intent);
     }
 
     private void showErrorDialog(Activity activity) {
@@ -189,9 +209,11 @@ public class CropActivity extends BaseActivity {
 
     // this function won't be necessary when we use the actual image
     private boolean isGibberish(String text){
+        if(text == null || text.isEmpty()) {
+            return true;
+        }
         // strategy: see if the amount of non alphanumeric characters is too high for actual text
         // may want to make this strategy smarter in the future
-
         int numAlphanumericChars = text.replaceAll("[^a-zA-Z ]", "").length();
         double ratio = (double) numAlphanumericChars / text.length();
         Log.e("isGibberish", "Ratio: " + ratio);

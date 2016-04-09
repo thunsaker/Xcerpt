@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -165,14 +164,7 @@ public class ScreenSlidePageFragment extends Fragment {
         LinearLayout layout = new LinearLayout(getActivity());
         Article articles[] = ((CustomizeActivity)getActivity()).articles;
 
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-        layout.setPadding(0, 0, dpAsPixels, 0);
-        layout.setLayoutParams(params);
-        layout.setOrientation(LinearLayout.VERTICAL);
+        setSourceCardLayoutParams(layout);
 
         spinner = new ProgressBar(
                 getActivity(),
@@ -195,6 +187,17 @@ public class ScreenSlidePageFragment extends Fragment {
 
         sv.addView(layout);
         return sv;
+    }
+
+    private void setSourceCardLayoutParams(LinearLayout layout) {
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+        layout.setPadding(0, 0, dpAsPixels, 0);
+        layout.setLayoutParams(params);
+        layout.setOrientation(LinearLayout.VERTICAL);
     }
 
     private RadioGroup getSourceSelectRadioGroup(Article[] articles) {

@@ -29,7 +29,6 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -69,11 +68,9 @@ public class ShareActivity extends BaseActivity {
     private TwitterLoginButton loginButton;
     private TextView userName;
     private Button tweetButton;
-    private ImageButton saveButton;
     private TextView characterCount;
     private EditText tweet;
     private LinearLayout tweetLayout;
-    private LinearLayout tweetBar;
 
     private String fileName;
     private String tweetText;
@@ -94,26 +91,17 @@ public class ShareActivity extends BaseActivity {
         setActionBarColour(bar, window, this);
 
         tweetButton = (Button) findViewById(R.id.tweet_button);
-        saveButton = (ImageButton) findViewById(R.id.save_button);
         userName = (TextView) findViewById(R.id.user_name);
 
         tweetLayout = (LinearLayout) findViewById(R.id.tweet_layout);
-        tweetBar = (LinearLayout) findViewById(R.id.tweet_bar);
+
         initLoginButton();
 
         showLoggedOutState();
 
-        TextView logOut = (TextView) findViewById(R.id.logout);
-        logOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Twitter.logOut();
-                showLoggedOutState(view);
-            }
-        });
+        initLogoutButton();
 
         selectedUrl = getIntent().getStringExtra(CustomizeActivity.URL);
-
         initLinkPreviewView(selectedUrl);
 
         tweetText = selectedUrl;
@@ -121,7 +109,45 @@ public class ShareActivity extends BaseActivity {
         final Validator twitterValidator = new Validator();
         int charLimit = Validator.MAX_TWEET_LENGTH - (2 * (twitterValidator.getShortUrlLengthHttps() + 1));
         initCharacterCountView(charLimit);
-        // initialize tweet edittext to listen to character count
+
+        initTweetEditor(twitterValidator);
+
+        initPreviewImage();
+
+        boolean imageSaved = saveImage();
+
+        if(!imageSaved){
+            //TODO throw error
+            return;
+        }
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPref.getBoolean(SettingsActivity.KEY_USE_TWITTER_COMPOSER, false)){
+            showJustImage();
+            openTwitterTweetComposer();
+        }
+        else if(twitterSession != null){
+            showLoggedInState(twitterSession);
+        }
+
+        shareImageUri = null;
+    }
+
+    private boolean saveImage() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MMdd_HHmm_ssSS");
+        Date now = new Date();
+        String strDate = sdf.format(now);
+        fileName = strDate + ".png";
+        return saveFile(fileName, img);
+    }
+
+    private void initPreviewImage() {
+        img = getImagePreview();
+        ImageView finalImage = (ImageView) findViewById(R.id.final_image);
+        finalImage.setImageBitmap(img);
+    }
+
+    private void initTweetEditor(final Validator twitterValidator) {
         tweet = (EditText) findViewById(R.id.tweet);
         tweet.addTextChangedListener(new TextWatcher() {
             @Override
@@ -147,32 +173,17 @@ public class ShareActivity extends BaseActivity {
                 }
             }
         });
+    }
 
-        img = getImagePreview();
-        ImageView finalImage = (ImageView) findViewById(R.id.final_image);
-        finalImage.setImageBitmap(img);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MMdd_HHmm_ssSS");
-        Date now = new Date();
-        String strDate = sdf.format(now);
-        fileName = strDate + ".png";
-        boolean imageSaved = saveFile(fileName, img);
-
-        if(!imageSaved){
-            //TODO throw error
-            return;
-        }
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPref.getBoolean(SettingsActivity.KEY_USE_TWITTER_COMPOSER, false)){
-            showJustImage();
-            openTwitterTweetComposer();
-        }
-        else if(twitterSession != null){
-            showLoggedInState(twitterSession);
-        }
-
-        shareImageUri = null;
+    private void initLogoutButton() {
+        TextView logOut = (TextView) findViewById(R.id.logout);
+        logOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Twitter.logOut();
+                showLoggedOutState(view);
+            }
+        });
     }
 
     private void openTwitterTweetComposer() {
@@ -311,7 +322,7 @@ public class ShareActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.share, menu);
+        getMenuInflater().inflate(R.menu.menu_share, menu);
         return true;
     }
 
@@ -324,7 +335,7 @@ public class ShareActivity extends BaseActivity {
         if(id == R.id.home){
             onBackPressed();
             return true;
-        } else if (id == R.id.action_settings) {
+        } else if (id == R.id.action_info) {
             AlertDialog infoDialog = DialogFactory.buildInfoDialog(this);
             displayDialog(infoDialog);
         }
@@ -359,6 +370,7 @@ public class ShareActivity extends BaseActivity {
                         Toast.LENGTH_LONG
                 ).show();
                 e.printStackTrace();
+                return;
             }
 
             ContentValues values = new ContentValues();

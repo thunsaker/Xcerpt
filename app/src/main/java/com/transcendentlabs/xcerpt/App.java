@@ -1,14 +1,12 @@
 package com.transcendentlabs.xcerpt;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 
 import com.crashlytics.android.Crashlytics;
 import com.twitter.sdk.android.Twitter;
@@ -71,22 +69,30 @@ public class App extends Application {
     public void openTwitterProfile(String username) {
         Intent intent;
         try {
-            // get the Twitter app if possible
-            getPackageManager().getPackageInfo("com.twitter.android", 0);
-            intent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("twitter://user?screen_name=" + username)
-            );
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            pushToTwitterAppProfile(username);
         } catch (Exception e) {
-            // no Twitter app, revert to browser
-            intent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://twitter.com/" + username)
-            );
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            pushToTwitterWebProfile(username);
         }
+    }
+
+    private void pushToTwitterWebProfile(String username) {
+        Intent intent;
+        intent = new Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://twitter.com/" + username)
+        );
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    private void pushToTwitterAppProfile(String username) throws PackageManager.NameNotFoundException {
+        Intent intent;
+        getPackageManager().getPackageInfo("com.twitter.android", 0);
+        intent = new Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("twitter://user?screen_name=" + username)
+        );
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }

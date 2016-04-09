@@ -112,32 +112,28 @@ public class CustomizeActivity extends BaseActivity {
         customSourceButton = (Button) findViewById(R.id.custom_source_button);
         initCustomSourceButton(customSourceButton);
 
-        initPager();
-
-        excerpt = getExcerptFromIntent();
-
-        final SharedPreferences settings = getPreferences(0);
-        initContentPreview(settings, excerpt);
-        showGuide(settings);
-
-        executeSearchTask(excerpt);
+        performSearch();
     }
 
     @Override
     public void onResume() {
-        super.onResume();  // Always call the superclass method first
+        super.onResume();
         String newExcerpt = getExcerptFromIntent();
         if(newExcerpt != null && !newExcerpt.equals(excerpt)){
-            titleView.setText(getString(R.string.loading));
-            websiteView.setText(getString(R.string.loading));
-            Arrays.fill(articles, null);
-            initPager();
-            excerpt = newExcerpt;
-            final SharedPreferences settings = getPreferences(0);
-            initContentPreview(settings, excerpt);
-            showGuide(settings);
-            executeSearchTask(excerpt);
+            performSearch();
         }
+    }
+
+    private void performSearch() {
+        titleView.setText(getString(R.string.loading));
+        websiteView.setText(getString(R.string.loading));
+        Arrays.fill(articles, null);
+        initPager();
+        excerpt = getExcerptFromIntent();
+        final SharedPreferences settings = getPreferences(0);
+        initContentPreview(settings, excerpt);
+        showGuideIfNeeded(settings);
+        executeSearchTask(excerpt);
     }
 
     private void initPager() {
@@ -156,9 +152,9 @@ public class CustomizeActivity extends BaseActivity {
         Intent intent = getIntent();
         String intentAction = intent.getAction();
 
-        if(intentAction != null && intentAction.equals(Intent.ACTION_SEND)){ // from sharing
+        if(fromSharing(intentAction)){
             return intent.getStringExtra(Intent.EXTRA_TEXT).trim();
-        }else if(intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT)){ // from Xcerpt
+        }else if(fromXcerpt(intentAction)){
             return intent.getStringExtra(EXCERPT);
         }
 
@@ -166,16 +162,16 @@ public class CustomizeActivity extends BaseActivity {
         return null;
     }
 
-    private void initContentPreview(final SharedPreferences settings, String text) {
-        final float TEXT_SIZE = 16;
+    private boolean fromXcerpt(String intentAction) {
+        return intentAction != null && intentAction.equals(Intent.ACTION_DEFAULT);
+    }
 
-        // set scroll view (content preview's parent) to max height
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int height = size.y;
-        scrollView = (MaxHeightScrollView) findViewById(R.id.preview_scroll);
-        scrollView.setMaxHeight((int) (MAX_SCROLL_VIEW_HEIGHT * height));
+    private boolean fromSharing(String intentAction) {
+        return intentAction != null && intentAction.equals(Intent.ACTION_SEND);
+    }
+
+    private void initContentPreview(final SharedPreferences settings, String text) {
+        initializeScrollView();
 
         contentPreview = (TextView) findViewById(R.id.content_preview);
 
@@ -183,27 +179,9 @@ public class CustomizeActivity extends BaseActivity {
         int defaultColour = settings.getInt(COLOUR_SETTING, Color.parseColor(DEFAULT_COLOUR));
         setColour(defaultColour);
 
-        // format text
-        contentPreview.setTypeface(Typeface.SERIF);
-        contentPreview.setTextColor(Color.BLACK);
-        contentPreview.setTextSize(TEXT_SIZE);
-        contentPreview.setText(text);
+        formatText(text);
 
-        // highlighting
-        final GestureDetector gestureDetector = new GestureDetector(
-                this,
-                new GestureDetector.SimpleOnGestureListener(){
-                    @Override
-                    public boolean onSingleTapConfirmed(MotionEvent e) {
-                        contentPreview.clearFocus();
-                        return true;
-                    }
-            });
-        contentPreview.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                return gestureDetector.onTouchEvent(event);
-            }
-        });
+        initializeHighlightClearing();
 
         contentPreview.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
 
@@ -234,7 +212,7 @@ public class CustomizeActivity extends BaseActivity {
 
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
-                switch(item.getItemId()) {
+                switch (item.getItemId()) {
 
                     case R.id.done:
                         share();
@@ -245,7 +223,42 @@ public class CustomizeActivity extends BaseActivity {
         });
     }
 
-    private void showGuide(final SharedPreferences settings) {
+    private void initializeHighlightClearing() {
+        final GestureDetector gestureDetector = new GestureDetector(
+                this,
+                new GestureDetector.SimpleOnGestureListener(){
+                    @Override
+                    public boolean onSingleTapConfirmed(MotionEvent e) {
+                        contentPreview.clearFocus();
+                        return true;
+                    }
+            });
+        contentPreview.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
+    }
+
+    private void formatText(String text) {
+        final float TEXT_SIZE = 16;
+        contentPreview.setTypeface(Typeface.SERIF);
+        contentPreview.setTextColor(Color.BLACK);
+        contentPreview.setTextSize(TEXT_SIZE);
+        contentPreview.setText(text);
+    }
+
+    private void initializeScrollView() {
+        // set scroll view (content preview's parent) to max height
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int height = size.y;
+        scrollView = (MaxHeightScrollView) findViewById(R.id.preview_scroll);
+        scrollView.setMaxHeight((int) (MAX_SCROLL_VIEW_HEIGHT * height));
+    }
+
+    private void showGuideIfNeeded(final SharedPreferences settings) {
         boolean showHint = settings.getBoolean(SHOW_HINT_SETTING, true);
 
         if(showHint) {
@@ -293,22 +306,7 @@ public class CustomizeActivity extends BaseActivity {
 
     public void processResults(final BingSearchResults.Result[] results) throws IOException {
         if(results == null || results.length == 0){
-            scrollView.post(new Runnable() {
-                @Override
-                public void run() {
-                    final ObjectAnimator animScrollToTop =
-                            ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getBottom());
-                    animScrollToTop.setDuration(500);
-                    animScrollToTop.start();
-
-                    setTitleText(getString(R.string.no_source_found));
-                    websiteView.setVisibility(View.GONE);
-                    customSourceButton.setVisibility(View.VISIBLE);
-
-                    no_results_or_error = true;
-                    mPagerAdapter.notifyDataSetChanged();
-                }
-            });
+            showNoSourceFoundError();
             return;
         }
 
@@ -320,44 +318,66 @@ public class CustomizeActivity extends BaseActivity {
                     new ParseHtmlAsyncTask.Callback() {
                         @Override
                         public void onComplete(Object o, Error error) {
-                            if (error != null) {
-                                // fall back on search result data
-                                articles[finalI] = createArticle(
-                                        results[finalI].Title,
-                                        results[finalI].DisplayUrl,
-                                        results[finalI].Url
-                                );
-                                if (error.getMessage() != null) {
-                                    Log.e("SearchAsyncTask", error.getMessage());
-                                } else {
-                                    Log.e("SearchAsyncTask", "Unknown error");
-                                }
-                            }else {
-                                String pageTitle = (String) o;
-                                if (pageTitle.length() == 0) {
-                                    // fall back to search result title
-                                    pageTitle = results[finalI].Title;
-                                }
-
-                                articles[finalI] = createArticle(
-                                        pageTitle,
-                                        results[finalI].DisplayUrl,
-                                        results[finalI].Url
-                                );
-                            }
-
-                            if (finalI == 0) {
-                                setTitleText(articles[0].title);
-                                websiteView.setText(articles[0].displayUrl);
-                                selectedUrl = articles[0].url;
-                                nextItem.setEnabled(true);
-                            }
-                            mPagerAdapter.notifyDataSetChanged();
+                            setArticle((String) o, error, finalI, results);
                         }
                     });
             tasks.add(titleTask);
             titleTask.execute();
         }
+    }
+
+    private void setArticle(String pageTitle, Error error, int articleIndex, BingSearchResults.Result[] results) {
+        if (error != null) {
+            // fall back on search result data
+            articles[articleIndex] = createArticle(
+                    results[articleIndex].Title,
+                    results[articleIndex].DisplayUrl,
+                    results[articleIndex].Url
+            );
+            // TODO crashlytics log
+        }else {
+            if (pageTitle.length() == 0) {
+                // fall back to search result title
+                pageTitle = results[articleIndex].Title;
+            }
+
+            articles[articleIndex] = createArticle(
+                    pageTitle,
+                    results[articleIndex].DisplayUrl,
+                    results[articleIndex].Url
+            );
+        }
+
+        if (articleIndex == 0) {
+            showAtLeastOneSourceFound();
+        }
+        mPagerAdapter.notifyDataSetChanged();
+    }
+
+    private void showAtLeastOneSourceFound() {
+        setTitleText(articles[0].title);
+        websiteView.setText(articles[0].displayUrl);
+        selectedUrl = articles[0].url;
+        nextItem.setEnabled(true);
+    }
+
+    private void showNoSourceFoundError() {
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                final ObjectAnimator animScrollToTop =
+                        ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getBottom());
+                animScrollToTop.setDuration(500);
+                animScrollToTop.start();
+
+                setTitleText(getString(R.string.no_source_found));
+                websiteView.setVisibility(View.GONE);
+                customSourceButton.setVisibility(View.VISIBLE);
+
+                no_results_or_error = true;
+                mPagerAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private Article createArticle(String title, String displayUrl, String url){
@@ -422,21 +442,7 @@ public class CustomizeActivity extends BaseActivity {
             return;
         }
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPref.getBoolean(SettingsActivity.KEY_DELETE_SCREENSHOT, false)) {
-            Bundle extras = getIntent().getExtras();
-            Uri uri = Uri.parse(extras.getString(InputActivity.IMAGE));
-            File file = new File(uri.getPath());
-            if(file.exists()) {
-                if (file.delete()) {
-                    MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, new MediaScannerConnection.OnScanCompletedListener() {
-                        public void onScanCompleted(String path, Uri uri)
-                        {
-                        }
-                    });
-                }
-            }
-        }
+        deleteScreenshotIfNeeded();
 
         Intent intent = new Intent(this, ShareActivity.class);
         intent.putExtra(URL, selectedUrl);
@@ -452,6 +458,23 @@ public class CustomizeActivity extends BaseActivity {
 
         intent.putExtra(IMAGE, byteArray);
         startActivity(intent);
+    }
+
+    private void deleteScreenshotIfNeeded() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPref.getBoolean(SettingsActivity.KEY_DELETE_SCREENSHOT, false)) {
+            Bundle extras = getIntent().getExtras();
+            Uri uri = Uri.parse(extras.getString(InputActivity.IMAGE));
+            File file = new File(uri.getPath());
+            if(file.exists()) {
+                if (file.delete()) {
+                    MediaScannerConnection.scanFile(this, new String[]{file.getAbsolutePath()}, null, new MediaScannerConnection.OnScanCompletedListener() {
+                        public void onScanCompleted(String path, Uri uri) {
+                        }
+                    });
+                }
+            }
+        }
     }
 
     public void updateSource(final int articleIndex){
@@ -567,16 +590,15 @@ public class CustomizeActivity extends BaseActivity {
         customSourceButton.setLayoutParams(buttonParams);
         customSourceButton.setTextSize(12);
 
-        final Activity activity = CustomizeActivity.this;
         customSourceButton.setText("Use URL from clipboard");
         customSourceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String pasteData = getTextFromClipboard(activity, clipboard);
+                final String pasteData = getTextFromClipboard(CustomizeActivity.this, clipboard);
                 if(pasteData != null){
                     getSourceHtml(pasteData);
                 }else{
-                    Toast.makeText(activity, getString(R.string.empty_clipboard_toast),
+                    Toast.makeText(CustomizeActivity.this, getString(R.string.empty_clipboard_toast),
                             Toast.LENGTH_SHORT).show();
                 }
             }

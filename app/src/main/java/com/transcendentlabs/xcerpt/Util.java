@@ -138,15 +138,6 @@ public class Util {
                         "Error",
                         "Required external storage (such as an SD card) is full or unavailable.");
             }
-
-            //        } else {
-            //          // For Android 2.1 and below, explicitly give the path as, for example,
-            //          // "/mnt/sdcard/Android/data/edu.sfsu.cs.orange.ocr/files/"
-            //          return new File(Environment.getExternalStorageDirectory().toString() + File.separator +
-            //                  "Android" + File.separator + "data" + File.separator + getPackageName() +
-            //                  File.separator + "files" + File.separator);
-            //        }
-
         } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
             // We can only read the media
             Log.e(TAG, "External storage is read-only");

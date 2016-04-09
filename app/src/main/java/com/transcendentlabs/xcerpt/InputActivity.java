@@ -55,17 +55,28 @@ public class InputActivity extends BaseActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
-        selectScreenshot = (TextView) findViewById(R.id.select_screenshot);
-        noScreenshot = (TextView) findViewById(R.id.no_screenshot);
-        pasteButton = (Button) findViewById(R.id.paste_button);
-        gv = (GridView) findViewById(R.id.image_grid);
+        initializeViews();
 
         clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+
+        setActionBarElevationOff();
+        setCustomActionBarLayout();
+
+        deleteTempFolder();
+    }
+
+    private void deleteTempFolder() {
+        String root =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        File dir = new File(root + File.separator + "Xcerpt" + File.separator + "tmp");
+        deleteFolder(dir);
+    }
+
+    private void setCustomActionBarLayout() {
         ActionBar bar = getSupportActionBar();
         Window window = getWindow();
         setActionBarColour(bar, window, this);
         if(bar != null) {
-            bar.setElevation(0);
             bar.setDisplayShowCustomEnabled(true);
             bar.setDisplayShowTitleEnabled(false);
 
@@ -74,17 +85,53 @@ public class InputActivity extends BaseActivity {
             ((TextView)v.findViewById(R.id.title)).setTypeface(App.getLogoFont());
             bar.setCustomView(v);
         }
+    }
 
-        String root =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-        File dir = new File(root + File.separator + "Xcerpt" + File.separator + "tmp");
-        deleteFolder(dir);
+    private void initializeViews() {
+        selectScreenshot = (TextView) findViewById(R.id.select_screenshot);
+        noScreenshot = (TextView) findViewById(R.id.no_screenshot);
+        pasteButton = (Button) findViewById(R.id.paste_button);
+        gv = (GridView) findViewById(R.id.image_grid);
     }
 
     @Override
     protected void onResume(){
         super.onResume();
         initOcrIfNecessary(this);
+        updateScreenshotGallery();
+
+        updatePasteButton();
+    }
+
+    private void updatePasteButton() {
+        if(clipboardEmpty()) {
+            disablePasteButton();
+        } else {
+            enablePasteButton();
+        }
+    }
+
+    private void enablePasteButton() {
+        pasteButton.setEnabled(true);
+        pasteButton.setText(getString(R.string.paste_instructions));
+        pasteButton.setTextColor(Color.WHITE);
+    }
+
+    private void disablePasteButton() {
+        pasteButton.setEnabled(false);
+        pasteButton.setText(getString(R.string.clipboard_empty));
+        pasteButton.setTextColor(getResources().getColor(R.color.white_trans_65));
+    }
+
+    private boolean clipboardEmpty() {
+        ClipData primaryClip = clipboard.getPrimaryClip();
+        return primaryClip == null
+                || primaryClip.getItemAt(0) == null
+                || primaryClip.getItemAt(0).getText() == null
+                || primaryClip.getItemAt(0).getText().toString().trim().isEmpty();
+    }
+
+    private void updateScreenshotGallery() {
         gvAdapter = new GridViewAdapter(this);
         gv.setAdapter(gvAdapter);
 
@@ -94,20 +141,6 @@ public class InputActivity extends BaseActivity {
         }else{
             noScreenshot.setVisibility(View.GONE);
             selectScreenshot.setVisibility(View.VISIBLE);
-        }
-
-        ClipData primaryClip = clipboard.getPrimaryClip();
-        if(primaryClip == null
-                || primaryClip.getItemAt(0) == null
-                || primaryClip.getItemAt(0).getText() == null
-                || primaryClip.getItemAt(0).getText().toString().trim().isEmpty()) {
-            pasteButton.setEnabled(false);
-            pasteButton.setText(getString(R.string.clipboard_empty));
-            pasteButton.setTextColor(getResources().getColor(R.color.white_trans_65));
-        } else {
-            pasteButton.setEnabled(true);
-            pasteButton.setText(getString(R.string.paste_instructions));
-            pasteButton.setTextColor(Color.WHITE);
         }
     }
 
@@ -153,45 +186,56 @@ public class InputActivity extends BaseActivity {
         }
 
         if(excerpt.length() <= 0){
-            Toast.makeText(getApplicationContext(),
-                    getString(R.string.empty_clipboard_toast),
-                    Toast.LENGTH_SHORT)
-                    .show();
+            showEmptyClipboardError();
             return;
         }
 
         if (App.getInstance().isNetworkAvailable()) {
-            Intent intent = new Intent(this, CustomizeActivity.class);
-            intent.setAction(Intent.ACTION_DEFAULT);
-            intent.putExtra(EXCERPT, excerpt);
-            startActivity(intent);
+            pushToCustomizePage(excerpt);
         } else {
-            CharSequence text = getString(R.string.no_internet_error);
-            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            showNoNetworkError();
         }
+    }
+
+    private void showEmptyClipboardError() {
+        Toast.makeText(getApplicationContext(),
+                getString(R.string.empty_clipboard_toast),
+                Toast.LENGTH_SHORT)
+                .show();
+    }
+
+    private void showNoNetworkError() {
+        CharSequence text = getString(R.string.no_internet_error);
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void pushToCustomizePage(String excerpt) {
+        Intent intent = new Intent(this, CustomizeActivity.class);
+        intent.setAction(Intent.ACTION_DEFAULT);
+        intent.putExtra(EXCERPT, excerpt);
+        startActivity(intent);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.share, menu);
+        getMenuInflater().inflate(R.menu.menu_input, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if(id == R.id.action_settings) {
-            // AlertDialog infoDialog = DialogFactory.buildInfoDialog(this);
-            // displayDialog(infoDialog);
-            Intent intent = new Intent(this, SettingsActivity.class);
-            intent.setAction(Intent.ACTION_DEFAULT);
-            startActivity(intent);
+            pushToSettingsPage();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void pushToSettingsPage() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        intent.setAction(Intent.ACTION_DEFAULT);
+        startActivity(intent);
     }
 
     void deleteFolder(File fileOrDirectory) {
@@ -214,13 +258,7 @@ public class InputActivity extends BaseActivity {
         @Override public View getView(int position, View convertView, ViewGroup parent) {
             AspectRatioImageView view = (AspectRatioImageView) convertView;
             if (view == null) {
-                Display display = getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                float ratio = ((float) size.y) / size.x;
-
-                view = new AspectRatioImageView(context, ratio);
-                view.setScaleType(CENTER_CROP);
+                view = getScreenshotThumbnailView();
             }
 
             // Get the image URL for the current position.
@@ -245,6 +283,17 @@ public class InputActivity extends BaseActivity {
             return view;
         }
 
+        private AspectRatioImageView getScreenshotThumbnailView() {
+            AspectRatioImageView view;Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            float ratio = ((float) size.y) / size.x;
+
+            view = new AspectRatioImageView(context, ratio);
+            view.setScaleType(CENTER_CROP);
+            return view;
+        }
+
         private void openScreenshot(Uri source) {
             if(source.toString() == null || source.toString().isEmpty()){
                 // TODO show error
@@ -262,6 +311,10 @@ public class InputActivity extends BaseActivity {
                 return;
             }
 
+            pushToCropPage(source);
+        }
+
+        private void pushToCropPage(Uri source) {
             Intent intent = new Intent(context, CropActivity.class);
             intent.putExtra(IMAGE, source.toString());
             startActivity(intent);

@@ -15,14 +15,11 @@ public class SettingsFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        Preference openXcerptTwitterAccountPreference = findPreference(SettingsActivity.KEY_SEE_XCERPT_APP);
-        openXcerptTwitterAccountPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                App.getInstance().openTwitterProfile("XcerptApp");
-                return true;
-            }
-        });
+        initOpenTwitterAccount();
+        initOpenPlayStorePage();
+    }
 
+    private void initOpenPlayStorePage() {
         Preference openXcerptPlayStorePreference = findPreference(SettingsActivity.KEY_GO_TO_PLAY_STORE);
         openXcerptPlayStorePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
@@ -32,6 +29,16 @@ public class SettingsFragment extends PreferenceFragment {
                 } catch (android.content.ActivityNotFoundException anfe) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
                 }
+                return true;
+            }
+        });
+    }
+
+    private void initOpenTwitterAccount() {
+        Preference openXcerptTwitterAccountPreference = findPreference(SettingsActivity.KEY_SEE_XCERPT_APP);
+        openXcerptTwitterAccountPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                App.getInstance().openTwitterProfile("XcerptApp");
                 return true;
             }
         });
