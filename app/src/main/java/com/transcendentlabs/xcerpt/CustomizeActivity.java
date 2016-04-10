@@ -464,7 +464,11 @@ public class CustomizeActivity extends BaseActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         if(sharedPref.getBoolean(SettingsActivity.KEY_DELETE_SCREENSHOT, false)) {
             Bundle extras = getIntent().getExtras();
-            Uri uri = Uri.parse(extras.getString(InputActivity.IMAGE));
+            String uriString = extras.getString(InputActivity.IMAGE);
+            if(uriString == null || uriString.isEmpty()) {
+                return;
+            }
+            Uri uri = Uri.parse(uriString);
             File file = new File(uri.getPath());
             if(file.exists()) {
                 if (file.delete()) {
