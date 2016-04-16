@@ -11,12 +11,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.Toast;
 
 import com.edmodo.cropper.CropImageView;
@@ -27,7 +25,6 @@ import java.util.ArrayList;
 import static com.transcendentlabs.xcerpt.Util.EXCERPT;
 import static com.transcendentlabs.xcerpt.Util.getStorageDirectory;
 import static com.transcendentlabs.xcerpt.Util.initOcrIfNecessary;
-import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 
 public class CropActivity extends BaseActivity {
 
@@ -55,10 +52,18 @@ public class CropActivity extends BaseActivity {
     private boolean initializeCropView() {
         cropImageView = (CropImageView) findViewById(R.id.CropImageView);
         cropImageView.setGuidelines(0);
-        Bundle extras = getIntent().getExtras();
-        Uri uri = Uri.parse(extras.getString(InputActivity.IMAGE));
+        Intent receivedIntent = getIntent();
+        String action = receivedIntent.getAction();
+        Bundle extras = receivedIntent.getExtras();
+        Uri uri;
+        if(Intent.ACTION_SEND.equals(action)) {
+            uri = extras.getParcelable(Intent.EXTRA_STREAM);
+        } else {
+            uri = Uri.parse(extras.getString(InputActivity.IMAGE));
+        }
         try {
             Bitmap img = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+
             if(img == null) {
                 finish();
                 return false;
