@@ -32,8 +32,8 @@ android {
         applicationId "com.transcendentlabs.xcerpt"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 23
-        versionName "1.4.1"
+        versionCode 24
+        versionName "1.4.3"
     }
     buildTypes {
         debug{
@@ -42,6 +42,8 @@ android {
             buildConfigField 'String', 'TWITTER_SECRET_KEY', TWITTER_SECRET_KEY
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
         }
         release {
             buildConfigField 'String', 'BING_ACCOUNT_KEY', BING_ACCOUNT_KEY
