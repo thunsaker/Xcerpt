@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.ActionBar;
@@ -20,14 +18,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.transcendentlabs.xcerpt.activities.BaseActivity;
+import com.transcendentlabs.xcerpt.tasks.OcrInitAsyncTask;
+
 import java.io.File;
 
 public class Util {
+    private static final String TAG = "Util";
 
     // Colour Util
 
     public static final String DEFAULT_COLOUR = "#009688"; // teal
-    private static final String TAG = "Util";
 
     public static void setActionBarColour(ActionBar bar, Window window, Activity activity){
         setActionBarColour(bar, window, activity, DEFAULT_COLOUR);

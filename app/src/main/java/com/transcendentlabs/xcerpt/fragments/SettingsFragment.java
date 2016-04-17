@@ -1,10 +1,14 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.fragments;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+
+import com.transcendentlabs.xcerpt.App;
+import com.transcendentlabs.xcerpt.R;
+import com.transcendentlabs.xcerpt.activities.SettingsActivity;
 
 /**
  * Created by Eric on 2016-03-25.

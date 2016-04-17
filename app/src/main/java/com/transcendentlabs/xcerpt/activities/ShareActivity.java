@@ -1,4 +1,4 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.activities;
 
 import android.app.ProgressDialog;
 import android.content.ClipData;
@@ -34,6 +34,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.transcendentlabs.xcerpt.App;
+import com.transcendentlabs.xcerpt.DialogFactory;
+import com.transcendentlabs.xcerpt.R;
 import com.twitter.Validator;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;

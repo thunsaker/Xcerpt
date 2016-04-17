@@ -1,4 +1,4 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.fragments;
 
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -21,6 +21,12 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.transcendentlabs.xcerpt.App;
+import com.transcendentlabs.xcerpt.Article;
+import com.transcendentlabs.xcerpt.R;
+import com.transcendentlabs.xcerpt.activities.CustomizeActivity;
+import com.transcendentlabs.xcerpt.tasks.ParseHtmlAsyncTask;
 
 import uz.shift.colorpicker.LineColorPicker;
 import uz.shift.colorpicker.OnColorChangedListener;
@@ -243,11 +249,11 @@ public class ScreenSlidePageFragment extends Fragment {
         RadioButton rb = new RadioButton(getActivity());
 
         String html;
-        if(article.title == null || article.title.isEmpty()) {
-            html = article.displayUrl;
+        if(article.getTitle() == null || article.getTitle().isEmpty()) {
+            html = article.getDisplayUrl();
         }else{
-            html = "<b>" + article.title + "</b> - "
-                    + article.displayUrl;
+            html = "<b>" + article.getTitle() + "</b> - "
+                    + article.getDisplayUrl();
         }
         rb.setId(index);
         rb.setText(Html.fromHtml(html), TextView.BufferType.SPANNABLE);

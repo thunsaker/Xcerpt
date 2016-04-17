@@ -1,4 +1,4 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.tasks;
 
 import android.os.AsyncTask;
 import android.text.TextUtils;
@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.transcendentlabs.xcerpt.BingSearchResults;
+import com.transcendentlabs.xcerpt.BuildConfig;
 
 import java.io.BufferedReader;
 import java.io.IOException;

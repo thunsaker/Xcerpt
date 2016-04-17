@@ -10,4 +10,16 @@ public class Article{
         this.displayUrl = displayUrl;
         this.url = url;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDisplayUrl() {
+        return displayUrl;
+    }
+
+    public String getUrl() {
+        return url;
+    }
 }

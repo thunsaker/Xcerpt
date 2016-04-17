@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".CustomizeActivity"
+            android:name=".activities.CustomizeActivity"
             android:launchMode="singleTask"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
@@ -28,28 +28,28 @@
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CropActivity" />
+                android:value=".activities.CropActivity" />
         </activity>
         <activity
-            android:name=".ShareActivity"
+            android:name=".activities.ShareActivity"
             android:label="@string/share"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CustomizeActivity" />
+                android:value=".activities.CustomizeActivity" />
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/settings"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".InputActivity" />
+                android:value=".activities.InputActivity" />
         </activity>
 
         <meta-data
@@ -57,7 +57,7 @@
             android:value="359ddc091b7c9586ca7cde1a6ff8d64f85d9c5cb" />
 
         <activity
-            android:name=".InputActivity"
+            android:name=".activities.InputActivity"
             android:launchMode="singleTask"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
@@ -70,7 +70,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CropActivity"
+            android:name=".activities.CropActivity"
             android:launchMode="singleTask"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
@@ -83,7 +83,7 @@
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".InputActivity" />
+                android:value=".activities.InputActivity" />
         </activity>
     </application>
 </manifest>

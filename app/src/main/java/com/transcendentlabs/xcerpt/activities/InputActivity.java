@@ -1,4 +1,4 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.activities;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -27,6 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.transcendentlabs.xcerpt.App;
+import com.transcendentlabs.xcerpt.R;
+import com.transcendentlabs.xcerpt.views.AspectRatioImageView;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +45,7 @@ public class InputActivity extends BaseActivity {
     public static final String IMAGE = "com.transcendentlabs.xcerpt.image";
 
     /** Resource to use for data file downloads. */
-    static final String DOWNLOAD_BASE = "http://tesseract-ocr.googlecode.com/files/";
+    public static final String DOWNLOAD_BASE = "http://tesseract-ocr.googlecode.com/files/";
 
     private GridView gv;
     private GridViewAdapter gvAdapter;
@@ -50,7 +53,7 @@ public class InputActivity extends BaseActivity {
     private TextView noScreenshot;
     private Button pasteButton;
 
-    ClipboardManager clipboard;
+    private ClipboardManager clipboard;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

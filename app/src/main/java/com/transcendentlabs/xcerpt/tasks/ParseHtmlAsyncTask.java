@@ -1,4 +1,4 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.tasks;
 
 import android.os.AsyncTask;
 import android.util.Log;

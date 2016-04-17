@@ -1,7 +1,6 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.activities;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -44,6 +43,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.transcendentlabs.xcerpt.App;
+import com.transcendentlabs.xcerpt.Article;
+import com.transcendentlabs.xcerpt.BingSearchResults;
+import com.transcendentlabs.xcerpt.views.MaxHeightScrollView;
+import com.transcendentlabs.xcerpt.tasks.ParseHtmlAsyncTask;
+import com.transcendentlabs.xcerpt.R;
+import com.transcendentlabs.xcerpt.fragments.ScreenSlidePageFragment;
+import com.transcendentlabs.xcerpt.tasks.SearchAsyncTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -355,9 +362,9 @@ public class CustomizeActivity extends BaseActivity {
     }
 
     private void showAtLeastOneSourceFound() {
-        setTitleText(articles[0].title);
-        websiteView.setText(articles[0].displayUrl);
-        selectedUrl = articles[0].url;
+        setTitleText(articles[0].getTitle());
+        websiteView.setText(articles[0].getDisplayUrl());
+        selectedUrl = articles[0].getUrl();
         nextItem.setEnabled(true);
     }
 
@@ -492,9 +499,9 @@ public class CustomizeActivity extends BaseActivity {
                         ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getBottom());
                 animScrollToTop.setDuration(500);
                 animScrollToTop.start();
-                setTitleText(articles[articleIndex].title);
-                websiteView.setText(articles[articleIndex].displayUrl);
-                selectedUrl = articles[articleIndex].url;
+                setTitleText(articles[articleIndex].getTitle());
+                websiteView.setText(articles[articleIndex].getDisplayUrl());
+                selectedUrl = articles[articleIndex].getUrl();
                 selected_index = articleIndex;
             }
         });
@@ -509,11 +516,11 @@ public class CustomizeActivity extends BaseActivity {
                 animScrollToTop.setDuration(500);
                 animScrollToTop.start();
 
-                setTitleText(article.title);
+                setTitleText(article.getTitle());
                 websiteView.setVisibility(View.VISIBLE);
                 customSourceButton.setVisibility(View.GONE);
-                websiteView.setText(article.displayUrl);
-                selectedUrl = article.url;
+                websiteView.setText(article.getDisplayUrl());
+                selectedUrl = article.getUrl();
             }
         });
 

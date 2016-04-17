@@ -1,4 +1,4 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.tasks;
 
 
 import android.app.Activity;
@@ -8,6 +8,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
+import com.transcendentlabs.xcerpt.R;
+import com.transcendentlabs.xcerpt.activities.InputActivity;
 
 import org.xeustechnologies.jtar.TarEntry;
 import org.xeustechnologies.jtar.TarInputStream;
@@ -35,7 +37,7 @@ import static com.transcendentlabs.xcerpt.Util.*;
  * Installs the language data required for OCR, and initializes the OCR engine using a background
  * thread.
  */
-final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
+public final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
     private static final String TAG = OcrInitAsyncTask.class.getSimpleName();
     /** ISO 639-3 language code indicating the default recognition language. */
     public static final String LANGUAGE_CODE = "eng";
@@ -52,7 +54,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
      * @param activity
      *          The calling activity
      */
-    OcrInitAsyncTask(Activity activity) {
+    public OcrInitAsyncTask(Activity activity) {
         this.activity = activity;
         this.context = activity.getBaseContext();
         this.baseApi = new TessBaseAPI();

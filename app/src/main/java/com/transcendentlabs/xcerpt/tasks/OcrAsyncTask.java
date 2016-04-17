@@ -1,10 +1,12 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.tasks;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.transcendentlabs.xcerpt.TessOCR;
 
 public class OcrAsyncTask extends AsyncTask<Void, Void, Void> {
 

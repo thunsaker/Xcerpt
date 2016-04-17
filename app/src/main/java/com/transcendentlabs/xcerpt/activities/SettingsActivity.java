@@ -1,8 +1,10 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.Window;
+
+import com.transcendentlabs.xcerpt.fragments.SettingsFragment;
 
 import static com.transcendentlabs.xcerpt.Util.setActionBarColour;
 

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.transcendentlabs.xcerpt.CustomizeActivity"
+    tools:context=".activities.CustomizeActivity"
     android:orientation="vertical">
 
     <com.astuetz.PagerSlidingTabStrip
@@ -21,7 +21,7 @@
         android:layout_below="@id/tabs"
         android:layout_above="@+id/preview_scroll"/>
 
-        <com.transcendentlabs.xcerpt.MaxHeightScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        <com.transcendentlabs.xcerpt.views.MaxHeightScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@id/preview_scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -106,5 +106,5 @@
                     android:text="@string/app_name"/>
 
             </LinearLayout>
-        </com.transcendentlabs.xcerpt.MaxHeightScrollView>
+        </com.transcendentlabs.xcerpt.views.MaxHeightScrollView>
 </RelativeLayout>

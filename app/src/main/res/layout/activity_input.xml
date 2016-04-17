@@ -4,7 +4,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.transcendentlabs.xcerpt.InputActivity"
+    tools:context=".activities.InputActivity"
     android:background="@color/md_teal_500">
 
     <Button

@@ -1,11 +1,10 @@
-package com.transcendentlabs.xcerpt;
+package com.transcendentlabs.xcerpt.views;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.widget.ImageView;
 
 /** An image view which always retains its aspect ratio. */
-final class AspectRatioImageView extends ImageView {
+public final class AspectRatioImageView extends ImageView {
     float mRatio;
 
     public AspectRatioImageView(Context context, float ratio) {
