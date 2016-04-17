@@ -1,4 +1,4 @@
-package com.transcendentlabs.xcerpt.activities;
+package com.transcendentlabs.xcerpt;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;

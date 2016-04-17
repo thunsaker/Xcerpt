@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_gravity="center_horizontal"
     android:background="@color/tw__solid_white"
-    tools:context=".activities.ShareActivity">
+    tools:context=".ShareActivity">
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"

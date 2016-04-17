@@ -1,11 +1,10 @@
-package com.transcendentlabs.xcerpt.activities;
+package com.transcendentlabs.xcerpt;
 
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -34,9 +33,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.transcendentlabs.xcerpt.App;
-import com.transcendentlabs.xcerpt.DialogFactory;
-import com.transcendentlabs.xcerpt.R;
 import com.twitter.Validator;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -266,7 +262,7 @@ public class ShareActivity extends BaseActivity {
         tweetButton.setVisibility(View.GONE);
         if(view != null) {
             InputMethodManager imm =
-                    (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
@@ -305,7 +301,7 @@ public class ShareActivity extends BaseActivity {
         FileOutputStream outputStream;
 
         try {
-            outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+            outputStream = openFileOutput(fileName, MODE_PRIVATE);
             image.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             outputStream.flush();
             outputStream.close();

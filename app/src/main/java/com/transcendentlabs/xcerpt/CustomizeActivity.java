@@ -1,9 +1,8 @@
-package com.transcendentlabs.xcerpt.activities;
+package com.transcendentlabs.xcerpt;
 
 import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -43,12 +42,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
-import com.transcendentlabs.xcerpt.App;
-import com.transcendentlabs.xcerpt.Article;
-import com.transcendentlabs.xcerpt.BingSearchResults;
 import com.transcendentlabs.xcerpt.views.MaxHeightScrollView;
 import com.transcendentlabs.xcerpt.tasks.ParseHtmlAsyncTask;
-import com.transcendentlabs.xcerpt.R;
 import com.transcendentlabs.xcerpt.fragments.ScreenSlidePageFragment;
 import com.transcendentlabs.xcerpt.tasks.SearchAsyncTask;
 
@@ -106,7 +101,7 @@ public class CustomizeActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customize);
-        clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         tasks = new ArrayList<>();
 
         backgroundView = (LinearLayout) findViewById(R.id.background);
@@ -321,7 +316,7 @@ public class CustomizeActivity extends BaseActivity {
 
         for(int i = 0; i < results.length; i++){
             final int finalI = i;
-            ParseHtmlAsyncTask titleTask = new ParseHtmlAsyncTask(results[i].Url,
+            ParseHtmlAsyncTask titleTask = new ParseHtmlAsyncTask(results[i].url,
                     new ParseHtmlAsyncTask.Callback() {
                         @Override
                         public void onComplete(Object o, Error error) {
@@ -337,21 +332,21 @@ public class CustomizeActivity extends BaseActivity {
         if (error != null) {
             // fall back on search result data
             articles[articleIndex] = createArticle(
-                    results[articleIndex].Title,
-                    results[articleIndex].DisplayUrl,
-                    results[articleIndex].Url
+                    results[articleIndex].title,
+                    results[articleIndex].displayUrl,
+                    results[articleIndex].url
             );
             // TODO crashlytics log
         }else {
             if (pageTitle.length() == 0) {
                 // fall back to search result title
-                pageTitle = results[articleIndex].Title;
+                pageTitle = results[articleIndex].title;
             }
 
             articles[articleIndex] = createArticle(
                     pageTitle,
-                    results[articleIndex].DisplayUrl,
-                    results[articleIndex].Url
+                    results[articleIndex].displayUrl,
+                    results[articleIndex].url
             );
         }
 

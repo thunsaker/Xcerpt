@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.transcendentlabs.xcerpt.App;
 import com.transcendentlabs.xcerpt.Article;
 import com.transcendentlabs.xcerpt.R;
-import com.transcendentlabs.xcerpt.activities.CustomizeActivity;
+import com.transcendentlabs.xcerpt.CustomizeActivity;
 import com.transcendentlabs.xcerpt.tasks.ParseHtmlAsyncTask;
 
 import uz.shift.colorpicker.LineColorPicker;

@@ -1,4 +1,4 @@
-package com.transcendentlabs.xcerpt.activities;
+package com.transcendentlabs.xcerpt;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -27,8 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.transcendentlabs.xcerpt.App;
-import com.transcendentlabs.xcerpt.R;
 import com.transcendentlabs.xcerpt.views.AspectRatioImageView;
 
 import java.io.File;
@@ -60,7 +58,7 @@ public class InputActivity extends BaseActivity {
         setContentView(R.layout.activity_input);
         initializeViews();
 
-        clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 
         setActionBarElevationOff();
         setCustomActionBarLayout();

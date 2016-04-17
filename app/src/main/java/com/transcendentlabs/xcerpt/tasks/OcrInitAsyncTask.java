@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.transcendentlabs.xcerpt.R;
-import com.transcendentlabs.xcerpt.activities.InputActivity;
+import com.transcendentlabs.xcerpt.InputActivity;
 
 import org.xeustechnologies.jtar.TarEntry;
 import org.xeustechnologies.jtar.TarInputStream;

@@ -1,4 +1,4 @@
-package com.transcendentlabs.xcerpt.activities;
+package com.transcendentlabs.xcerpt;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -18,9 +18,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.edmodo.cropper.CropImageView;
-import com.transcendentlabs.xcerpt.App;
 import com.transcendentlabs.xcerpt.tasks.OcrAsyncTask;
-import com.transcendentlabs.xcerpt.R;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -24,6 +24,9 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * Performs a web search on text
+ */
 public class SearchAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private final String TAG = getClass().getName();

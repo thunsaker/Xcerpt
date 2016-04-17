@@ -8,7 +8,7 @@ import android.preference.PreferenceFragment;
 
 import com.transcendentlabs.xcerpt.App;
 import com.transcendentlabs.xcerpt.R;
-import com.transcendentlabs.xcerpt.activities.SettingsActivity;
+import com.transcendentlabs.xcerpt.SettingsActivity;
 
 /**
  * Created by Eric on 2016-03-25.

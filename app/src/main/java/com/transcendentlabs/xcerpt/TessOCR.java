@@ -11,7 +11,6 @@ public class TessOCR {
     private TessBaseAPI mTess;
 
     public TessOCR(String datapath) {
-        // TODO Auto-generated constructor stub
         mTess = new TessBaseAPI();
         String language = "eng";
         mTess.init(datapath, language);
@@ -20,9 +19,8 @@ public class TessOCR {
     public String getOCRResult(Bitmap bitmap) {
 
         mTess.setImage(bitmap);
-        String result = mTess.getUTF8Text();
 
-        return result;
+        return mTess.getUTF8Text();
     }
 
     public void onDestroy() {

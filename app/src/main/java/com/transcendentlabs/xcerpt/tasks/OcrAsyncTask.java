@@ -1,18 +1,19 @@
 package com.transcendentlabs.xcerpt.tasks;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.transcendentlabs.xcerpt.TessOCR;
 
+/**
+ * Performs OCR on a bitmap
+ */
 public class OcrAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private Bitmap mBitmap;
     private Callback mCallback;
     private String mDatapath;
+    private TessOCR tesseract;
 
     private String excerpt;
 
@@ -24,7 +25,7 @@ public class OcrAsyncTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        TessOCR tesseract = new TessOCR(mDatapath);
+        tesseract = new TessOCR(mDatapath);
 
         excerpt = tesseract.getOCRResult(mBitmap);
         excerpt = excerpt.replaceAll("\n", " ");
@@ -39,6 +40,9 @@ public class OcrAsyncTask extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(s);
         if (mCallback != null && !isCancelled()) {
             mCallback.onComplete(excerpt, null);
+        }
+        if(tesseract != null) {
+            tesseract.onDestroy();
         }
     }
 

@@ -2,24 +2,23 @@ package com.transcendentlabs.xcerpt;
 
 public class BingSearchResults {
 
-    public ResultsContent d;
+    public ResultsContent resultsContent;
 
     public static class ResultsContent {
         public Result[] results;
     }
 
     public static class Result {
-        public String ID;
-        public String Title;
-        public String Description;
-        public String DisplayUrl;
-        public String Url;
-
+        public String id;
+        public String title;
+        public String description;
+        public String displayUrl;
+        public String url;
     }
 
     public Result[] getResults(){
-        if (d == null)
+        if (resultsContent == null)
             return null;
-        return d.results;
+        return resultsContent.results;
     }
 }

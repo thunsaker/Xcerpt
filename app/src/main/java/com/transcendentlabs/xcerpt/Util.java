@@ -18,7 +18,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.transcendentlabs.xcerpt.activities.BaseActivity;
 import com.transcendentlabs.xcerpt.tasks.OcrInitAsyncTask;
 
 import java.io.File;
@@ -99,8 +98,6 @@ public class Util {
 
 
     public static File getStorageDirectory(Activity activity) {
-        //Log.d(TAG, "getStorageDirectory(): API level is " + Integer.valueOf(android.os.Build.VERSION.SDK_INT));
-
         String state = null;
         try {
             state = Environment.getExternalStorageState();
