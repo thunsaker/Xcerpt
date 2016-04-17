@@ -464,6 +464,9 @@ public class CustomizeActivity extends BaseActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         if(sharedPref.getBoolean(SettingsActivity.KEY_DELETE_SCREENSHOT, false)) {
             Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                return;
+            }
             String uriString = extras.getString(InputActivity.IMAGE);
             if(uriString == null || uriString.isEmpty()) {
                 return;
