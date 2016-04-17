@@ -21,3 +21,8 @@ tess-two/build/generated/*
 tess-two/build/intermediates/*
 tess-two/build/tmp/*
 tess-two/outputs/*
+.idea/encodings.xml
+.idea/gradle.xml
+.idea/runConfigurations.xml
+.idea/misc.xml
+.idea/encodings.xml
