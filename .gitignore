@@ -8,3 +8,16 @@ app/fabric.properties
 app/gradle.properties
 *.apk
 app/manifest-merger-release-report.txt
+.idea/encodings.xml
+.idea/encodings.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/vcs.xml
+cropper/build/generated/*
+cropper/build/intermediates/*
+cropper/build/outputs/*
+cropper/build/tmp/*
+tess-two/build/generated/*
+tess-two/build/intermediates/*
+tess-two/build/tmp/*
+tess-two/outputs/*
