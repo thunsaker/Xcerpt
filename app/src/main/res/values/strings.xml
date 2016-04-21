@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Xcerpt</string>
-    <string name="title_activity_highlight">Xcerpt</string>
+    <string name="title_activity_highlight" translatable="false">Xcerpt</string>
     <string name="paste_button">Paste</string>
     <string name="delete_button">Delete</string>
     <string name="next_button">Looks good!</string>
@@ -20,9 +20,8 @@
     <string name="instructions_colour">Select a background and highlight colour.</string>
     <string name="instructions_source">Choose the correct source you wish to share.</string>
     <string name="loading">Loading…</string>
-    <string name="title_activity_share">Xcerpt</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="watermark">"\""</string>
+    <string name="title_activity_share" translatable="false">Xcerpt</string>
+    <string name="watermark" translatable="false">"\""</string>
     <string name="no_source_found">No source found! Xcerpt requires a source URL.</string>
     <string name="no_source_instructions">Please provide the URL in the Source tab.</string>
     <string name="highlight">Highlight</string>
@@ -34,7 +33,7 @@
     <string name="paste_hint">Paste the excerpt you want to share.</string>
     <string name="share_hint">Hint: Next time, after selecting the passage you want, instead of pressing the COPY button, press the SHARE button, and select Xcerpt!</string>
     <string name="view_on_twitter">View on Twitter</string>
-    <string name="title_activity_input">InputActivity</string>
+    <string name="title_activity_input" translatable="false">InputActivity</string>
     <string name="paste_instructions">Paste Text</string>
     <string name="select_image_instructions">Select a screenshot</string>
     <string name="title_activity_crop">Crop screenshot</string>
