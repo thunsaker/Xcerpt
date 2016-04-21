@@ -42,6 +42,8 @@ android {
             buildConfigField 'String', 'TWITTER_SECRET_KEY', TWITTER_SECRET_KEY
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
         }
         release {
             buildConfigField 'String', 'BING_ACCOUNT_KEY', BING_ACCOUNT_KEY
